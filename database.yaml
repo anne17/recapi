@@ -1,22 +1,25 @@
 recipies:
 - title: Chili con carne med kikärter
   pdf: Chili con carne med kikärter - Recept _ Arla.pdf
+  img: chili-kikärtor.jpg
   tags:
   - middag
   - köttfärs
 - title: Mug cake
   pdf: Mug cake - Koppkaka.pdf
-  img: mugcake.png
+  img: mug-cake.jpg
   tags:
   - dessert
   - kaka
   - snabblagat
 - title: Pastagratäng med bacon
   pdf: Pastagratäng med bacon _ Recept ICA.se.pdf
+  img: pastagratang-med-bacon-722019.jpg
   tags:
   - middag
 - title: Couscous med grönsaker och halloumi
   pdf: Couscous med grönsaker och halloumi.pdf
+  img: couscous-med-gronsaker-och-halloumi.jpg
   tags:
   - middag
   - vegetariskt
@@ -24,3 +27,4 @@ recipies:
   tags:
   - middag
   - snabblagat
+  img: mugcake.png

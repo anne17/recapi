@@ -26,9 +26,14 @@ class RecipeList(Resource):
 api.add_resource(RecipeList, '/recipe-data')
 
 
-@app.route('/file/<path:path>')
-def send_file(path):
+@app.route('/pdf/<path:path>')
+def send_pdf(path):
     return send_from_directory('res/pdf', path)
+
+
+@app.route('/img/<path:path>')
+def send_img(path):
+    return send_from_directory('res/img', path)
 
 
 def load_data(yamlfile):
@@ -36,4 +41,4 @@ def load_data(yamlfile):
         return yaml.load(f)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=9005)
