@@ -16,13 +16,12 @@
     source venv/bin/activate
     pip install --upgrade pip
     pip install -r requirements.txt
-    deactivate
     ```
 
 ## Running the backend
 
-* For development mode run:
+* For development mode run (while venv is active):
 
     ```
-    python3 app.py
+    python app.py
     ```

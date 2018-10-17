@@ -1,40 +1,22 @@
-# -*- coding: utf-8 -*-
+from flask import send_from_directory
+from flask_restful import Resource
+from flask_login import login_user
 
-import configparser
-import yaml
-
-from flask import Flask, send_from_directory, request
-from flask_restful import Resource, Api
-from flask_cors import CORS
-from flask_login import LoginManager, login_user
-
+from app import app, api, login_manager, Config
 from user import User
-
-app = Flask(__name__, static_url_path='')
-CORS(app)
-api = Api(app)
-# login = LoginManager(app)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-# Read config
-Config = configparser.ConfigParser()
-Config.read("config.cfg")
+import utils
 
 
 class Hello(Resource):
     def get(self):
         return {"hello": "true"}
 
-
 api.add_resource(Hello, '/')
 
 
 class RecipeList(Resource):
     def get(self):
-        return load_data(Config.get("DATA", "database"))
-
+        return utils.load_data(Config.get("DATA", "database"))
 
 api.add_resource(RecipeList, '/recipe-data')
 
@@ -64,7 +46,7 @@ def login():
         # Login and validate the user.
         # user should be an instance of your `User` class
 
-    user = User("anne")
+    user = User("someone")
     login_user(user)
 
     print('Logged in successfully.')
@@ -96,16 +78,3 @@ def login():
 #     return 'User %s logged in' % username
 #     # return redirect(url_for('index'))
 #     # return render_template('login.html', title='Sign In', form=form)
-
-
-def load_data(yamlfile):
-    with open(yamlfile) as f:
-        return yaml.load(f)
-
-
-if __name__ == '__main__':
-    app.run(
-        debug=Config.getboolean("APP-SETTINGS", "debug_mode"),
-        host=Config.get("APP-SETTINGS", "wsgi_host"),
-        port=Config.get("APP-SETTINGS", "wsgi_port")
-    )
