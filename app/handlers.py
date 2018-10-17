@@ -1,8 +1,10 @@
+import os
+
 from flask import send_from_directory
 from flask_restful import Resource
 from flask_login import login_user
 
-from app import app, api, login_manager, Config
+from app import app, api, Config
 from user import User
 import utils
 
@@ -23,17 +25,14 @@ api.add_resource(RecipeList, '/recipe-data')
 
 @app.route('/pdf/<path:path>')
 def send_pdf(path):
-    return send_from_directory('res/pdf', path)
+    data_dir = os.path.join(Config.get("DATA", "media_dir"), "pdf")
+    return send_from_directory(data_dir, path)
 
 
 @app.route('/img/<path:path>')
 def send_img(path):
-    return send_from_directory('res/img', path)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
+    data_dir = os.path.join(Config.get("DATA", "media_dir"), "img")
+    return send_from_directory(data_dir, path)
 
 
 @app.route('/login', methods=['GET', 'POST'])

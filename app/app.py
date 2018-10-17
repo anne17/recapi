@@ -10,7 +10,7 @@ from flask_restful import Api
 from flask_login import LoginManager
 
 # Init app
-app = Flask(__name__, static_url_path='')
+app = Flask(__name__)
 api = Api(app)
 
 # Enable CORS

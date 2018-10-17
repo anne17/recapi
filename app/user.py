@@ -2,7 +2,7 @@
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
-# from app import login
+from app import login_manager
 
 
 class User(UserMixin):
@@ -32,6 +32,6 @@ class User(UserMixin):
         return True
 
 
-# @login.user_loader
-# def load_user(id):
-#     return User.query.get(int(id))
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
