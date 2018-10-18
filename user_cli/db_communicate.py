@@ -37,7 +37,6 @@ def add_user(user, pw, displayname, db):
     """Add a new user to the data base."""
     if not db.get(user):
         db[user] = {}
-        db[user][Config.get("USER_CLI", "db_user")] = user
         db[user][Config.get("USER_CLI", "db_password")] = generate_password_hash(pw)
         db[user][Config.get("USER_CLI", "db_display")] = displayname
         db[user][Config.get("USER_CLI", "db_userid")] = gen_id(db)
