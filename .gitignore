@@ -1,3 +1,7 @@
+
+# Data
+data/users.db
+
 # Server stuff
 .htaccess
 

@@ -35,13 +35,15 @@ def viewuser(user):
 @app.cli.command()
 @click.option('--user', default="")
 @click.option('--pw', default="")
-def adduser(user, pw):
+@click.option('--display', default="")
+def adduser(user, pw, display):
     """Adds a user to the data base."""
     try:
-        add_user(user, pw, UserDB)
+        add_user(user, pw, display, UserDB)
         click.echo("Successfully added user: %s" % user)
     except:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
+        return
 
 
 @app.cli.command()

@@ -26,9 +26,9 @@ From the command-line
 
 #### adduser
 
-    flask adduser --user USER --pw PASS
+    flask adduser --user USER --pw PASS --display DISPLAY_NAME
 
-Creates an user with username `USER` and password `PASS`.
+Creates an user with username `USER`, password `PASS` and display name `DISPLAY_NAME`.
 
 #### viewuser
 
@@ -38,7 +38,9 @@ Returns (on `stdout`):
 ```
 {
     user: string,
-    password: hash
+    password: hash,
+    display_name: string,
+    id: integer
 }
 ```
 
