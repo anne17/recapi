@@ -2,22 +2,31 @@
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app import login_manager
+import utils
+from app import Config, login_manager
 
 
 class User(UserMixin):
-    def __init__(self, username):
+    def __init__(self, username, password):
         self.username = username
+        self.password = password
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.db_pw_attr = Config.get("USER_CLI", "db_password")
+        self.db_id_attr = Config.get("USER_CLI", "db_userid")
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        self.load_db()
+        self.userdata = self.db.get(self.username, "")
 
-    def is_authenticated(self):
-        # a property that is True if the user has valid credentials or False otherwise.
-        return True
+        self.is_authenticated = self.authenticate()
+
+    def load_db(self):
+        self.db = utils.load_data(Config.get("DATA", "userdata"))
+
+    def authenticate(self):
+        """Set is_authenticated to True if the user has valid credentials (False otherwise)."""
+        user_password = self.userdata.get(self.db_pw_attr)
+        authenticated = check_password_hash(user_password, generate_password_hash(self.password))
+        return authenticated
 
     def is_active(self):
         # a property that is True if the user's account is active or False otherwise.
@@ -28,8 +37,8 @@ class User(UserMixin):
         return True
 
     def get_id(self):
-        # a method that returns a unique identifier for the user as a string (unicode, if using Python 2).
-        return True
+        """Return a unique identifier for the user as a string."""
+        return str(self.userdata.get(self.db_id_attr))
 
 
 @login_manager.user_loader

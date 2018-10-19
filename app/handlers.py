@@ -45,7 +45,7 @@ def login():
         # Login and validate the user.
         # user should be an instance of your `User` class
 
-    user = User("someone")
+    user = User("someone", "password")
     login_user(user)
 
     print('Logged in successfully.')
