@@ -4,8 +4,6 @@ import logging
 import json
 import configparser
 
-# from config import Config
-
 from werkzeug.security import generate_password_hash, check_password_hash
 
 logging.basicConfig(stream=sys.stdout)

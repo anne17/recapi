@@ -1,7 +1,9 @@
-import click
-import json
 import sys
+import json
+import click
+from getpass import getpass
 from flask import Flask
+
 from db_communicate import load_db, add_user, check_user
 
 app = Flask(__name__)
@@ -34,27 +36,31 @@ def viewuser(user):
 
 @app.cli.command()
 @click.option('--user', default="")
-@click.option('--pw', default="")
 @click.option('--display', default="")
-def adduser(user, pw, display):
+def adduser(user, display):
     """Adds a user to the data base."""
+    pw = input_pw("Please select a password: ")
     try:
         add_user(user, pw, display, UserDB)
         click.echo("Successfully added user: %s" % user)
     except:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
-        return
 
 
 @app.cli.command()
 @click.option('--user', default="")
-@click.option('--pw', default="")
-def checkuser(user, pw):
+def checkuser(user):
     """Check if password for user is correct."""
+    pw = input_pw()
     try:
         if check_user(user, pw, UserDB):
             click.echo("Successfully authenticated user: %s" % user)
         else:
-            click.echo("Invalid password or username!")
+            click.echo("Invalid username or password!")
     except:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
+
+
+def input_pw(prompt="Password: "):
+    """Prompt for password."""
+    return getpass(prompt)
