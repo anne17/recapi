@@ -1,6 +1,7 @@
 
 # Data
 data/users.db
+data/users.sql
 
 # Server stuff
 .htaccess

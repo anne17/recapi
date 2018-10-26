@@ -4,10 +4,10 @@ import click
 from getpass import getpass
 from flask import Flask
 
-from db_communicate import load_db, add_user, check_user
+from db_communicate import UserDB
 
 app = Flask(__name__)
-UserDB = load_db()
+UserDB = UserDB()
 
 
 @app.cli.command()
@@ -27,11 +27,7 @@ def viewall():
 @click.option('--user', default="")
 def viewuser(user):
     """Get the user's data set."""
-    if not UserDB.get(user):
-        click.echo("Error: unknown user: %s" % user)
-    else:
-        pretty_response = json.dumps(UserDB[user], indent=2, sort_keys=True, ensure_ascii=False)
-        click.echo(pretty_response)
+    click.echo(UserDB.get(user))
 
 
 @app.cli.command()
@@ -41,7 +37,7 @@ def adduser(user, display):
     """Adds a user to the data base."""
     pw = input_pw("Please select a password: ")
     try:
-        add_user(user, pw, display, UserDB)
+        UserDB.add_user(user, pw, display)
         click.echo("Successfully added user: %s" % user)
     except:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
@@ -53,7 +49,7 @@ def checkuser(user):
     """Check if password for user is correct."""
     pw = input_pw()
     try:
-        if check_user(user, pw, UserDB):
+        if UserDB.check_user(user, pw):
             click.echo("Successfully authenticated user: %s" % user)
         else:
             click.echo("Invalid username or password!")
