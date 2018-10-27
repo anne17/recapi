@@ -37,7 +37,7 @@ Start venv and run command-line API:
 
 ```
     source venv/bin/activate
-    export FLASK_APP=app/cmd_api.py FLASK_RUN_PORT=8083
+    export FLASK_APP=app/user_cli.py FLASK_RUN_PORT=8083
 ```
 
 ## Command line options
