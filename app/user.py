@@ -2,8 +2,8 @@
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
-import utils
-from app import Config, login_manager
+from app import login_manager
+from db_communicate import UserDB
 
 
 class User(UserMixin):
@@ -11,20 +11,18 @@ class User(UserMixin):
         self.username = username
         self.password = password
 
-        self.db_pw_attr = Config.get("USER_DB", "db_password")
-        self.db_id_attr = Config.get("USER_DB", "db_userid")
+        self.init_user()
 
-        self.load_db()
-        self.userdata = self.db.get(self.username, "")
+    def init_user(self):
+        userdb = UserDB()
+        userdata = userdb.get(self.username)
+        assert (len(userdata) == 4)
+        self.is_authenticated = self.authenticate(self.userdata[3])
+        self.userid = self.userdata[0]
+        self.displayname = self.userdata[2]
 
-        self.is_authenticated = self.authenticate()
-
-    def load_db(self):
-        self.db = utils.load_data(Config.get("USER_DB", "db_path"))
-
-    def authenticate(self):
+    def authenticate(self, user_password):
         """Set is_authenticated to True if the user has valid credentials (False otherwise)."""
-        user_password = self.userdata.get(self.db_pw_attr)
         authenticated = check_password_hash(user_password, generate_password_hash(self.password))
         return authenticated
 
@@ -38,7 +36,7 @@ class User(UserMixin):
 
     def get_id(self):
         """Return a unique identifier for the user as a string."""
-        return str(self.userdata.get(self.db_id_attr))
+        return str(self.userid)
 
 
 @login_manager.user_loader
