@@ -1,5 +1,4 @@
 import sys
-import json
 import click
 from getpass import getpass
 from flask import Flask
@@ -19,8 +18,12 @@ def hello():
 @app.cli.command()
 def viewall():
     """View entire database."""
-    pretty_response = json.dumps(UserDB, indent=2, sort_keys=True, ensure_ascii=False)
-    click.echo(pretty_response)
+    users = UserDB.getall()
+    if not users:
+        click.echo("Data base is empty!")
+    else:
+        for u in users:
+            click.echo(u)
 
 
 @app.cli.command()
@@ -36,6 +39,10 @@ def viewuser(user):
 def adduser(user, display):
     """Adds a user to the data base."""
     pw = input_pw("Please select a password: ")
+    pw2 = input_pw("Please confirm password: ")
+    if pw != pw2:
+        click.echo("Password not confirmed. Aborting.")
+        exit()
     try:
         UserDB.add_user(user, pw, display)
         click.echo("Successfully added user: %s" % user)
@@ -53,6 +60,17 @@ def checkuser(user):
             click.echo("Successfully authenticated user: %s" % user)
         else:
             click.echo("Invalid username or password!")
+    except:
+        click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
+
+
+@app.cli.command()
+@click.option('--user', default="")
+def deleteuser(user):
+    """Deletes a user from the data base."""
+    try:
+        UserDB.delete_user(user)
+        click.echo("Deleted user: %s" % user)
     except:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
 

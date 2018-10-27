@@ -35,15 +35,7 @@ Will prompt for password.
 
     flask viewuser --user USER
 
-Returns (on `stdout`):
-```
-{
-    user: string,
-    password: hash,
-    display_name: string,
-    id: integer
-}
-```
+Displays user ID, username, displayname in stdout.
 
 #### viewall
 
@@ -53,6 +45,12 @@ Shows entire user database.
 
 #### checkuser
 
-    flask checkuser --user USER --pw PASS
+    flask checkuser --user USER
 
-Authenticates user `USER` with `PASS`.
+Authenticates user `USER`. Will prompt for password.
+
+#### deleteuser
+
+    flask deleteuser --user USER
+
+Deletes user from data base.
