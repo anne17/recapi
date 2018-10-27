@@ -11,8 +11,8 @@ class User(UserMixin):
         self.username = username
         self.password = password
 
-        self.db_pw_attr = Config.get("USER_CLI", "db_password")
-        self.db_id_attr = Config.get("USER_CLI", "db_userid")
+        self.db_pw_attr = Config.get("USER_DB", "db_password")
+        self.db_id_attr = Config.get("USER_DB", "db_userid")
 
         self.load_db()
         self.userdata = self.db.get(self.username, "")
@@ -20,7 +20,7 @@ class User(UserMixin):
         self.is_authenticated = self.authenticate()
 
     def load_db(self):
-        self.db = utils.load_data(Config.get("DATA", "userdata"))
+        self.db = utils.load_data(Config.get("USER_DB", "db_path"))
 
     def authenticate(self):
         """Set is_authenticated to True if the user has valid credentials (False otherwise)."""
