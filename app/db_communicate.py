@@ -72,6 +72,7 @@ class UserDB():
         u = self.cursor.fetchone()
         if not u:
             log.error("Error: unknown user: %s" % user)
+            return False
         else:
             return u
 
@@ -141,3 +142,12 @@ class UserDB():
         uids.append(0)  # fallback
         ID_count = max(uids) + 1
         return ID_count
+
+    def get_by_id(self, uid):
+        """Get user by ID."""
+        sql = "SELECT * FROM %s WHERE %s=?" % (
+            self.tablename,
+            self.db_userid
+            )
+        self.cursor.execute(sql, (int(uid),))
+        return self.cursor.fetchone()
