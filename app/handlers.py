@@ -52,7 +52,7 @@ def my_login():
     user.username = username
     if not user.is_authenticated(password):
         return jsonify({"status": "error",
-                        "message": "Invalid username or password!"}), 401
+                        "message": "Invalid username or password!"}), 200
     login_user(user, remember=remember)
     return jsonify({"status": "success",
                     "message": "User %s logged in successfully!\n" % username}), 200
