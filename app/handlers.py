@@ -55,6 +55,7 @@ def my_login():
                         "message": "Invalid username or password!"}), 200
     login_user(user, remember=remember)
     return jsonify({"status": "success",
+                    "user": user.displayname,
                     "message": "User %s logged in successfully!\n" % username}), 200
     # return redirect(url_for('index'))
     # return render_template('login.html', title='Sign In', form=form)
