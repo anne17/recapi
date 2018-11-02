@@ -7,18 +7,15 @@ import configparser
 from flask import Flask
 from flask_cors import CORS
 from flask_restful import Api
-from flask_login import LoginManager
+from flask_httpauth import HTTPBasicAuth
 
 # Init app
 app = Flask(__name__)
 api = Api(app)
+auth = HTTPBasicAuth()
 
 # Enable CORS
 CORS(app)
-
-# Init login manager
-login_manager = LoginManager()
-login_manager.init_app(app)
 
 # Read config
 if os.path.exists(os.path.join(os.path.dirname(app.config.root_path), 'config.cfg')) is False:

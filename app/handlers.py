@@ -2,9 +2,8 @@ import os
 
 from flask import send_from_directory, request
 from flask_restful import Resource
-from flask_login import login_user, current_user, login_required, logout_user
 
-from app import app, api, Config
+from app import app, api, Config, auth
 from user import User
 import utils
 
@@ -45,38 +44,24 @@ def send_img(path):
     return send_from_directory(data_dir, path)
 
 
-# https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins
-# https://github.com/maxcountryman/flask-login
-@app.route('/login', methods=['GET', 'POST'])
-def my_login():
-    if current_user.is_authenticated:
-        print("Current user is already authenticated.")
-        return utils.success_response("User %s is already authenticated!\n" % current_user.username,
-                                      current_user.displayname)
+@auth.verify_password
+# https://github.com/flask-restful/flask-restful/issues/492
+# https://flask-httpauth.readthedocs.io/en/latest/
+# Set @auth.login_required on authorized routes
+def verify_pw(username, password):
+    user = User(username)
+    return user.is_authenticated(password)
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     username = request.form["login"]
     password = request.form["password"]
-    remember = request.form["remember"]
-    user = User()
-    user.username = username
-    if not user.is_authenticated(password):
-        return utils.error_response("Invalid username or password!")
-    login_user(user, remember=remember)
-    # next = request.args.get('next')
-    # is_safe_url should check if the url is safe for redirects.
-    # See http://flask.pocoo.org/snippets/62/ for an example.
-    # if not is_safe_url(next):
-    #     return flask.abort(400)
-    print("user %s logged in successfully" % username)
-    return utils.success_response("User %s logged in successfully!\n" % username,
-                                  user=user.displayname)
+    user = User(username)
+    # print("User:", user.username, user.displayname, user.is_authenticated(password))
 
-
-@app.route('/logout', methods=["GET"])
-@login_required
-def logout():
-    """Handle logout."""
-    print("Attempting to logout")
-    logout_user()
-    print("Still attempting to logout")
-    return utils.success_response("User logged out.")
+    if user.is_authenticated(password):
+        print("user %s logged in successfully" % username)
+        return utils.success_response("User %s logged in successfully!\n" % username,
+                                      user=user.displayname)
+    return utils.error_response("Invalid username or password!")
