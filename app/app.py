@@ -5,15 +5,16 @@ import os
 import configparser
 
 from flask import Flask
+from flask_session import Session
 from flask_cors import CORS
 from flask_restful import Api
-from flask_httpauth import HTTPBasicAuth
 
 # Init app
 app = Flask(__name__)
 api = Api(app)
-auth = HTTPBasicAuth()
-
+app.config.from_object(__name__)
+app.config["SESSION_TYPE"] = 'filesystem'
+Session(app)
 # Enable CORS
 CORS(app)
 

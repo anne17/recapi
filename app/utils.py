@@ -13,7 +13,7 @@ def error_response(msg):
     return jsonify({
         "status": "error",
         "message": msg
-        })
+    })
 
 
 def success_response(msg, **kwargs):
@@ -21,7 +21,7 @@ def success_response(msg, **kwargs):
     response = {
         "status": "success",
         "message": msg
-        }
+    }
     for key, value in kwargs.items():
         response[key] = value
     return jsonify(response)
