@@ -16,7 +16,7 @@ app.config.from_object(__name__)
 app.config["SESSION_TYPE"] = 'filesystem'
 Session(app)
 # Enable CORS
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # Read config
 if os.path.exists(os.path.join(os.path.dirname(app.config.root_path), 'config.cfg')) is False:

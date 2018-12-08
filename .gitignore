@@ -2,6 +2,7 @@
 # Data
 data/users.db
 data/users.sql
+flask_session
 
 # Server stuff
 .htaccess
