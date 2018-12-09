@@ -26,12 +26,12 @@ class UserDB():
     """User data base model using sqlite."""
 
     def __init__(self):
-        self.db_path = Config.get("USER_DB", "db_path")
-        self.tablename = Config.get("USER_DB", "db_users_table")
-        self.db_userid = Config.get("USER_DB", "db_userid")
-        self.db_user = Config.get("USER_DB", "db_user")
-        self.db_display = Config.get("USER_DB", "db_display")
-        self.db_password = Config.get("USER_DB", "db_password")
+        self.db_path = Config.get("DB", "db_path")
+        self.tablename = Config.get("DB", "db_users_table")
+        self.db_userid = Config.get("DB", "db_userid")
+        self.db_user = Config.get("DB", "db_user")
+        self.db_display = Config.get("DB", "db_display")
+        self.db_password = Config.get("DB", "db_password")
         self.load_db()
 
     def __exit__(self):
@@ -53,11 +53,11 @@ class UserDB():
         try:
             sql = ("INSERT INTO %s values (?, ?, ?, ?)" % self.tablename)
             self.cursor.execute(sql, (
-                          self.gen_id(),
-                          user,
-                          displayname,
-                          generate_password_hash(pw)
-                      ))
+                self.gen_id(),
+                user,
+                displayname,
+                generate_password_hash(pw)
+            ))
             self.connection.commit()
         except Exception as e:
             log.error("Could not save changes to database! %s", e)
@@ -67,7 +67,7 @@ class UserDB():
         sql = "SELECT * FROM %s WHERE %s=?" % (
             self.tablename,
             self.db_user
-            )
+        )
         self.cursor.execute(sql, (user,))
         u = self.cursor.fetchone()
         if not u:
@@ -82,7 +82,7 @@ class UserDB():
             self.db_user,
             self.db_display,
             self.tablename
-            )
+        )
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
@@ -92,7 +92,7 @@ class UserDB():
             self.db_password,
             self.tablename,
             self.db_user
-            )
+        )
         self.cursor.execute(sql, (user,))
         stored_pw = self.cursor.fetchone()[0]
         return check_password_hash(stored_pw, pw)
@@ -102,7 +102,7 @@ class UserDB():
         sql = "DELETE FROM %s WHERE %s=?" % (
             self.tablename,
             self.db_user
-            )
+        )
         try:
             self.cursor.execute(sql, (user,))
             assert (self.cursor.rowcount == 1)
@@ -116,7 +116,7 @@ class UserDB():
         sql = "SELECT %s FROM %s" % (
             self.db_user,
             self.tablename
-            )
+        )
         self.cursor.execute(sql,)
         users = [u[0] for u in self.cursor.fetchall()]
         if user in users:
@@ -125,13 +125,13 @@ class UserDB():
 
     def create_table(self):
         """Create the user data table if it does not exist."""
-        sql = "CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s)" % (
-                self.tablename,
-                self.db_userid,
-                self.db_user,
-                self.db_display,
-                self.db_password
-                )
+        sql = "CREATE TABLE IF NOT EXISTS %s (%s INT PRIMARY KEY, %s, %s, %s)" % (
+              self.tablename,
+              self.db_userid,
+              self.db_user,
+              self.db_display,
+              self.db_password
+        )
         self.cursor.execute(sql)
 
     def gen_id(self):
@@ -148,6 +148,6 @@ class UserDB():
         sql = "SELECT * FROM %s WHERE %s=?" % (
             self.tablename,
             self.db_userid
-            )
+        )
         self.cursor.execute(sql, (int(uid),))
         return self.cursor.fetchone()
