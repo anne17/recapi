@@ -52,7 +52,7 @@ def send_img(path):
 
 @app.route('/check_authentication', methods=['GET', 'POST'])
 def check_authentication():
-    print("Checking for authentication")
+    """Check if current user is authorized in the active session."""
     if session.get("authorized"):
         print("User authorized: %s" % session.get("user"))
         return utils.success_response("User authorized", user=session.get("user"))
@@ -63,6 +63,7 @@ def check_authentication():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Check user credentials and log in if authorized."""
     if session.get("authorized"):
         return utils.success_response("User already authorized!")
     else:
@@ -74,7 +75,14 @@ def login():
         if user.is_authenticated(password):
             session["authorized"] = True
             session["user"] = user.displayname
-            print("user %s logged in successfully" % username)
+            print("User %s logged in successfully" % username)
             return utils.success_response("User %s logged in successfully!" % username,
                                           user=user.displayname)
-        return utils.error_response("Invalid username or password!")
+        return utils.error_response("Invalid username or password!"), 401
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    """Remove session for current user."""
+    session.clear()
+    return utils.success_response("Logged out successfully")
