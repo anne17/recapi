@@ -12,9 +12,7 @@ from flask_restful import Api
 # Init app
 app = Flask(__name__)
 api = Api(app)
-app.config.from_object(__name__)
-app.config["SESSION_TYPE"] = 'filesystem'
-Session(app)
+
 # Enable CORS
 CORS(app, supports_credentials=True)
 
@@ -29,9 +27,14 @@ else:
 Config = configparser.ConfigParser()
 Config.read(configfile)
 
+# Init session
+app.config.from_object(__name__)
+app.config["SESSION_TYPE"] = Config.get("SESSION", "session_type")
+app.config["SESSION_FILE_DIR"] = Config.get("SESSION", "file_dir")
 app.secret_key = Config.get("SESSION", "secret_key")
+Session(app)
 
-# Load paths
+# Load routes
 from handlers import *
 
 

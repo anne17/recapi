@@ -10,7 +10,8 @@ import utils
 
 class Hello(Resource):
     def get(self):
-        return utils.success_response("Hello!")
+        routes = [str(rule) for rule in app.url_map.iter_rules()]
+        return utils.success_response("Hello!", routes=routes)
 
 
 api.add_resource(Hello, '/')
