@@ -1,7 +1,6 @@
 
 # Data
-data/users.db
-data/users.sql
+data/database.sql
 flask_session
 
 # Server stuff
