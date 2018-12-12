@@ -27,11 +27,11 @@ class UserDB():
 
     def __init__(self):
         self.db_path = Config.get("DB", "db_path")
-        self.tablename = Config.get("DB", "db_users_table")
-        self.db_userid = Config.get("DB", "db_userid")
-        self.db_user = Config.get("DB", "db_user")
-        self.db_display = Config.get("DB", "db_display")
-        self.db_password = Config.get("DB", "db_password")
+        self.tablename = Config.get("DB", "user_table")
+        self.db_userid = Config.get("DB", "user_id")
+        self.db_user = Config.get("DB", "user_name")
+        self.db_display = Config.get("DB", "user_display")
+        self.db_password = Config.get("DB", "user_password")
         self.load_db()
 
     def __exit__(self):
@@ -51,9 +51,8 @@ class UserDB():
             log.error("User '%s' already exists!" % user)
             raise Exception("User '%s' already exists!" % user)
         try:
-            sql = ("INSERT INTO %s values (?, ?, ?, ?)" % self.tablename)
+            sql = ("INSERT INTO %s values (?, ?, ?)" % self.tablename)
             self.cursor.execute(sql, (
-                self.gen_id(),
                 user,
                 displayname,
                 generate_password_hash(pw)
@@ -125,23 +124,13 @@ class UserDB():
 
     def create_table(self):
         """Create the user data table if it does not exist."""
-        sql = "CREATE TABLE IF NOT EXISTS %s (%s INT PRIMARY KEY, %s, %s, %s)" % (
+        sql = "CREATE TABLE IF NOT EXISTS %s (%s, %s, %s)" % (
               self.tablename,
-              self.db_userid,
               self.db_user,
               self.db_display,
               self.db_password
         )
         self.cursor.execute(sql)
-
-    def gen_id(self):
-        """Generate unique ID for new user."""
-        sql = "SELECT %s FROM %s" % (self.db_userid, self.tablename)
-        self.cursor.execute(sql)
-        uids = [uid[0] for uid in self.cursor.fetchall()]
-        uids.append(0)  # fallback
-        ID_count = max(uids) + 1
-        return ID_count
 
     def get_by_id(self, uid):
         """Get user by ID."""
