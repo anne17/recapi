@@ -51,7 +51,11 @@ class UserDB():
             log.error("User '%s' already exists!" % user)
             raise Exception("User '%s' already exists!" % user)
         try:
-            sql = ("INSERT INTO %s values (?, ?, ?)" % self.tablename)
+            sql = ("INSERT INTO %s (%s, %s, %s) values (?, ?, ?)" % (
+                   self.tablename,
+                   self.db_user,
+                   self.db_display,
+                   self.db_password))
             self.cursor.execute(sql, (
                 user,
                 displayname,
@@ -124,8 +128,9 @@ class UserDB():
 
     def create_table(self):
         """Create the user data table if it does not exist."""
-        sql = "CREATE TABLE IF NOT EXISTS %s (%s, %s, %s)" % (
+        sql = "CREATE TABLE IF NOT EXISTS %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s, %s, %s)" % (
               self.tablename,
+              self.db_userid,
               self.db_user,
               self.db_display,
               self.db_password
