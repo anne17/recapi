@@ -26,12 +26,13 @@ class UserDB():
     """User data base model using sqlite."""
 
     def __init__(self):
-        self.db_path = Config.get("DB", "db_path")
-        self.tablename = Config.get("DB", "user_table")
-        self.db_userid = Config.get("DB", "user_id")
-        self.db_user = Config.get("DB", "user_name")
-        self.db_display = Config.get("DB", "user_display")
-        self.db_password = Config.get("DB", "user_password")
+        # Strings in data base:
+        self.db_path = Config.get("DATA", "db_path")
+        self.tablename = "users"
+        self.db_userid = "id"
+        self.db_user = "user"
+        self.db_display = "display"
+        self.db_password = "password"
         self.load_db()
 
     def __exit__(self):

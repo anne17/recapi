@@ -7,17 +7,24 @@ class RecipeTable():
     """User data base model using sqlite."""
 
     def __init__(self):
-        self.db_path = Config.get("DB", "db_path")
-        self.tablename = Config.get("DB", "recipe_table")
-        self.id = Config.get("DB", "recipe_id")
-        self.name = Config.get("DB", "recipe_name")
-        self.content = Config.get("DB", "recipe_content")
-        self.ingredients = Config.get("DB", "recipe_ingredients")
-        self.created_by = Config.get("DB", "recipe_created")
+        # recipe_tag_id = tag_id
+        #
+        # tag_meta_table = recipe_tags
+        # tag_meta_id = rowid
+        # tag_meta_recipe_id = recipe_id
+        # tag_meta_tag_id = tag_id
+        self.db_path = Config.get("DATA", "db_path")
+        self.tablename = "recipies"
+        self.id = "id"
+        self.name = "recipe"
+        self.content = "content"
+        self.ingredients = "ingredients"
+        self.image = "image"
+        self.created_by = "created_by"
 
-        self.tags_tablename = Config.get("DB", "tags_table")
-        self.tag_id = Config.get("DB", "tag_id")
-        self.tag_name = Config.get("DB", "tag_name")
+        self.tags_tablename = "tags"
+        self.tag_id = "tag_id"
+        self.tag_name = "tag_name"
 
         self.load_db()
 
