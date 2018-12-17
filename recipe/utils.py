@@ -2,7 +2,7 @@ import functools
 import yaml
 from flask import jsonify
 
-from app import session
+# from app import session
 
 
 def load_data(yamlfile):
@@ -30,16 +30,16 @@ def success_response(msg, **kwargs):
     return jsonify(response)
 
 
-def gatekeeper(function):
-    """Stop unauthorized users. Use as decorator where authorization is needed."""
-    @functools.wraps(function)  # Copy original function's information, needed by Flask
-    def wrapper(*args, **kwargs):
-        if not session.get("authorized"):
-            return jsonify({"error": "Access denied"})
-        else:
-            return function(*args, **kwargs)
-
-    return wrapper
+# def gatekeeper(function):
+#     """Stop unauthorized users. Use as decorator where authorization is needed."""
+#     @functools.wraps(function)  # Copy original function's information, needed by Flask
+#     def wrapper(*args, **kwargs):
+#         if not session.get("authorized"):
+#             return jsonify({"error": "Access denied"})
+#         else:
+#             return function(*args, **kwargs)
+#
+#     return wrapper
 
 # Example:
 # @app.route("/coolfunc")
