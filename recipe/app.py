@@ -35,7 +35,7 @@ app.secret_key = Config.get("SESSION", "secret_key")
 Session(app)
 
 # Load routes
-from handlers import *
+from views import *
 
 
 if __name__ == '__main__':
