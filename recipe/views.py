@@ -1,57 +1,54 @@
 import os
 
-from flask import send_from_directory, request, session
-from flask_restful import Resource
+from flask import send_from_directory, request, session, current_app, Blueprint
 
-from app import app, api, Config
-from user import User
-import utils
+# from app import app, api, Config
+# from recipe import api
+# from recipe.user import User
+from recipe import utils
 
-
-class Hello(Resource):
-    def get(self):
-        routes = [str(rule) for rule in app.url_map.iter_rules()]
-        return utils.success_response("Hello!", routes=routes)
+general = Blueprint("general", __name__)
 
 
-api.add_resource(Hello, '/')
+@general.route("/")
+def hello():
+    routes = [str(rule) for rule in current_app.url_map.iter_rules()]
+    return utils.success_response("Hello!", routes=routes)
 
 
-class RecipeList(Resource):
-    def get(self):
-        return utils.load_data(Config.get("DATA", "database"))
+@general.route("/recipe-data")
+def recipe_data():
+    print(current_app.config)
+    return utils.load_data(current_app.config.get("DATA", "database"))
 
 
-api.add_resource(RecipeList, '/recipe-data')
-
-
-@app.errorhandler(404)
+@general.errorhandler(404)
 def page_not_found(e):
     """Handle 404"""
     return utils.error_response("Page not found.")
 
 
-@app.errorhandler(401)
+@general.errorhandler(401)
 def handle_unauthorized(e):
     """Handle 401"""
     return utils.error_response("Unauthorized.")
 
 
-@app.route('/pdf/<path:path>')
+@general.route('/pdf/<path:path>')
 def send_pdf(path):
     """Serve PDF files."""
     data_dir = os.path.join(Config.get("DATA", "media_dir"), "pdf")
     return send_from_directory(data_dir, path)
 
 
-@app.route('/img/<path:path>')
+@general.route('/img/<path:path>')
 def send_img(path):
     """Serve images."""
     data_dir = os.path.join(Config.get("DATA", "media_dir"), "img")
     return send_from_directory(data_dir, path)
 
 
-@app.route('/check_authentication', methods=['GET', 'POST'])
+@general.route('/check_authentication', methods=['GET', 'POST'])
 def check_authentication():
     """Check if current user is authorized in the active session."""
     if session.get("authorized"):
@@ -62,7 +59,7 @@ def check_authentication():
         return utils.error_response("Access denied")
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@general.route('/login', methods=['GET', 'POST'])
 def login():
     """Check user credentials and log in if authorized."""
     if session.get("authorized"):
@@ -82,7 +79,7 @@ def login():
         return utils.error_response("Invalid username or password!"), 401
 
 
-@app.route('/logout', methods=['GET', 'POST'])
+@general.route('/logout', methods=['GET', 'POST'])
 def logout():
     """Remove session for current user."""
     session.clear()
