@@ -18,10 +18,10 @@
 
 ## Running the backend
 
-* For development mode run (while venv is active):
+* Run in development mode:
 
     ```
-    pipenv run python recipe/app.py
+    pipenv run python run.py
     ```
 
 

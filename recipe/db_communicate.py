@@ -1,8 +1,9 @@
-import os
+# import os
 import sys
 import logging
-import configparser
 import sqlite3
+
+from flask import current_app
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -10,16 +11,16 @@ logging.basicConfig(stream=sys.stdout)
 log = logging.getLogger('user_cli' + __name__)
 
 
-# Read config
-if os.path.exists(os.path.join(os.path.dirname(
-        os.path.dirname(__file__)), 'config.cfg')) is False:
-    configfile = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), 'config.default.cfg')
-else:
-    configfile = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.cfg')
-
-Config = configparser.ConfigParser()
-Config.read(configfile)
+# # Read config
+# if os.path.exists(os.path.join(os.path.dirname(
+#         os.path.dirname(__file__)), 'config.cfg')) is False:
+#     configfile = os.path.join(
+#         os.path.dirname(os.path.dirname(__file__)), 'config.default.cfg')
+# else:
+#     configfile = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.cfg')
+#
+# Config = configparser.ConfigParser()
+# Config.read(configfile)
 
 
 class UserDB():
@@ -27,7 +28,7 @@ class UserDB():
 
     def __init__(self):
         # Strings in data base:
-        self.db_path = Config.get("DATA", "db_path")
+        self.db_path = current_app.config.get("DATABASE_PATH")
         self.tablename = "users"
         self.db_userid = "id"
         self.db_user = "user"

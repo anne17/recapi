@@ -1,10 +1,11 @@
 from werkzeug.security import check_password_hash
 
-from db_communicate import UserDB
+from recipe.db_communicate import UserDB
 
 
 class User():
     def __init__(self, username):
+        """User model"""
         self.username = username
 
         # Retrieve user information from data base.

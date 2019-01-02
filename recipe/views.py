@@ -4,7 +4,7 @@ from flask import send_from_directory, request, session, current_app, Blueprint
 
 # from app import app, api, Config
 # from recipe import api
-# from recipe.user import User
+from recipe.models import User
 from recipe import utils
 
 general = Blueprint("general", __name__)
@@ -18,8 +18,11 @@ def hello():
 
 @general.route("/recipe-data")
 def recipe_data():
-    print(current_app.config)
-    return utils.load_data(current_app.config.get("DATA", "database"))
+    try:
+        data = utils.load_data(current_app.config.get("DATABASE"))
+        return utils.success_response(msg="Data loaded", data=data)
+    except:
+        return utils.error_response("Failed to load data.")
 
 
 @general.errorhandler(404)
@@ -37,14 +40,14 @@ def handle_unauthorized(e):
 @general.route('/pdf/<path:path>')
 def send_pdf(path):
     """Serve PDF files."""
-    data_dir = os.path.join(Config.get("DATA", "media_dir"), "pdf")
+    data_dir = os.path.join(current_app.config.get("MEDIA_DIR"), "pdf")
     return send_from_directory(data_dir, path)
 
 
 @general.route('/img/<path:path>')
 def send_img(path):
     """Serve images."""
-    data_dir = os.path.join(Config.get("DATA", "media_dir"), "img")
+    data_dir = os.path.join(current_app.config.get("MEDIA_DIR"), "img")
     return send_from_directory(data_dir, path)
 
 

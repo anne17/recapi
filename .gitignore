@@ -1,5 +1,5 @@
 # Config
-config.cfg
+config.py
 
 # Data
 data/database.sql
