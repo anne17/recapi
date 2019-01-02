@@ -76,6 +76,7 @@ def login():
         if user.is_authenticated(password):
             session["authorized"] = True
             session["user"] = user.displayname
+            session["uid"] = user.uid
             print("User %s logged in successfully" % username)
             return utils.success_response("User %s logged in successfully!" % username,
                                           user=user.displayname)

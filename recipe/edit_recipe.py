@@ -1,6 +1,6 @@
 import sqlite3
 
-from flask import current_app
+from flask import current_app, session
 
 
 class RecipeTable():
@@ -41,20 +41,23 @@ class RecipeTable():
 
     def add_recipe(self, data):
         """Add a new recipe to the data base."""
-        tags = data.get("tags")
-        for tag in tags:
-            pass
-            # add row in tag meta table
-        # if self.user_exists(user):
-        #     log.error("User '%s' already exists!" % user)
-        #     raise Exception("User '%s' already exists!" % user)
+        current_user = session.get("uid")
+        # What if no current user??
+        # tags = data.get("tags")
+        # for tag in tags:
+        #     pass
+        #    # add row in tag meta table
+        # if self.name_exists(user):
+        #     log.error("Recipe name already exists!")
+        #     raise Exception("Recipe name already exists!")
         try:
             sql = (f"INSERT INTO {self.tablename} values (?, ?, ?, ?, ?)")
             self.cursor.execute(sql, (
                 data.get("name"),
+                data.get("image"),
                 data.get("content"),
                 data.get("ingredients"),
-                data.get("user"),
+                current_user
             ))
             self.connection.commit()
         except Exception as e:
@@ -71,8 +74,10 @@ class RecipeTable():
             f"{self.content}, "
             f"{self.ingredients}, "
             f"{self.created_by}, "
-            f"{self.tags}) "
             f"FOREIGN KEY({self.created_by}) REFERENCES users(id) "  # Todo: Don't hard-code this!
             # f"FOREIGN KEY({self.tags}) REFERENCES tags(id)"
         )
         self.cursor.execute(sql)
+
+        # Create tags table
+        # Create tags meta table
