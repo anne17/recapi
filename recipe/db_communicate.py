@@ -1,4 +1,3 @@
-# import os
 import sys
 import logging
 import sqlite3
@@ -11,24 +10,18 @@ logging.basicConfig(stream=sys.stdout)
 log = logging.getLogger('user_cli' + __name__)
 
 
-# # Read config
-# if os.path.exists(os.path.join(os.path.dirname(
-#         os.path.dirname(__file__)), 'config.cfg')) is False:
-#     configfile = os.path.join(
-#         os.path.dirname(os.path.dirname(__file__)), 'config.default.cfg')
-# else:
-#     configfile = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.cfg')
-#
-# Config = configparser.ConfigParser()
-# Config.read(configfile)
-
-
 class UserDB():
     """User data base model using sqlite."""
 
-    def __init__(self):
+    def __init__(self, db_path=False):
+        try:
+            self.db_path = current_app.config.get("DATABASE_PATH")
+        except RuntimeError:
+            # When calling this from user_cli there is no app context.
+            # Use db_path variable instead.
+            self.db_path = db_path
+
         # Strings in data base:
-        self.db_path = current_app.config.get("DATABASE_PATH")
         self.tablename = "users"
         self.db_userid = "id"
         self.db_user = "user"

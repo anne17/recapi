@@ -1,12 +1,23 @@
 import sys
+import os
 import click
 from getpass import getpass
 from flask import Flask
 
-from db_communicate import UserDB
+from recipe.db_communicate import UserDB
 
 app = Flask(__name__)
-UserDB = UserDB()
+
+# Get data base path from config
+if os.path.exists(os.path.join(os.path.dirname(app.config.root_path), 'config.py')) is False:
+    print("Config file 'config.py' is missing! Cannot run application.")
+    exit()
+
+sys.path.append(os.path.dirname(app.config.root_path))
+
+from config import Config
+
+UserDB = UserDB(db_path=Config.DATABASE_PATH)
 
 
 @app.cli.command()
