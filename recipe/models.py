@@ -1,6 +1,6 @@
 from werkzeug.security import check_password_hash
 
-from recipe.db_communicate import UserDB
+from recipe.edit_recipe import UserDB
 
 
 class User():
@@ -14,9 +14,11 @@ class User():
         if userdata:
             self.user_password = userdata[3]
             self.displayname = userdata[2]
+            self.uid = userdata[0]
         else:
             self.user_password = False
             self.displayname = ""
+            self.uid = 0
 
     def is_authenticated(self, password):
         """Return True if the user has valid credentials (False otherwise)."""
