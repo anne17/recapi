@@ -2,7 +2,6 @@ import os
 
 from flask import send_from_directory, request, session, current_app, Blueprint
 
-# from app import app, api, Config
 # from recipe import api
 from recipe.models import User
 from recipe import utils
@@ -21,7 +20,8 @@ def recipe_data():
     try:
         data = utils.load_data(current_app.config.get("DATABASE"))
         return utils.success_response(msg="Data loaded", data=data)
-    except:
+    except Exception as e:
+        # logging.error(traceback.format_exc())
         return utils.error_response("Failed to load data.")
 
 

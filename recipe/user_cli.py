@@ -4,7 +4,7 @@ import click
 from getpass import getpass
 from flask import Flask
 
-from recipe.db_communicate import UserDB
+from recipe.edit_user import UserDB
 
 app = Flask(__name__)
 
@@ -57,7 +57,7 @@ def adduser(user, display):
     try:
         UserDB.add_user(user, pw, display)
         click.echo("Successfully added user: %s" % user)
-    except:
+    except Exception as e:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
 
 
@@ -71,7 +71,7 @@ def checkuser(user):
             click.echo("Successfully authenticated user: %s" % user)
         else:
             click.echo("Invalid username or password!")
-    except:
+    except Exception as e:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
 
 
@@ -87,7 +87,7 @@ def changepw(user):
     try:
         UserDB.update_pw(user, pw)
         click.echo("Successfully changed password for user: %s" % user)
-    except:
+    except Exception as e:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
 
 
@@ -98,7 +98,7 @@ def deleteuser(user):
     try:
         UserDB.delete_user(user)
         click.echo("Deleted user: %s" % user)
-    except:
+    except Exception as e:
         click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
 
 

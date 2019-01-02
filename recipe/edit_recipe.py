@@ -1,6 +1,6 @@
 import sqlite3
 
-from app import Config
+from flask import current_app
 
 
 class RecipeTable():
@@ -13,7 +13,7 @@ class RecipeTable():
         # tag_meta_id = rowid
         # tag_meta_recipe_id = recipe_id
         # tag_meta_tag_id = tag_id
-        self.db_path = Config.get("DATA", "db_path")
+        self.db_path = current_app.config.get("DATABASE_PATH")
         self.tablename = "recipies"
         self.id = "id"
         self.name = "recipe"
