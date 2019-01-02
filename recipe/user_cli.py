@@ -77,6 +77,22 @@ def checkuser(user):
 
 @app.cli.command()
 @click.option('--user', default="")
+def changepw(user):
+    """Change password for user."""
+    pw = input_pw("Please enter new password: ")
+    pw2 = input_pw("Please confirm password: ")
+    if pw != pw2:
+        click.echo("Password not confirmed. Aborting.")
+        exit()
+    try:
+        UserDB.update_pw(user, pw)
+        click.echo("Successfully changed password for user: %s" % user)
+    except:
+        click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
+
+
+@app.cli.command()
+@click.option('--user', default="")
 def deleteuser(user):
     """Deletes a user from the data base."""
     try:

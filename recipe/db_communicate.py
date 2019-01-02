@@ -61,6 +61,22 @@ class UserDB():
             log.error("Could not save changes to database! %s", e)
             raise Exception("Could not save changes to database! %s" % e)
 
+    def update_pw(self, user, pw):
+        """Change a user's password."""
+        if not self.user_exists(user):
+            raise Exception("User '%s' does not exist!" % user)
+        try:
+            sql = ("UPDATE %s SET %s = ? WHERE %s= ?" % (
+                   self.tablename,
+                   self.db_password,
+                   self.db_user))
+            print(sql)
+            self.cursor.execute(sql, (generate_password_hash(pw), user))
+            self.connection.commit()
+        except Exception as e:
+            log.error("Could not save changes to database! %s", e)
+            raise Exception("Could not save changes to database! %s" % e)
+
     def get(self, user):
         sql = "SELECT * FROM %s WHERE %s=?" % (
             self.tablename,
