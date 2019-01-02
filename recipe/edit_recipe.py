@@ -37,7 +37,7 @@ class RecipeTable():
         # log.info("Resuming the data base")
         self.connection = sqlite3.connect(self.db_path)
         self.cursor = self.connection.cursor()
-        self.create_table()
+        self.create_tables()
 
     def add_recipe(self, data):
         """Add a new recipe to the data base."""
@@ -49,7 +49,7 @@ class RecipeTable():
         #     log.error("User '%s' already exists!" % user)
         #     raise Exception("User '%s' already exists!" % user)
         try:
-            sql = ("INSERT INTO %s values (?, ?, ?, ?, ?)" % self.tablename)
+            sql = (f"INSERT INTO {self.tablename} values (?, ?, ?, ?, ?)")
             self.cursor.execute(sql, (
                 data.get("name"),
                 data.get("content"),
@@ -61,13 +61,18 @@ class RecipeTable():
             # log.error("Could not save changes to database! %s", e)
             raise Exception("Could not save changes to database! %s" % e)
 
-    def create_table(self):
+    def create_tables(self):
         """Create the user data table if it does not exist."""
-        sql = "CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)" % (
-              self.tablename,
-              self.name,
-              self.content,
-              self.ingredients,
-              self.created_by
+        sql = (
+            f"CREATE TABLE IF NOT EXISTS {self.tablename} ("
+            f"{self.id} INTEGER PRIMARY KEY AUTOINCREMENT, "
+            f"{self.name}, "
+            f"{self.image}, "
+            f"{self.content}, "
+            f"{self.ingredients}, "
+            f"{self.created_by}, "
+            f"{self.tags}) "
+            f"FOREIGN KEY({self.created_by}) REFERENCES users(id) "  # Todo: Don't hard-code this!
+            # f"FOREIGN KEY({self.tags}) REFERENCES tags(id)"
         )
         self.cursor.execute(sql)
