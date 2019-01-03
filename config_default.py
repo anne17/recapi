@@ -6,7 +6,7 @@ class Config:
     # Path to media directory, relative to app.py
     MEDIA_DIR = "../static"
 
-    DEBUG_MODE = True
+    DEBUG = True
     WSGI_HOST = "0.0.0.0"
     WSGI_PORT = 9005
 
