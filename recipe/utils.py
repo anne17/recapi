@@ -1,5 +1,6 @@
 # import functools
 import yaml
+import markdown
 from flask import jsonify
 
 # from app import session
@@ -29,6 +30,24 @@ def success_response(msg, **kwargs):
         response[key] = value
     return jsonify(response)
 
+
+def md2html(name="", portions=0, ingredients="", contents="", source=""):
+    """Convert markdown recipe data to form with html."""
+    data = {}
+    data["name"] = name
+    data["portions"] = str(portions)
+    data["ingredients"] = markdown.markdown(ingredients)
+    data["contents"] = markdown.markdown(contents)
+    data["source"] = source
+
+    # contents = markdown.markdown(contents)
+    # ingredients = markdown.markdown(ingredients)
+    # data = (
+    #     f"<h1>{name}</h1>"
+    #     f"{ingredients}"
+    #     f"{contents}"
+    # )
+    return data
 
 # def gatekeeper(function):
 #     """Stop unauthorized users. Use as decorator where authorization is needed."""

@@ -88,3 +88,19 @@ def logout():
     """Remove session for current user."""
     session.clear()
     return utils.success_response("Logged out successfully")
+
+
+@general.route("/preview_data", methods=['GET', 'POST'])
+def preview():
+    """Convert markdown data to html."""
+    try:
+        data = utils.md2html(name=request.form["name"],
+                             portions=request.form["portions"],
+                             ingredients=request.form["ingredients"],
+                             contents=request.form["contents"],
+                             source=request.form["source"]
+                             )
+        return utils.success_response(msg="Data converted", data=data)
+    except Exception as e:
+        # logging.error(traceback.format_exc())
+        return utils.error_response("Failed to convert data.")

@@ -13,6 +13,7 @@ flask-restful = "*"
 flask-cors = "*"
 pyyaml = "*"
 gunicorn = "*"
+markdown = "*"
 
 [requires]
 python_version = "3"
