@@ -8,7 +8,7 @@ from flask import jsonify
 
 def load_data(yamlfile):
     """Load yaml file and return json object."""
-    with open(yamlfile) as f:
+    with open(yamlfile, encoding="UTF-8") as f:
         return yaml.load(f)
 
 

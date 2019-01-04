@@ -6,7 +6,7 @@ Flask REST-API for storing, editing and searching recipies.
 ## Prerequisites
 
 * A Unix-like environment (e.g. Linux, OS X)
-* [Python 3.4](http://python.org/) or newer
+* [Python 3.6](http://python.org/) or newer
 * pipenv
 
 
@@ -17,6 +17,7 @@ Flask REST-API for storing, editing and searching recipies.
     ```
     pipenv install
     ```
+* Copy file `config_default.py` to `config.py` and adjust configuration.
 
 ## Running the backend
 

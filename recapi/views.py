@@ -22,7 +22,7 @@ def recipe_data():
         return utils.success_response(msg="Data loaded", data=data)
     except Exception as e:
         # logging.error(traceback.format_exc())
-        return utils.error_response("Failed to load data.")
+        return utils.error_response(f"Failed to load data: {e}")
 
 
 @general.errorhandler(404)
