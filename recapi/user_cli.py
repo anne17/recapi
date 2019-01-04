@@ -4,7 +4,7 @@ import click
 from getpass import getpass
 from flask import Flask
 
-from recipe.edit_user import UserDB
+from recapi.edit_user import UserDB
 
 app = Flask(__name__)
 

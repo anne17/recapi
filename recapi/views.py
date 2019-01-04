@@ -2,9 +2,9 @@ import os
 
 from flask import send_from_directory, request, session, current_app, Blueprint
 
-# from recipe import api
-from recipe.models import User
-from recipe import utils
+# from recapi import api
+from recapi.models import User
+from recapi import utils
 
 general = Blueprint("general", __name__)
 

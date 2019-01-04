@@ -1,4 +1,6 @@
-# receptsida-backend
+# recAPI
+
+Flask REST-API for storing, editing and searching recipies.
 
 
 ## Prerequisites

@@ -1,6 +1,6 @@
 from werkzeug.security import check_password_hash
 
-from recipe.edit_user import UserDB
+from recapi.edit_user import UserDB
 
 
 class User():
