@@ -27,3 +27,15 @@ recipies:
   tags:
   - middag
   - snabblagat
+  ingredients: |
+    - bröd
+    - ost
+    - smör
+  contents: |
+    1. Skär lagom tunna skivor av brödet.
+    2. Bre lagom mycket på smör på varje skiva.
+    3. Lägg på **mycket** ost.
+
+    Klart! Smakar extragott med några skivor gurka eller paprika på!
+  source: https://example.com
+  portions: 4

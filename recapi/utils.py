@@ -31,7 +31,7 @@ def success_response(msg, **kwargs):
     return jsonify(response)
 
 
-def md2html(name="", portions=0, ingredients="", contents="", source=""):
+def md2htmlform(name="", portions=0, ingredients="", contents="", source=""):
     """Convert markdown recipe data to form with html."""
     data = {}
     data["name"] = name
@@ -40,14 +40,12 @@ def md2html(name="", portions=0, ingredients="", contents="", source=""):
     data["contents"] = markdown.markdown(contents)
     data["source"] = source
 
-    # contents = markdown.markdown(contents)
-    # ingredients = markdown.markdown(ingredients)
-    # data = (
-    #     f"<h1>{name}</h1>"
-    #     f"{ingredients}"
-    #     f"{contents}"
-    # )
     return data
+
+
+def md2html(data):
+    return markdown.markdown(data)
+
 
 # def gatekeeper(function):
 #     """Stop unauthorized users. Use as decorator where authorization is needed."""

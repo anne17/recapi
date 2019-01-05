@@ -37,7 +37,7 @@ Command line interface for administration of the user data base.
 Start serving the command-line API:
 
 ```
-    export FLASK_APP=recipe/user_cli.py FLASK_RUN_PORT=8083
+    export FLASK_APP=recapi/user_cli.py FLASK_RUN_PORT=8083
 ```
 
 ## Command line options

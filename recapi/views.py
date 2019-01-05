@@ -92,15 +92,34 @@ def logout():
 
 @general.route("/preview_data", methods=['GET', 'POST'])
 def preview():
-    """Convert markdown data to html."""
+    """Generate recipe preview. Convert markdown data to html."""
     try:
-        data = utils.md2html(name=request.form["name"],
-                             portions=request.form["portions"],
-                             ingredients=request.form["ingredients"],
-                             contents=request.form["contents"],
-                             source=request.form["source"]
-                             )
+        data = utils.md2htmlform(
+            name=request.form["name"],
+            portions=request.form["portions"],
+            ingredients=request.form["ingredients"],
+            contents=request.form["contents"],
+            source=request.form["source"]
+        )
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
         # logging.error(traceback.format_exc())
         return utils.error_response("Failed to convert data.")
+
+
+@general.route("/view_recipe")
+def view():
+    """Generate view for one recipe. Convert markdown data to html."""
+    name = request.args.get("title")
+    recipes = utils.load_data(current_app.config.get("DATABASE"))["recipies"]
+    recipe = []
+    for r in recipes:
+        if r.get("title") == name:
+            recipe = r
+            break
+    if not recipe:
+        return utils.error_response("Failed to convert data.")
+
+    recipe["ingredients"] = utils.md2html(recipe["ingredients"])
+    recipe["contents"] = utils.md2html(recipe["contents"])
+    return utils.success_response(msg="Data loaded", data=recipe)
