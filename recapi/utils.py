@@ -31,21 +31,36 @@ def success_response(msg, **kwargs):
     return jsonify(response)
 
 
-def md2htmlform(name="", portions=0, ingredients="", contents="", source=""):
+def md2htmlform(form):
     """Convert markdown recipe data to form with html."""
     data = {}
-    data["name"] = name
-    data["portions"] = str(portions)
-    data["ingredients"] = markdown.markdown(ingredients)
-    data["contents"] = markdown.markdown(contents)
-    data["source"] = source
-
+    data["title"] = form.get("title")
+    data["portions"] = form.get("portions")
+    data["ingredients"] = md2html(form.get("ingredients"))
+    data["contents"] = md2html(form.get("contents"))
+    data["source"] = form.get("source")
     return data
 
 
 def md2html(data):
+    """Convert markdown to html."""
     return markdown.markdown(data)
 
+
+def get_recipe_by_title(recipies, title):
+    """Find recipe with matching title in data base."""
+    recipies = recipies.get("recipies")
+    recipe = {}
+
+    for r in recipies:
+        if r.get("title") == title:
+            recipe = r
+            break
+
+    if recipe:
+        recipe["ingredients"] = md2html(recipe.get("ingredients", ""))
+        recipe["contents"] = md2html(recipe.get("contents", ""))
+    return recipe
 
 # def gatekeeper(function):
 #     """Stop unauthorized users. Use as decorator where authorization is needed."""

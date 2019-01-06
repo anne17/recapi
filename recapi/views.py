@@ -94,32 +94,23 @@ def logout():
 def preview():
     """Generate recipe preview. Convert markdown data to html."""
     try:
-        data = utils.md2htmlform(
-            name=request.form["name"],
-            portions=request.form["portions"],
-            ingredients=request.form["ingredients"],
-            contents=request.form["contents"],
-            source=request.form["source"]
-        )
+        data = utils.md2htmlform(request.form)
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
         # logging.error(traceback.format_exc())
-        return utils.error_response("Failed to convert data.")
+        return utils.error_response(f"Failed to convert data: {e}")
 
 
 @general.route("/view_recipe")
 def view():
     """Generate view for one recipe. Convert markdown data to html."""
-    name = request.args.get("title")
-    recipes = utils.load_data(current_app.config.get("DATABASE"))["recipies"]
-    recipe = []
-    for r in recipes:
-        if r.get("title") == name:
-            recipe = r
-            break
-    if not recipe:
-        return utils.error_response("Failed to convert data.")
-
-    recipe["ingredients"] = utils.md2html(recipe["ingredients"])
-    recipe["contents"] = utils.md2html(recipe["contents"])
-    return utils.success_response(msg="Data loaded", data=recipe)
+    try:
+        title = request.args.get("title")
+        recipies = utils.load_data(current_app.config.get("DATABASE"))
+        recipe = utils.get_recipe_by_title(recipies, title)
+        if not recipe:
+            return utils.error_response(f"Could not find recipe '{title}'."), 404
+        return utils.success_response(msg="Data loaded", data=recipe)
+    except Exception as e:
+        # logging.error(traceback.format_exc())
+        return utils.error_response(f"Failed to load recipe: {e}"), 400
