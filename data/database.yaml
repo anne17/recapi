@@ -1,7 +1,7 @@
 recipies:
 - title: Chili con carne med kikärter
   pdf: Chili con carne med kikärter - Recept _ Arla.pdf
-  img: chili-kikärtor.jpg
+  img: chili-kikartor.jpg
   tags:
   - middag
   - köttfärs
@@ -33,7 +33,7 @@ recipies:
     - smör
   contents: |
     1. Skär lagom tunna skivor av brödet.
-    2. Bre lagom mycket på smör på varje skiva.
+    2. Bre lagom mycket smör på varje skiva.
     3. Lägg på **mycket** ost.
 
     Klart! Smakar extragott med några skivor gurka eller paprika på!
