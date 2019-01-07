@@ -9,11 +9,10 @@ verify_ssl = true
 click = "*"
 flask = "*"
 flask-session = "*"
-flask-restful = "*"
 flask-cors = "*"
-pyyaml = "*"
 gunicorn = "*"
 markdown = "*"
+pyyaml = "==4.2b1"
 
 [requires]
 python_version = "3"
