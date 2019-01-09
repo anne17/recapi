@@ -95,6 +95,10 @@ def preview():
     """Generate recipe preview. Convert markdown data to html."""
     try:
         data = utils.md2htmlform(request.form)
+        image = request.files.get("image")
+        # if image:
+        # save image
+        # data["image"] = link to image
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
         # logging.error(traceback.format_exc())
