@@ -53,7 +53,7 @@ def send_img(path):
 
 @general.route('/tmp/<path:path>')
 def send_tmp(path):
-    """Serve images."""
+    """Serve temporary files."""
     data_dir = os.path.join(current_app.config.get("TMP_DIR"))
     return send_from_directory(data_dir, path)
 
@@ -106,7 +106,7 @@ def preview():
         if image_file:
             filename = utils.make_filename(image_file)
             utils.save_upload_file(image_file, filename, current_app.config.get("TMP_DIR"))
-        data["image"] = "/tmp/" + filename
+            data["image"] = filename
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
         # logging.error(traceback.format_exc())

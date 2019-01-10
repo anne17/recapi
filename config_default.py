@@ -3,10 +3,10 @@ class Config:
     DATABASE = "data/database.yaml"
     DATABASE_PATH = "data/database.sql"
 
-    # Path to media directory, relative to views.py
+    # Path to media directory, relative to ?
     MEDIA_DIR = "../static"
     # Path to temporary files dir
-    TMP_DIR = "../data/tmp"
+    TMP_DIR = "../tmp"
 
     DEBUG = True
     WSGI_HOST = "0.0.0.0"

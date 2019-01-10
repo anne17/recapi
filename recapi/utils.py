@@ -67,7 +67,7 @@ def get_recipe_by_title(recipies, title):
 
 def make_filename(infile):
     """Generate a random file name with extension from infile."""
-    _filename, file_extension = os.path.splitext(infile)
+    _filename, file_extension = os.path.splitext(infile.filename)
     filename = str(uuid.uuid1())
     return filename + file_extension
 
