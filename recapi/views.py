@@ -51,6 +51,13 @@ def send_img(path):
     return send_from_directory(data_dir, path)
 
 
+@general.route('/tmp/<path:path>')
+def send_tmp(path):
+    """Serve images."""
+    data_dir = os.path.join(current_app.config.get("TMP_DIR"))
+    return send_from_directory(data_dir, path)
+
+
 @general.route('/check_authentication', methods=['GET', 'POST'])
 def check_authentication():
     """Check if current user is authorized in the active session."""
@@ -95,10 +102,11 @@ def preview():
     """Generate recipe preview. Convert markdown data to html."""
     try:
         data = utils.md2htmlform(request.form)
-        image = request.files.get("image")
-        # if image:
-        # save image
-        # data["image"] = link to image
+        image_file = request.files.get("image")
+        if image_file:
+            filename = utils.make_filename(image_file)
+            utils.save_upload_file(image_file, filename, current_app.config.get("TMP_DIR"))
+        data["image"] = "/tmp/" + filename
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
         # logging.error(traceback.format_exc())
