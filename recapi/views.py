@@ -40,21 +40,21 @@ def handle_unauthorized(e):
 @general.route('/pdf/<path:path>')
 def send_pdf(path):
     """Serve PDF files."""
-    data_dir = os.path.join(current_app.config.get("MEDIA_DIR"), "pdf")
+    data_dir = os.path.join(current_app.config.get("MEDIA_PATH"), "pdf")
     return send_from_directory(data_dir, path)
 
 
 @general.route('/img/<path:path>')
 def send_img(path):
     """Serve images."""
-    data_dir = os.path.join(current_app.config.get("MEDIA_DIR"), "img")
+    data_dir = os.path.join(current_app.config.get("MEDIA_PATH"), "img")
     return send_from_directory(data_dir, path)
 
 
 @general.route('/tmp/<path:path>')
 def send_tmp(path):
     """Serve temporary files."""
-    data_dir = os.path.join(current_app.config.get("TMP_DIR"))
+    data_dir = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
     return send_from_directory(data_dir, path)
 
 
@@ -105,8 +105,9 @@ def preview():
         image_file = request.files.get("image")
         if image_file:
             filename = utils.make_filename(image_file)
-            utils.save_upload_file(image_file, filename, current_app.config.get("TMP_DIR"))
-            data["image"] = filename
+            directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
+            utils.save_upload_file(image_file, filename, directory)
+            data["image"] = "tmp/" + filename
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
         # logging.error(traceback.format_exc())

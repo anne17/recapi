@@ -4,9 +4,9 @@ class Config:
     DATABASE_PATH = "data/database.sql"
 
     # Path to media directory, relative to ?
-    MEDIA_DIR = "../static"
-    # Path to temporary files dir
-    TMP_DIR = "../tmp"
+    MEDIA_PATH = "../static"
+
+    TMP_DIR = "tmp"
 
     DEBUG = True
     WSGI_HOST = "0.0.0.0"
