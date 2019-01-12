@@ -120,6 +120,21 @@ def view():
     try:
         title = request.args.get("title")
         recipies = utils.load_data(current_app.config.get("DATABASE"))
+        recipe = utils.get_recipe_by_title(recipies, title, convert=True)
+        if not recipe:
+            return utils.error_response(f"Could not find recipe '{title}'."), 404
+        return utils.success_response(msg="Data loaded", data=recipe)
+    except Exception as e:
+        # logging.error(traceback.format_exc())
+        return utils.error_response(f"Failed to load recipe: {e}"), 400
+
+
+@general.route("/get_recipe")
+def get():
+    """Get data for one recipe."""
+    try:
+        title = request.args.get("title")
+        recipies = utils.load_data(current_app.config.get("DATABASE"))
         recipe = utils.get_recipe_by_title(recipies, title)
         if not recipe:
             return utils.error_response(f"Could not find recipe '{title}'."), 404

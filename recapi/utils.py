@@ -41,6 +41,7 @@ def md2htmlform(form):
     data["ingredients"] = md2html(form.get("ingredients"))
     data["contents"] = md2html(form.get("contents"))
     data["source"] = form.get("source")
+    data["image"] = form.get("image")
     return data
 
 
@@ -49,7 +50,7 @@ def md2html(data):
     return markdown.markdown(data)
 
 
-def get_recipe_by_title(recipies, title):
+def get_recipe_by_title(recipies, title, convert=False):
     """Find recipe with matching title in data base."""
     recipies = recipies.get("recipies")
     recipe = {}
@@ -59,7 +60,7 @@ def get_recipe_by_title(recipies, title):
             recipe = r
             break
 
-    if recipe:
+    if convert and recipe:
         recipe["ingredients"] = md2html(recipe.get("ingredients", ""))
         recipe["contents"] = md2html(recipe.get("contents", ""))
     return recipe
