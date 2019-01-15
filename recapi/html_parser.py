@@ -46,7 +46,7 @@ def ica_parser(url):
     contents = html2markdown.convert(str(contents))
 
     ingredients = soup.find(class_="ingredients")
-    ingredients = remove_attrs(ingredients).find_all("ul")
+    ingredients = remove_attrs(ingredients).find_all(["ul", "strong"])
     ingredients = "".join(str(i) for i in ingredients)
     ingredients = html2markdown.convert(ingredients)
     ingredients = remove_spans(ingredients)
@@ -64,4 +64,5 @@ def ica_parser(url):
 
 if __name__ == '__main__':
     url = "https://www.ica.se/recept/tikka-masala-med-fars-och-broccoli-724835/"
+    url = "https://www.ica.se/recept/morotssoppa-med-kokos-722533/"
     parse(url)
