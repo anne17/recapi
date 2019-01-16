@@ -3,15 +3,43 @@ import requests
 import html2markdown
 from bs4 import BeautifulSoup
 
-PARSERS = {
-    "ica_parser": "www.ica.se/recept/"
-}
+
+class GeneralParser():
+
+    # def __init__(self, url):
+    #     self.url = url
+    #     self.make_soup()
+
+    def make_soup(self):
+        """Get HTML and create BeautifulSoup object."""
+        self.page = requests.get(self.url)
+        self.soup = BeautifulSoup(self.page.text, "html.parser")
+
+    def get_source(self):
+        """Get source URL for recipe."""
+        self.source = self.url
+
+    def can_parse(self):
+        """Check if this is the right parser for the URL."""
+        pattern = re.compile(self.base_url)
+        match = pattern.search(selfurl)
+        if match:
+            return True
+        return False
+
+
+class ICAParser(GeneralParser):
+
+    def __init__(self, url):
+        self.base_url = "www.ica.se/recept/"
+        self.url = url
+        self.make_soup()
 
 
 def parse(url):
     parser = match_parser(url)
     if parser:
-        eval(parser)(url)
+        parser(url)
 
 
 def match_parser(url):
@@ -21,18 +49,6 @@ def match_parser(url):
         if match:
             return parser
     return None
-
-
-def remove_attrs(soup):
-    for tag in soup.findAll(True):
-        tag.attrs = {}
-    return soup
-
-
-def remove_spans(instring):
-    outstring = re.sub("<span>", "", instring)
-    outstring = re.sub("</span>", "", outstring)
-    return outstring
 
 
 def ica_parser(url):
@@ -62,7 +78,31 @@ def ica_parser(url):
     print(f"\nSource:\n{url}")
 
 
+PARSERS = {
+    ica_parser: "www.ica.se/recept/"
+}
+
+#############
+# Auxiliaries
+#############
+
+def remove_attrs(soup):
+    """Remove all attributes from all nodes in a BeautifulSoup object."""
+    for tag in soup.findAll(True):
+        tag.attrs = {}
+    return soup
+
+
+def remove_spans(instring):
+    """Remove span tags from string."""
+    outstring = re.sub("<span>", "", instring)
+    outstring = re.sub("</span>", "", outstring)
+    return outstring
+
+
 if __name__ == '__main__':
-    url = "https://www.ica.se/recept/tikka-masala-med-fars-och-broccoli-724835/"
+    # url = "https://www.ica.se/recept/tikka-masala-med-fars-och-broccoli-724835/"
     url = "https://www.ica.se/recept/morotssoppa-med-kokos-722533/"
-    parse(url)
+    # parse(url)
+    ica_parser = ICAParser(url)
+    print(ica_parser.soup)
