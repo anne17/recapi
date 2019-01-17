@@ -1,21 +1,38 @@
 import re
-from recapi.html_parsers.icaparser import ICAParser
+import os
+import importlib
+import pkgutil
+from recapi import utils, html_parsers
+from recapi.html_parsers import GeneralParser
 
-# TODO: List parsers automatically... somehow.
-PARSERS = [ICAParser]
 
 def parse(url):
-    """Parse url and return something useful."""
-    p = find_parser(PARSERS, url)
+    """Parse url and return response with recipe data."""
+    # Import all modules from html_parsers sub package
+    parser_module_path = os.path.dirname(html_parsers.__file__)
+    for (module_loader, name, ispkg) in pkgutil.iter_modules([parser_module_path]):
+        importlib.import_module(html_parsers.__name__ + "." + name, __package__)
+
+    # Collect all parser classes
+    all_parsers = [parser for parser in GeneralParser.__subclasses__()]
+
+    p = find_parser(all_parsers, url)
     if p:
+        recipe = {}
         parser = p(url)
-        print(f"\nTitle:\n{parser.title}")
-        print(f"\nImage:\n{parser.image}")
-        print(f"\nContents:\n{parser.contents}")
-        print(f"\nIngredients:\n{parser.ingredients}")
-        print(f"\nSource:\n{parser.url}")
+        recipe["title"] = parser.title
+        recipe["image"] = parser.image
+        recipe["contents"] = parser.contents
+        recipe["ingredients"] = parser.ingredients
+        recipe["source"] = parser.url
+        # print(f"\nTitle:\n{parser.title}")
+        # print(f"\nImage:\n{parser.image}")
+        # print(f"\nContents:\n{parser.contents}")
+        # print(f"\nIngredients:\n{parser.ingredients}")
+        # print(f"\nSource:\n{parser.url}")
+        return utils.success_response("Successfully extracted recipe.", data=recipe)
     else:
-        print("No parser found for URL {url}.")
+        return utils.error_response(f"No parser found for URL {url}.")
 
 
 def extract_domain(url):

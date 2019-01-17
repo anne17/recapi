@@ -13,7 +13,7 @@ general = Blueprint("general", __name__)
 @general.route("/")
 def hello():
     routes = [str(rule) for rule in current_app.url_map.iter_rules()]
-    return utils.success_response("Hello!", routes=routes)
+    return utils.success_response("Welcome to recAPI!", routes=routes)
 
 
 @general.route("/recipe-data")
@@ -145,8 +145,10 @@ def get():
         return utils.error_response(f"Failed to load recipe: {e}"), 400
 
 
-@general.route("/test_html")
-def test_html():
-    # url = "https://www.ica.se/recept/tikka-masala-med-fars-och-broccoli-724835/"
-    url = "https://www.ica.se/recept/morotssoppa-med-kokos-722533/"
-    return utils.success_response("Successful test!", data=parse_html.main(url))
+@general.route("/parse_html")
+def parse_from_url():
+    url = request.args.get("url")
+    # TODO: remove example url
+    if not url:
+        url = "https://www.ica.se/recept/morotssoppa-med-kokos-722533/"
+    return parse_html.parse(url)
