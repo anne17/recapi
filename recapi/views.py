@@ -99,7 +99,7 @@ def logout():
 
 
 @general.route("/preview_data", methods=['GET', 'POST'])
-def preview():
+def preview_data():
     """Generate recipe preview. Convert markdown data to html."""
     try:
         data = utils.md2htmlform(request.form)
@@ -116,7 +116,7 @@ def preview():
 
 
 @general.route("/view_recipe")
-def view():
+def view_recipe():
     """Generate view for one recipe. Convert markdown data to html."""
     try:
         title = request.args.get("title")
@@ -131,7 +131,7 @@ def view():
 
 
 @general.route("/get_recipe")
-def get():
+def get_recipe():
     """Get data for one recipe."""
     try:
         title = request.args.get("title")
@@ -145,7 +145,7 @@ def get():
         return utils.error_response(f"Failed to load recipe: {e}"), 400
 
 
-@general.route("/parse_html")
+@general.route("/parse_from_url")
 def parse_from_url():
     url = request.args.get("url")
     # TODO: remove example url
