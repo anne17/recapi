@@ -5,6 +5,7 @@ from flask import send_from_directory, request, session, current_app, Blueprint
 # from recapi import api
 from recapi.models import User
 from recapi import utils
+from recapi import parse_html
 
 general = Blueprint("general", __name__)
 
@@ -142,3 +143,10 @@ def get():
     except Exception as e:
         # logging.error(traceback.format_exc())
         return utils.error_response(f"Failed to load recipe: {e}"), 400
+
+
+@general.route("/test_html")
+def test_html():
+    # url = "https://www.ica.se/recept/tikka-masala-med-fars-och-broccoli-724835/"
+    url = "https://www.ica.se/recept/morotssoppa-med-kokos-722533/"
+    return utils.success_response("Successful test!", data=parse_html.main(url))
