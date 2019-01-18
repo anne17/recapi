@@ -10,8 +10,8 @@ def parse(url):
     """Parse url and return response with recipe data."""
     # Import all modules from html_parsers sub package
     parser_module_path = os.path.dirname(html_parsers.__file__)
-    for (module_loader, name, ispkg) in pkgutil.iter_modules([parser_module_path]):
-        importlib.import_module(html_parsers.__name__ + "." + name, __package__)
+    for (_module_loader, name, _ispkg) in pkgutil.iter_modules([parser_module_path]):
+        importlib.import_module(f"{html_parsers.__name__}.{name}", __package__)
 
     # Collect all parser classes
     all_parsers = [parser for parser in GeneralParser.__subclasses__()]
