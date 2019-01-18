@@ -12,12 +12,14 @@ general = Blueprint("general", __name__)
 
 @general.route("/")
 def hello():
+    """Say hi and show available routes."""
     routes = [str(rule) for rule in current_app.url_map.iter_rules()]
     return utils.success_response("Welcome to recAPI!", routes=routes)
 
 
 @general.route("/recipe-data")
 def recipe_data():
+    """Return all available recipe data."""
     try:
         data = utils.load_data(current_app.config.get("DATABASE"))
         return utils.success_response(msg="Data loaded", data=data)
@@ -28,13 +30,13 @@ def recipe_data():
 
 @general.errorhandler(404)
 def page_not_found(e):
-    """Handle 404"""
+    """Handle 404."""
     return utils.error_response("Page not found.")
 
 
 @general.errorhandler(401)
 def handle_unauthorized(e):
-    """Handle 401"""
+    """Handle 401."""
     return utils.error_response("Unauthorized.")
 
 
@@ -147,6 +149,7 @@ def get_recipe():
 
 @general.route("/parse_from_url")
 def parse_from_url():
+    """Extract recipe data from given URL."""
     url = request.args.get("url")
     # TODO: remove example url
     if not url:

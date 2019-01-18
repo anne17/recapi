@@ -5,7 +5,12 @@ import markdown
 from flask import jsonify
 import uuid
 
-# from app import session
+
+IMAGE_FORMATS = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/gif": "gif"
+}
 
 
 def load_data(yamlfile):
@@ -66,9 +71,10 @@ def get_recipe_by_title(recipies, title, convert=False):
     return recipe
 
 
-def make_filename(infile):
+def make_filename(infile, file_extension=None):
     """Generate a random file name with extension from infile."""
-    _filename, file_extension = os.path.splitext(infile.filename)
+    if not file_extension:
+        _filename, file_extension = os.path.splitext(infile.filename)
     filename = str(uuid.uuid1())
     return filename + file_extension
 
@@ -84,6 +90,18 @@ def save_upload_file(file, filename, upload_folder):
         # logging.error(traceback.format_exc())
         raise e
 
+
+def save_upload_data(data, filename, upload_folder):
+    """Save upload data to file."""
+    try:
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+        with open(os.path.join(upload_folder, filename), 'wb') as f:
+            f.write(data)
+        return True
+    except Exception as e:
+        # logging.error(traceback.format_exc())
+        raise e
 
 # def gatekeeper(function):
 #     """Stop unauthorized users. Use as decorator where authorization is needed."""

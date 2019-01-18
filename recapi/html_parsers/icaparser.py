@@ -21,8 +21,8 @@ class ICAParser(GeneralParser):
 
     def get_image(self):
         image = self.soup.find(class_="recipe-image-square__image").get("style", "")
-        match = re.match(r"background-image: url\('\/*(.*)'\)", str(image))
-        self.image = match.group(1)
+        match = re.match(r"background-image: url\('(.*)'\)", str(image))
+        self.image = "https:" + match.group(1)
 
     def get_ingredients(self):
         ingredients = self.soup.find(class_="ingredients")
