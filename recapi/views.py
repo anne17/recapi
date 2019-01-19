@@ -151,7 +151,10 @@ def get_recipe():
 def parse_from_url():
     """Extract recipe data from given URL."""
     url = request.args.get("url")
-    # TODO: remove example url
-    if not url:
-        url = "https://www.ica.se/recept/morotssoppa-med-kokos-722533/"
     return parse_html.parse(url)
+
+
+@general.route("/get_parsers")
+def get_parsers():
+    """Get a list of recipe pages for which there is a parser available."""
+    return parse_html.get_parsable_pages()

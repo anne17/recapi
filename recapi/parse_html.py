@@ -12,10 +12,10 @@ from recapi.html_parsers import GeneralParser
 
 def parse(url):
     """Parse url and return response with recipe data."""
-    # Import all modules from html_parsers sub package
-    parser_module_path = os.path.dirname(html_parsers.__file__)
-    for (_module_loader, name, _ispkg) in pkgutil.iter_modules([parser_module_path]):
-        importlib.import_module(f"{html_parsers.__name__}.{name}", __package__)
+    if not utils.valid_url(url):
+        return utils.error_response(f"Invalid URL: {url}."), 400
+
+    import_parsers()
 
     # Collect all parser classes
     all_parsers = [parser for parser in GeneralParser.__subclasses__()]
@@ -33,7 +33,26 @@ def parse(url):
 
         return utils.success_response("Successfully extracted recipe.", data=recipe)
     else:
-        return utils.error_response(f"No parser found for URL {url}.")
+        return utils.error_response(f"No parser found for URL {url}."), 400
+
+
+def get_parsable_pages():
+    """Get a list of recipe pages for which there is a parser available."""
+    import_parsers()
+    try:
+        pages_list = [p.base_url for p in GeneralParser.__subclasses__()]
+        return utils.success_response("Successfully retrieved list of parsable pages.", data=pages_list)
+    except Exception as e:
+        print(e)
+        # logging.error(traceback.format_exc())
+        return utils.error_response("Could not retrieve list of parsable pages."), 500
+
+
+def import_parsers():
+    """Import all modules from html_parsers sub package."""
+    parser_module_path = os.path.dirname(html_parsers.__file__)
+    for (_module_loader, name, _ispkg) in pkgutil.iter_modules([parser_module_path]):
+        importlib.import_module(f"{html_parsers.__name__}.{name}", __package__)
 
 
 def find_parser(parsers, url):
