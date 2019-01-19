@@ -1,5 +1,6 @@
 # import functools
 import os
+from validator_collection import checkers
 import yaml
 import markdown
 from flask import jsonify
@@ -102,6 +103,12 @@ def save_upload_data(data, filename, upload_folder):
     except Exception as e:
         # logging.error(traceback.format_exc())
         raise e
+
+
+def valid_url(url):
+    """Check if input is a valid url."""
+    return checkers.is_url(url)
+
 
 # def gatekeeper(function):
 #     """Stop unauthorized users. Use as decorator where authorization is needed."""
