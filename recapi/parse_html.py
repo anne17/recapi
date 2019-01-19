@@ -5,13 +5,18 @@ import pkgutil
 import urllib
 import requests
 
-from flask import current_app
+from flask import current_app, Blueprint, request
 from recapi import utils, html_parsers
 from recapi.html_parsers import GeneralParser
 
+parser_views = Blueprint("parser_views", __name__)
 
-def parse(url):
-    """Parse url and return response with recipe data."""
+
+@parser_views.route("/parse_from_url")
+def parse_from_url():
+    """Extract recipe data from given url
+    and return response with recipe data."""
+    url = request.args.get("url")
     if not utils.valid_url(url):
         return utils.error_response(f"Invalid URL: {url}."), 400
 
@@ -36,7 +41,8 @@ def parse(url):
         return utils.error_response(f"No parser found for URL {url}."), 400
 
 
-def get_parsable_pages():
+@parser_views.route("/get_parsers")
+def get_parsers():
     """Get a list of recipe pages for which there is a parser available."""
     import_parsers()
     try:

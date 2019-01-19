@@ -8,7 +8,8 @@ from flask_cors import CORS
 
 
 def create_app():
-    """https://github.com/pallets/flask/blob/master/examples/tutorial/flaskr/__init__.py"""
+    """Instanciate app."""
+    # https://github.com/pallets/flask/blob/master/examples/tutorial/flaskr/__init__.py
     app = Flask(__name__)
     # api.init_app(app)
 
@@ -25,14 +26,8 @@ def create_app():
     # Init session
     Session(app)
 
-    # Example:
-    # from yourapplication.model import db
-    # db.init_app(app)
-    #
-    # from yourapplication.views.admin import admin
-    # app.register_blueprint(admin)
-
-    from . import views
+    from . import views, parse_html
     app.register_blueprint(views.general)
+    app.register_blueprint(parse_html.parser_views)
 
     return app

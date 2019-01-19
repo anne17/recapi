@@ -5,7 +5,6 @@ from flask import send_from_directory, request, session, current_app, Blueprint
 # from recapi import api
 from recapi.models import User
 from recapi import utils
-from recapi import parse_html
 
 general = Blueprint("general", __name__)
 
@@ -144,16 +143,3 @@ def get_recipe():
     except Exception as e:
         # logging.error(traceback.format_exc())
         return utils.error_response(f"Failed to load recipe: {e}"), 400
-
-
-@general.route("/parse_from_url")
-def parse_from_url():
-    """Extract recipe data from given URL."""
-    url = request.args.get("url")
-    return parse_html.parse(url)
-
-
-@general.route("/get_parsers")
-def get_parsers():
-    """Get a list of recipe pages for which there is a parser available."""
-    return parse_html.get_parsable_pages()
