@@ -68,7 +68,6 @@ def check_authentication():
         print("User authorized: %s" % session.get("user"))
         return utils.success_response("User authorized", user=session.get("user"))
     else:
-        print("Access denied")
         return utils.error_response("Access denied")
 
 
@@ -81,7 +80,7 @@ def login():
         username = request.form["login"]
         password = request.form["password"]
         user = User(username)
-        # print("User:", user.username, user.displayname, user.is_authenticated(password))
+        # logging.debug("User:", user.username, user.displayname, user.is_authenticated(password))
 
         if user.is_authenticated(password):
             session["authorized"] = True
