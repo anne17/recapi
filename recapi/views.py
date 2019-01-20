@@ -39,13 +39,6 @@ def handle_unauthorized(e):
     return utils.error_response("Unauthorized.")
 
 
-@general.route('/pdf/<path:path>')
-def send_pdf(path):
-    """Serve PDF files."""
-    data_dir = os.path.join(current_app.config.get("MEDIA_PATH"), "pdf")
-    return send_from_directory(data_dir, path)
-
-
 @general.route('/img/<path:path>')
 def send_img(path):
     """Serve images."""

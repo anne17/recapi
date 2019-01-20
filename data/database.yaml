@@ -1,28 +1,33 @@
 recipies:
-- title: Chili con carne med kikärter
-  pdf: Chili con carne med kikärter - Recept _ Arla.pdf
-  image: img/chili-kikartor.jpg
-  tags:
-  - middag
-  - köttfärs
-- title: Mug cake
-  pdf: Mug cake - Koppkaka.pdf
-  image: img/mug-cake.jpg
-  tags:
-  - dessert
-  - kaka
-  - snabblagat
+
 - title: Pastagratäng med bacon
-  pdf: Pastagratäng med bacon _ Recept ICA.se.pdf
   image: img/pastagratang-med-bacon-722019.jpg
+  source: https://www.ica.se/recept/pastagratang-med-bacon-722019/
+  portions: 4
+  ingredients: |
+    *   250 g gröna ärter
+    *   4 port pasta (farfalle)
+    *   2 förp bacon (à 140 g)
+    *   2 dl crème fraiche
+    *   2 dl mjölk
+    *   2 ägg
+    *   1/2 tsk salt
+    *   2 krm peppar
+    *   1 msk smör till formen
+    *   4 skivor cheddarost
+    *   3 tomater
+  contents: |
+    1.   Tina ärtorna.
+    2.   Sätt ugnen på 225°C.
+    3.   Koka pastan enligt anvisningen på förpackningen. Låt rinna av.
+    4.   Strimla baconet och stek i en stekpanna.
+    5.   Vispa ihop crème fraiche, mjölk och ägg. Salta och peppra.
+    6.   Häll pastan i en smord ugnssäker form och vänd ner bacon och ärtor. Häll över äggstanningen.
+    7.   Riv osten i bitar och lägg på gratängen och gratinera högt upp i ugnen ca 20 minuter, tills den får färg.
+    8.   Skär tomaterna i bitar och servera dem till gratängen.
   tags:
   - middag
-- title: Couscous med grönsaker och halloumi
-  pdf: Couscous med grönsaker och halloumi.pdf
-  image: img/couscous-med-gronsaker-och-halloumi.jpg
-  tags:
-  - middag
-  - vegetariskt
+
 - title: Mackor med ost
   tags:
   - middag
@@ -37,5 +42,30 @@ recipies:
     3. Lägg på **mycket** ost.
 
     Klart! Smakar extragott med några skivor gurka eller paprika på!
-  source: https://example.com
+  source: Annes mamma
   portions: 4
+
+- title: Couscous med grönsaker och halloumi
+  image: img/couscous-med-gronsaker-och-halloumi.jpg
+  source: https://alltommat.se/recept/couscous-med-gronsaker-och-halloumi/
+  portions: 4
+  tags:
+  - middag
+  - vegetariskt
+
+- title: Chili con carne med kikärter
+  image: img/chili-kikartor.jpg
+  source: https://www.arla.se/recept/chili-con-carne-med-kikarter/
+  portions: 4
+  tags:
+  - middag
+  - köttfärs
+
+- title: Mug cake
+  image: img/mug-cake.jpg
+  source: https://www.kungsornen.se/recept/kakor/mjuka-kakor/mugcake/
+  portions: 1
+  tags:
+  - dessert
+  - kaka
+  - snabblagat
