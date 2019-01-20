@@ -33,9 +33,9 @@ recipies:
   - middag
   - snabblagat
   ingredients: |
-    - bröd
-    - ost
-    - smör
+    * bröd
+    * ost
+    * smör
   contents: |
     1. Skär lagom tunna skivor av brödet.
     2. Bre lagom mycket smör på varje skiva.

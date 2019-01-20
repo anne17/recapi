@@ -15,8 +15,8 @@ markdown = "*"
 pyyaml = "==4.2b1"
 bs4 = "*"
 requests = "*"
-html2markdown = "*"
 validator-collection = "*"
+html2text = "*"
 
 [requires]
 python_version = "3.6"

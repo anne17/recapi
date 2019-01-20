@@ -1,12 +1,11 @@
-import re
 import requests
-import html2markdown
 
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 
 
 class GeneralParser(ABC):
+    """Abstract parser class."""
 
     base_url = ""
 
