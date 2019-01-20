@@ -14,9 +14,10 @@ parser_views = Blueprint("parser_views", __name__)
 
 @parser_views.route("/parse_from_url")
 def parse_from_url():
-    """Extract recipe data from given url
-    and return response with recipe data."""
+    """Extract recipe data from given url and return response with recipe data."""
     url = request.args.get("url")
+    if not url.startswith("http"):
+        url = "http://" + url
     if not utils.valid_url(url):
         return utils.error_response(f"Invalid URL: {url}."), 400
 
