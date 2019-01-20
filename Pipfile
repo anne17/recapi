@@ -19,4 +19,4 @@ html2markdown = "*"
 validator-collection = "*"
 
 [requires]
-python_version = "3"
+python_version = "3.6"
