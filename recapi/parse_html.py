@@ -88,7 +88,7 @@ def download_image(image_url):
         file_info = urllib.request.urlopen(image_url).info()
         content_type = file_info.get('Content-Type')
         if utils.IMAGE_FORMATS.get(content_type):
-            file_ending = utils.IMAGE_FORMATS.get(content_type)
+            file_ending = "." + utils.IMAGE_FORMATS.get(content_type)
         else:
             # Not an image! TODO: log error
             return ""
