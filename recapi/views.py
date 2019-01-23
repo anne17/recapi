@@ -136,3 +136,18 @@ def get_recipe():
     except Exception as e:
         # logging.error(traceback.format_exc())
         return utils.error_response(f"Failed to load recipe: {e}"), 400
+
+
+@general.route("/clean_tmp_data")
+def clean_tmp_data():
+    """Clean temporary data like uploaded images."""
+    password = request.args.get("password")
+    if password != current_app.config.get("ADMIN_PASSWORD"):
+        return utils.error_response("Failed to confirm password."), 500
+    try:
+        tmp_path = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
+        data = utils.clean_tmp_folder(tmp_path)
+        return utils.success_response(f"Successfully cleaned temporary data!",
+                                      removed_files=data)
+    except Exception as e:
+        return utils.error_response(f"Cleanup failed: {e}"), 400

@@ -3,6 +3,8 @@ class Config:
     DATABASE = "data/database.yaml"
     DATABASE_PATH = "data/database.sql"
 
+    ADMIN_PASSWORD = "password"
+
     # Path to media directory, relative to ?
     MEDIA_PATH = "../static"
 

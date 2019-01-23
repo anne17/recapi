@@ -1,5 +1,6 @@
 # import functools
 import os
+import time
 from validator_collection import checkers
 import yaml
 import markdown
@@ -108,6 +109,29 @@ def save_upload_data(data, filename, upload_folder):
 def valid_url(url):
     """Check if input is a valid url."""
     return checkers.is_url(url)
+
+
+def clean_tmp_folder(tmp_folder, timeout=604800):
+    """Delete data in temp folder that has lived longer than the timeout (1 week)."""
+    current_time = time.time()
+    removed = []
+    for filename in os.listdir(tmp_folder):
+        filepath = os.path.join(tmp_folder, filename)
+        mod_date = os.path.getmtime(filepath)
+        old = True if current_time - mod_date > timeout else False
+        if old:
+            remove_file(filepath)
+            removed.append(filename)
+    return removed
+
+
+def remove_file(filepath):
+    """Delete file."""
+    try:
+        if os.path.exists(filepath):
+            os.remove(filepath)
+    except Exception as e:
+        raise e
 
 
 # def gatekeeper(function):
