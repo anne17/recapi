@@ -2,7 +2,6 @@ import os
 
 from flask import send_from_directory, request, session, current_app, Blueprint
 
-# from recapi import api
 from recapi.models import User
 from recapi import utils
 
@@ -16,7 +15,7 @@ def hello():
     return utils.success_response("Welcome to recAPI!", routes=routes)
 
 
-@general.route("/recipe-data")
+@general.route("/recipe_data")
 def recipe_data():
     """Return all available recipe data."""
     try:
@@ -150,4 +149,5 @@ def clean_tmp_data():
         return utils.success_response(f"Successfully cleaned temporary data!",
                                       removed_files=data)
     except Exception as e:
+        # logging.error(traceback.format_exc())
         return utils.error_response(f"Cleanup failed: {e}"), 400
