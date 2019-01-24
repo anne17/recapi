@@ -4,6 +4,7 @@ import importlib
 import pkgutil
 import urllib
 import requests
+import traceback
 
 from flask import current_app, Blueprint, request
 from recapi import utils, html_parsers
@@ -50,9 +51,8 @@ def get_parsers():
         pages_list = [p.base_url for p in GeneralParser.__subclasses__()]
         return utils.success_response("Successfully retrieved list of parsable pages.", data=pages_list)
     except Exception as e:
-        print(e)
-        # logging.error(traceback.format_exc())
-        return utils.error_response("Could not retrieve list of parsable pages."), 500
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Could not retrieve list of parsable pages: {e}"), 500
 
 
 def import_parsers():
@@ -90,7 +90,7 @@ def download_image(image_url):
         if utils.IMAGE_FORMATS.get(content_type):
             file_ending = "." + utils.IMAGE_FORMATS.get(content_type)
         else:
-            # Not an image! TODO: log error
+            current_app.logger.error(f"URL did not point to an image: {image_url}")
             return ""
 
         # Get image data and save in tmp dir
@@ -103,6 +103,5 @@ def download_image(image_url):
         return filepath
 
     except Exception as e:
-        print(e)
-        # logging.error(traceback.format_exc())
+        current_app.logger.error(traceback.format_exc())
         return ""

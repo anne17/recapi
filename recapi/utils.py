@@ -1,11 +1,13 @@
 # import functools
 import os
 import time
+import traceback
+import uuid
+
 from validator_collection import checkers
 import yaml
 import markdown
-from flask import jsonify
-import uuid
+from flask import jsonify, current_app
 
 
 IMAGE_FORMATS = {
@@ -89,7 +91,7 @@ def save_upload_file(file, filename, upload_folder):
         file.save(os.path.join(upload_folder, filename))
         return True
     except Exception as e:
-        # logging.error(traceback.format_exc())
+        current_app.logger.error(traceback.format_exc())
         raise e
 
 
@@ -102,7 +104,7 @@ def save_upload_data(data, filename, upload_folder):
             f.write(data)
         return True
     except Exception as e:
-        # logging.error(traceback.format_exc())
+        current_app.logger.error(traceback.format_exc())
         raise e
 
 
@@ -131,6 +133,7 @@ def remove_file(filepath):
         if os.path.exists(filepath):
             os.remove(filepath)
     except Exception as e:
+        current_app.logger.error(traceback.format_exc())
         raise e
 
 

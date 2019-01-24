@@ -1,4 +1,5 @@
 import os
+import traceback
 
 from flask import send_from_directory, request, session, current_app, Blueprint
 
@@ -22,7 +23,7 @@ def recipe_data():
         data = utils.load_data(current_app.config.get("DATABASE"))
         return utils.success_response(msg="Data loaded", data=data)
     except Exception as e:
-        # logging.error(traceback.format_exc())
+        current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to load data: {e}")
 
 
@@ -71,7 +72,7 @@ def login():
         username = request.form["login"]
         password = request.form["password"]
         user = User(username)
-        # logging.debug("User:", user.username, user.displayname, user.is_authenticated(password))
+        current_app.logger.debug("User:", user.username, user.displayname, user.is_authenticated(password))
 
         if user.is_authenticated(password):
             session["authorized"] = True
@@ -103,7 +104,7 @@ def preview_data():
             data["image"] = "tmp/" + filename
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
-        # logging.error(traceback.format_exc())
+        current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to convert data: {e}")
 
 
@@ -118,7 +119,7 @@ def view_recipe():
             return utils.error_response(f"Could not find recipe '{title}'."), 404
         return utils.success_response(msg="Data loaded", data=recipe)
     except Exception as e:
-        # logging.error(traceback.format_exc())
+        current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to load recipe: {e}"), 400
 
 
@@ -133,7 +134,7 @@ def get_recipe():
             return utils.error_response(f"Could not find recipe '{title}'."), 404
         return utils.success_response(msg="Data loaded", data=recipe)
     except Exception as e:
-        # logging.error(traceback.format_exc())
+        current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to load recipe: {e}"), 400
 
 
@@ -149,5 +150,5 @@ def clean_tmp_data():
         return utils.success_response(f"Successfully cleaned temporary data!",
                                       removed_files=data)
     except Exception as e:
-        # logging.error(traceback.format_exc())
+        current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Cleanup failed: {e}"), 400
