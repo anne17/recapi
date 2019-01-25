@@ -1,0 +1,258 @@
+openapi: 3.0.1
+info:
+  title: recAPI
+  description: API for storing and editing recipe data
+  version: '0.1'
+  license:
+    name: MIT
+    url: "https://opensource.org/licenses/MIT"
+  x-logo:
+    url: "https://api.kalufs.lol/recapi/img/default.png"
+servers:
+  - url: "https://api.kalufs.lol/recapi"
+tags:
+  - name: General
+  - name: Recipe Data
+  - name: Authentication
+paths:
+  /:
+    get:
+      summary: Default query
+      description: Say hi and show available routes.
+      tags:
+        - General
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  routes:
+                    type: array
+                    items:
+                      type: string
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "message": "Welcome to recAPI!",
+                      "routes": [
+                        "/check_authentication",
+                        "/parse_from_url",
+                        "/preview_data",
+                        "/recipe_data",
+                        "/view_recipe",
+                        "/get_parsers",
+                        "/get_recipe",
+                        "/logout",
+                        "/login",
+                        "/",
+                        "/static/<path:filename>",
+                        "/img/<path:path>",
+                        "/tmp/<path:path>"
+                      ],
+                      "status": "success"
+                    }
+  /check_authentication:
+    get:
+      summary: Check authentication
+      description: Check if current user is authorized in the active session.
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "message": "Access denied",
+                      "status": "error"
+                    }
+    post:
+      summary: Check authentication
+      description: Check if current user is authorized in the active session.
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "message": "Access denied",
+                      "status": "error"
+                    }
+      servers:
+        - url: 'https://api.kalufs.lol'
+    servers:
+      - url: 'https://api.kalufs.lol'
+  /logout:
+    get:
+      summary: Logout
+      description: Remove session for current user.
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "message": "Logged out successfully",
+                      "status": "success"
+                    }
+
+  /parse_from_url:
+    get:
+      summary: Parse recipe
+      description: Extract recipe data from given url and return response with recipe data.
+      tags:
+        - Recipe Data
+      parameters:
+        - name: url
+          in: query
+          schema:
+            type: string
+          example: >-
+            https://www.ica.se/recept/bakad-banangrot-med-tahinihonung-724918/
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+                      contents:
+                        type: string
+                      ingredients:
+                        type: string
+                      source:
+                        type: string
+                      title:
+                        type: string
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "data": {
+                        "contents": "\n  1. S\u00e4tt ugnen p\u00e5 225\u00b0C. \n  2. Blanda alla torra ingredienser i en sk\u00e5l. Vispa ihop \u00e4gg, h\u00e4lften av honungen och havredryck. Blanda ner de torra ingredienserna.\n  3. H\u00e4ll i en smord ugnsform. Skala och dela bananerna l\u00e4ngs med. L\u00e4gg bananhalvorna p\u00e5 gr\u00f6ten och ringla \u00f6ver resten av honungen. S\u00e4tt in i mitten av ugnen ca 25 minuter.\n  4.  **Tahinihonung:** R\u00f6r ihop tahini och honung. \n  5. **Till servering:** Servera gr\u00f6ten med tahinihonung och yoghurt. \n\n",
+                        "image": "tmp/ba1b6fe0-2001-11e9-ae64-b827eb7c0ccfjpg",
+                        "ingredients": "\n  * 4 dl havregryn\n  * 1 tsk malen kanel\n  * 1/2 tsk malen kardemumma\n  * 1/2 tsk malen ingef\u00e4ra\n  * 2 krm vaniljpulver\n  * 1/2 tsk salt\n  * 1 \u00e4gg\n  * 4 msk honung\n  * 5 dl havredryck\n  * 4 sm\u00e5 bananer\n\n**Tahiniyoghurt**\n\n  * 2 msk tahini\n  * 3 msk honung\n\n**Till servering**\n\n  * grekisk yoghurt\n\n",
+                        "source": "https://www.ica.se/recept/bakad-banangrot-med-tahinihonung-724918/",
+                        "title": "Bakad banangr\u00f6t med tahinihonung"
+                      },
+                      "message": "Successfully extracted recipe.",
+                      "status": "success"
+                    }
+      servers:
+        - url: 'https://api.kalufs.lol'
+    servers:
+      - url: 'https://api.kalufs.lol'
+
+  /view_recipe:
+    get:
+      summary: View recipe
+      description: Generate view for one recipe. Convert markdown data to html.
+      tags:
+        - Recipe Data
+      parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+          example: Pastagrat%C3%A4ng%20med%20bacon
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+                      contents:
+                        type: string
+                      ingredients:
+                        type: string
+                      source:
+                        type: string
+                      title:
+                        type: string
+                      portions:
+                        type: integer
+                      tags:
+                        type: array
+                        items:
+                          type: string
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "data": {
+                        "contents": "<ol>\n<li>Tina \u00e4rtorna.</li>\n<li>S\u00e4tt ugnen p\u00e5 225\u00b0C.</li>\n<li>Koka pastan enligt anvisningen p\u00e5 f\u00f6rpackningen. L\u00e5t rinna av.</li>\n<li>Strimla baconet och stek i en stekpanna.</li>\n<li>Vispa ihop cr\u00e8me fraiche, mj\u00f6lk och \u00e4gg. Salta och peppra.</li>\n<li>H\u00e4ll pastan i en smord ugnss\u00e4ker form och v\u00e4nd ner bacon och \u00e4rtor. H\u00e4ll \u00f6ver \u00e4ggstanningen.</li>\n<li>Riv osten i bitar och l\u00e4gg p\u00e5 grat\u00e4ngen och gratinera h\u00f6gt upp i ugnen ca 20 minuter, tills den f\u00e5r f\u00e4rg.</li>\n<li>Sk\u00e4r tomaterna i bitar och servera dem till grat\u00e4ngen.</li>\n</ol>",
+                        "image": "img/pastagratang-med-bacon-722019.jpg",
+                        "ingredients": "<ul>\n<li>250 g gr\u00f6na \u00e4rter</li>\n<li>4 port pasta (farfalle)</li>\n<li>2 f\u00f6rp bacon (\u00e0 140 g)</li>\n<li>2 dl cr\u00e8me fraiche</li>\n<li>2 dl mj\u00f6lk</li>\n<li>2 \u00e4gg</li>\n<li>1/2 tsk salt</li>\n<li>2 krm peppar</li>\n<li>1 msk sm\u00f6r till formen</li>\n<li>4 skivor cheddarost</li>\n<li>3 tomater</li>\n</ul>",
+                        "portions": 4,
+                        "source": "https://www.ica.se/recept/pastagratang-med-bacon-722019/",
+                        "tags": [
+                          "middag"
+                        ],
+                        "title": "Pastagrat\u00e4ng med bacon"
+                      },
+                      "message": "Data loaded",
+                      "status": "success"
+                    }

@@ -1,7 +1,10 @@
+"""Collection of general routes."""
+
 import os
 import traceback
 
-from flask import send_from_directory, request, session, current_app, Blueprint
+import yaml
+from flask import send_from_directory, request, session, current_app, Blueprint, jsonify, render_template, url_for
 
 from recapi.models import User
 from recapi import utils
@@ -14,6 +17,22 @@ def hello():
     """Say hi and show available routes."""
     routes = [str(rule) for rule in current_app.url_map.iter_rules()]
     return utils.success_response("Welcome to recAPI!", routes=routes)
+
+
+@general.route("/api_spec")
+def api_spec():
+    """Return open API specification in json."""
+    with open("static/recapi-oas.yaml", encoding="UTF-8") as f:
+        return jsonify(yaml.load(f))
+
+
+@general.route("/api_doc")
+def api_doc():
+    """Render HTML API documentation."""
+    return render_template('apidoc.html',
+                           title="recAPI documentation",
+                           spec_url=url_for("general.api_spec")
+                           )
 
 
 @general.route("/recipe_data")
