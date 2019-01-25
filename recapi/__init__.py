@@ -1,3 +1,5 @@
+"""Instanciation of flask app."""
+
 import os
 import sys
 import logging

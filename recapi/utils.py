@@ -1,3 +1,5 @@
+"""Collection of utilities and auxiliaries."""
+
 # import functools
 import os
 import time

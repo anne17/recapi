@@ -1,3 +1,5 @@
+"""ICA parser class."""
+
 import re
 import html2text
 

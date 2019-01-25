@@ -1,3 +1,5 @@
+"""General parser class (abstract)."""
+
 import requests
 
 from abc import ABC, abstractmethod
