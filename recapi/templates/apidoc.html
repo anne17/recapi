@@ -4,7 +4,7 @@
     <title>{{title}}</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- <link rel="icon" href="{{favicon}}"> -->
+    <link rel="icon" href="{{favicon}}">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -25,10 +25,14 @@
       redoc a:hover > code {
         color: rgb(104, 104, 207) !important;
       }
+      /* Smaller and centered logo */
+      redoc img {
+        max-width: 20vh !important;
+        margin: auto;
+      }
     </style>
     {# <script>
-      url = {{spec_url}};
-      let url = '{{spec-url}}';
+      let url = '{{spec_url}}';
       loadOAS(url);
 
       function loadOAS(url) {
@@ -48,7 +52,7 @@
     </script> #}
   </head>
   <body>
-    <!--<div style="position: absolute; top: 5px; left: 5px; z-index: 99; opacity: 0.3; color: black;"><a href="../"><i class="material-icons">home</i></a></div>-->
+    <!-- <div style="position: absolute; top: 5px; left: 5px; z-index: 99; opacity: 0.3; color: black;"><a href="../"><i class="material-icons">home</i></a></div> -->
     <redoc spec-url="{{spec_url}}"></redoc>
     <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
   </body>

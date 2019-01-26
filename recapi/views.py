@@ -12,7 +12,7 @@ from recapi import utils
 general = Blueprint("general", __name__)
 
 
-@general.route("/")
+@general.route("/routes")
 def hello():
     """Say hi and show available routes."""
     routes = [str(rule) for rule in current_app.url_map.iter_rules()]
@@ -26,11 +26,13 @@ def api_spec():
         return jsonify(yaml.load(f))
 
 
+@general.route("/")
 @general.route("/api_doc")
 def api_doc():
     """Render HTML API documentation."""
     return render_template('apidoc.html',
                            title="recAPI documentation",
+                           favicon=url_for("static", filename="favicon.ico"),
                            spec_url=url_for("general.api_spec")
                            )
 
@@ -56,6 +58,13 @@ def page_not_found(e):
 def handle_unauthorized(e):
     """Handle 401."""
     return utils.error_response("Unauthorized.")
+
+
+@general.route('/static/<path:path>')
+def send_static(path):
+    """Serve static files."""
+    data_dir = os.path.join(current_app.config.get("MEDIA_PATH"))
+    return send_from_directory(data_dir, path)
 
 
 @general.route('/img/<path:path>')
