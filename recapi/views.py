@@ -16,7 +16,7 @@ general = Blueprint("general", __name__)
 def hello():
     """Say hi and show available routes."""
     routes = [str(rule) for rule in current_app.url_map.iter_rules()]
-    return utils.success_response("Welcome to recAPI!", routes=routes)
+    return utils.success_response("Listing available routes", routes=routes)
 
 
 @general.route("/api_spec")
@@ -60,7 +60,7 @@ def handle_unauthorized(e):
     return utils.error_response("Unauthorized.")
 
 
-@general.route('/static/<path:path>')
+@general.route('/static/<path:filename>')
 def send_static(path):
     """Serve static files."""
     data_dir = os.path.join(current_app.config.get("MEDIA_PATH"))

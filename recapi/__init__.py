@@ -13,7 +13,7 @@ from flask_cors import CORS
 def create_app():
     """Instanciate app."""
     # https://github.com/pallets/flask/blob/master/examples/tutorial/flaskr/__init__.py
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=None)
 
     # Enable CORS
     CORS(app, supports_credentials=True)
