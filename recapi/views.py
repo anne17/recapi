@@ -4,7 +4,7 @@ import os
 import traceback
 
 import yaml
-from flask import send_from_directory, request, session, current_app, Blueprint, jsonify, render_template, url_for
+from flask import send_from_directory, request, session, current_app, Blueprint, jsonify, render_template, url_for, redirect
 
 from recapi.models import User
 from recapi import utils
@@ -22,11 +22,17 @@ def hello():
 @general.route("/api_spec")
 def api_spec():
     """Return open API specification in json."""
-    with open("static/recapi-oas.yaml", encoding="UTF-8") as f:
+    spec_file = os.path.join(current_app.static_folder, "recapi-oas.yaml")
+    with open(spec_file, encoding="UTF-8") as f:
         return jsonify(yaml.load(f))
 
 
 @general.route("/")
+def base_route():
+    """Redirect to /api_doc."""
+    return redirect(url_for('general.api_doc'))
+
+
 @general.route("/api_doc")
 def api_doc():
     """Render HTML API documentation."""
@@ -41,7 +47,9 @@ def api_doc():
 def recipe_data():
     """Return all available recipe data."""
     try:
-        data = utils.load_data(current_app.config.get("DATABASE"))
+        data_path = os.path.join(current_app.config.get("ROOT_PATH"),
+                                 current_app.config.get("DATABASE"))
+        data = utils.load_data(data_path)
         return utils.success_response(msg="Data loaded", data=data)
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -60,25 +68,19 @@ def handle_unauthorized(e):
     return utils.error_response("Unauthorized.")
 
 
-@general.route('/static/<path:filename>')
-def send_static(path):
-    """Serve static files."""
-    data_dir = os.path.join(current_app.config.get("MEDIA_PATH"))
-    return send_from_directory(data_dir, path)
-
-
-@general.route('/img/<path:path>')
-def send_img(path):
+@general.route('/img/<filename>')
+def send_img(filename):
     """Serve images."""
-    data_dir = os.path.join(current_app.config.get("MEDIA_PATH"), "img")
-    return send_from_directory(data_dir, path)
+    image_dir = os.path.join(current_app.config.get("ROOT_PATH"),
+                             current_app.config.get("IMAGE_PATH"))
+    return send_from_directory(image_dir, filename)
 
 
-@general.route('/tmp/<path:path>')
-def send_tmp(path):
+@general.route('/tmp/<filename>')
+def send_tmp(filename):
     """Serve temporary files."""
     data_dir = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
-    return send_from_directory(data_dir, path)
+    return send_from_directory(data_dir, filename)
 
 
 @general.route('/check_authentication', methods=['GET', 'POST'])

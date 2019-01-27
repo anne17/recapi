@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{{favicon}}">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
     <style>
       body {
         margin: 0;
@@ -31,11 +31,9 @@
         margin: auto;
       }
     </style>
-    {# <script>
-      let url = '{{spec_url}}';
-      loadOAS(url);
-
-      function loadOAS(url) {
+    <script>
+      function loadOAS() {
+        let url = '{{spec_url}}';
         const options = {
           expandResponses: '200',
           theme: {
@@ -49,11 +47,11 @@
         };
         Redoc.init(url, options);
       }
-    </script> #}
+    </script>
   </head>
-  <body>
+  <body onload="loadOAS()">
     <!-- <div style="position: absolute; top: 5px; left: 5px; z-index: 99; opacity: 0.3; color: black;"><a href="../"><i class="material-icons">home</i></a></div> -->
-    <redoc spec-url="{{spec_url}}"></redoc>
+    <redoc spec-url=""></redoc>
     <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
   </body>
 </html>

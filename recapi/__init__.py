@@ -13,7 +13,7 @@ from flask_cors import CORS
 def create_app():
     """Instanciate app."""
     # https://github.com/pallets/flask/blob/master/examples/tutorial/flaskr/__init__.py
-    app = Flask(__name__, static_folder=None)
+    app = Flask(__name__)
 
     # Enable CORS
     CORS(app, supports_credentials=True)
@@ -24,6 +24,9 @@ def create_app():
         exit()
 
     app.config.from_object('config.Config')
+
+    # Set root path (parent dir to recapi package)
+    app.config["ROOT_PATH"] = os.path.abspath(os.path.join(app.root_path, os.pardir))
 
     # Configure logger
     logfmt = '%(asctime)-15s - %(levelname)s: %(message)s'

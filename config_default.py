@@ -1,14 +1,14 @@
 class Config:
 
+    # Relative to application root
     DATABASE = "data/database.yaml"
     DATABASE_PATH = "data/database.sql"
+    IMAGE_PATH = "data/img"
+
+    # Relative to instance folder
+    TMP_DIR = "tmp"
 
     ADMIN_PASSWORD = "password"
-
-    # Path to media directory, relative to ?
-    MEDIA_PATH = "../static"
-
-    TMP_DIR = "tmp"
 
     DEBUG = True
     WSGI_HOST = "0.0.0.0"
