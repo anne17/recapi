@@ -30,16 +30,17 @@ def api_spec():
 @general.route("/")
 def base_route():
     """Redirect to /api_doc."""
-    return redirect(url_for('general.api_doc'))
+    return redirect(url_for('general.api_doc', _external=True))
 
 
 @general.route("/api_doc")
 def api_doc():
     """Render HTML API documentation."""
+    current_app.logger.info("URL: %s", url_for("general.api_spec", _external=True))
     return render_template('apidoc.html',
                            title="recAPI documentation",
-                           favicon=url_for("static", filename="favicon.ico"),
-                           spec_url=url_for("general.api_spec")
+                           favicon=url_for("static", filename="favicon.ico", _external=True),
+                           spec_url=url_for("general.api_spec", _external=True)
                            )
 
 
