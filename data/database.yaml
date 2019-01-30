@@ -28,7 +28,7 @@ recipies:
   tags:
   - middag
 
-- title: Chili con carne med kikärter
+- title: Chili con carne med kikärtor
   image: img/chili-kikartor.jpg
   source: https://www.arla.se/recept/chili-con-carne-med-kikarter/
   portions: 4
@@ -36,32 +36,35 @@ recipies:
   - middag
   - köttfärs
   ingredients: |
+    * ris
     * 400 g nötfärs
     * 2 vitlöksklyftor
     * 2 morötter
     * 2 palsternackor
-    * 2 purjolökar
-    * smör
-    * 1 burk krossade tomater, ca 400 g
+    * 1 purjolök
+    * 400 g krossade tomater
+    * 2 burkar kikärtor à ca 400 g
     * 2 tsk chilipulver
+    * 1 nypa kanel
     * 1 tärning köttbuljong
-    * 2 burkar kikärter à ca 400 g
-    * 2 dl Arla Köket lätt crème fraiche tomat & basilika
-    * 1 tsk salt
     * ½ dl hackad färsk persilja
+    * 2 dl Arla Köket lätt crème fraiche tomat & basilika
+    * smör
     * salt och peppar
   contents: |
     1. Skala och hacka vitlöken. Skala morötter och palsternackor och skär dem i
     bitar. Grovstrimla purjolöken.
-    2. Stek färsen i smör i en stekpanna. Lägg i
+    2. Koka riset enligt anvisningen på förpackningen.
+    3. Stek färsen i smör i en stekpanna. Lägg i
     vitlöken och låt den fräsa med.
-    3. Lägg över i en gryta. Tillsätt morötter,
-    palsternacka, krossade tomater, chilipulver, smulad buljongtärning och 5 dl
+    4. Lägg över i en gryta. Tillsätt morötter,
+    palsternacka, krossade tomater, chilipulver, kanel, smulad buljongtärning och 5 dl
     vatten.
-    4. Skölj ärterna i kallt vatten och rör ner dem i grytan. Låt allt koka
-    ca 20 min.
-    5. Smaksätt med salt och peppar. Rör ner persiljan och hälften av
-    crème fraiche. Servera resten till grytan.
+    5. Skölj kikärtorna i kallt vatten och rör ner dem i grytan. Låt allt koka
+    ca 15 min.
+    6. Lägg i purjolöken och låt koka ytterligare 5 min.
+    7. Smaksätt med salt och peppar. Rör ner persiljan.
+    8. Servera med en klick crème fraiche.
 
 - title: Mackor med ost
   tags:
