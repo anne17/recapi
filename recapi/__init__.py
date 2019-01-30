@@ -8,14 +8,12 @@ import time
 from flask import Flask
 from flask_session import Session
 from flask_cors import CORS
-from werkzeug.contrib.fixers import ProxyFix
 
 
 def create_app():
     """Instanciate app."""
     # https://github.com/pallets/flask/blob/master/examples/tutorial/flaskr/__init__.py
     app = Flask(__name__)
-    app.wsgi_app = ProxyFix(app.wsgi_app)
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
     # Enable CORS
