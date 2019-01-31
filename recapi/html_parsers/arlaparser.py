@@ -13,7 +13,9 @@ text_maker.ignore_images = True
 class ArlaParser(GeneralParser):
     """Parser for recipies at ica.se."""
 
-    base_url = "arla.se"
+    domain = "arla.se"
+    name = "Arla"
+    address = "https://www.arla.se/recept/"
 
     def __init__(self, url):
         """Init the parser."""

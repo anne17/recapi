@@ -9,7 +9,9 @@ from bs4 import BeautifulSoup
 class GeneralParser(ABC):
     """Abstract parser class."""
 
-    base_url = ""
+    domain = ""
+    name = ""
+    address = ""
 
     def make_soup(self):
         """Get HTML and create BeautifulSoup object."""

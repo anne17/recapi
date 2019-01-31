@@ -13,7 +13,9 @@ text_maker.emphasis_mark = "*"
 class ICAParser(GeneralParser):
     """Parser for recipies at ica.se."""
 
-    base_url = "ica.se"
+    domain = "ica.se"
+    name = "ICA"
+    address = "https://www.ica.se/recept/"
 
     def __init__(self, url):
         """Init the parser."""

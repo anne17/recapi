@@ -50,7 +50,9 @@ def get_parsers():
     """Get a list of recipe pages for which there is a parser available."""
     import_parsers()
     try:
-        pages_list = [p.base_url for p in GeneralParser.__subclasses__()]
+        pages_list = [{"domain": p.domain,
+                       "name": p.name,
+                       "address": p.address} for p in GeneralParser.__subclasses__()]
         return utils.success_response("Successfully retrieved list of parsable pages.", data=pages_list)
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -71,7 +73,7 @@ def find_parser(parsers, url):
     # Create domain dict
     domain_dict = {}
     for p in parsers:
-        domain_dict[p.base_url] = p
+        domain_dict[p.domain] = p
 
     return domain_dict.get(domain)
 
