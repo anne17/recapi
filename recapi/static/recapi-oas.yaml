@@ -5,85 +5,61 @@ info:
   version: '0.1'
   license:
     name: MIT
-    url: "https://opensource.org/licenses/MIT"
+    url: 'https://opensource.org/licenses/MIT'
   x-logo:
-    url: "https://api.kalufs.lol/recapi/img/default.png"
+    url: 'https://api.kalufs.lol/recapi/img/default.png'
 servers:
-  - url: "https://api.kalufs.lol/recapi"
+  - url: 'https://api.kalufs.lol/recapi'
 tags:
-  - name: General
   - name: Recipe Data
+  - name: Parsing
   - name: Authentication
+  - name: Documentation
+  - name: Static Files
+  - name: misc
 paths:
+
+  /api_doc:
+    get:
+      summary: HTML Docs
+      description: View HTML api documentation
+      tags:
+        - Documentation
+      responses:
+        '200':
+          description: OK
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+
   /:
     get:
-      summary: Default query
-      description: Say hi and show available routes.
+      summary: HTML Docs
+      description: View HTML api documentation
       tags:
-        - General
+        - Documentation
       responses:
         '200':
-          description: Success
+          description: OK
           content:
-            application/json:
+            text/html; charset=utf-8:
               schema:
-                type: object
-                properties:
-                  routes:
-                    type: array
-                    items:
-                      type: string
-                  message:
-                    type: string
-                  status:
-                    type: string
-              examples:
-                '0':
-                  value: |
-                    {
-                      "message": "Welcome to recAPI!",
-                      "routes": [
-                        "/check_authentication",
-                        "/parse_from_url",
-                        "/preview_data",
-                        "/recipe_data",
-                        "/view_recipe",
-                        "/get_parsers",
-                        "/get_recipe",
-                        "/logout",
-                        "/login",
-                        "/",
-                        "/static/<path:filename>",
-                        "/img/<path:path>",
-                        "/tmp/<path:path>"
-                      ],
-                      "status": "success"
-                    }
-  /check_authentication:
+                type: string
+              examples: {}
+
+  /api_spec:
     get:
-      summary: Check authentication
-      description: Check if current user is authorized in the active session.
+      summary: API spec
+      description: View the API specification in JSON
       tags:
-        - Authentication
+        - Documentation
       responses:
         '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  status:
-                    type: string
-              examples:
-                '0':
-                  value: |
-                    {
-                      "message": "Access denied",
-                      "status": "error"
-                    }
+          description: OK
+
+  /check_authentication:
     post:
       summary: Check authentication
       description: Check if current user is authorized in the active session.
@@ -91,7 +67,7 @@ paths:
         - Authentication
       responses:
         '200':
-          description: Success
+          description: OK
           content:
             application/json:
               schema:
@@ -106,21 +82,18 @@ paths:
                   value: |
                     {
                       "message": "Access denied",
-                      "status": "error"
+                      "status": "success"
                     }
-      servers:
-        - url: 'https://api.kalufs.lol'
-    servers:
-      - url: 'https://api.kalufs.lol'
+
   /logout:
-    get:
+    post:
       summary: Logout
       description: Remove session for current user.
       tags:
         - Authentication
       responses:
         '200':
-          description: Success
+          description: OK
           content:
             application/json:
               schema:
@@ -144,16 +117,12 @@ paths:
       description: Extract recipe data from given url and return response with recipe data.
       tags:
         - Recipe Data
+        - Parsing
       parameters:
-        - name: url
-          in: query
-          schema:
-            type: string
-          example: >-
-            https://www.ica.se/recept/bakad-banangrot-med-tahinihonung-724918/
+        - $ref: '#/components/parameters/urlParam'
       responses:
         '200':
-          description: Success
+          description: OK
           content:
             application/json:
               schema:
@@ -181,19 +150,64 @@ paths:
                   value: |
                     {
                       "data": {
-                        "contents": "\n  1. S\u00e4tt ugnen p\u00e5 225\u00b0C. \n  2. Blanda alla torra ingredienser i en sk\u00e5l. Vispa ihop \u00e4gg, h\u00e4lften av honungen och havredryck. Blanda ner de torra ingredienserna.\n  3. H\u00e4ll i en smord ugnsform. Skala och dela bananerna l\u00e4ngs med. L\u00e4gg bananhalvorna p\u00e5 gr\u00f6ten och ringla \u00f6ver resten av honungen. S\u00e4tt in i mitten av ugnen ca 25 minuter.\n  4.  **Tahinihonung:** R\u00f6r ihop tahini och honung. \n  5. **Till servering:** Servera gr\u00f6ten med tahinihonung och yoghurt. \n\n",
+                        "contents": "1. Sätt ugnen pä 225\u00b0C. \n  2. Blanda alla torra ingredienser i en skål. Vispa ihop ägg, hälften av honungen och havredryck. Blanda ner de torra ingredienserna.\n  3. Häll i en smord ugnsform. Skala och dela bananerna längs med. Lägg bananhalvorna på gröten och ringla över resten av honungen. Sätt in i mitten av ugnen ca 25 minuter.\n  4.  **Tahinihonung:** Rör ihop tahini och honung. \n  5. **Till servering:** Servera gröten med tahinihonung och yoghurt.",
                         "image": "tmp/ba1b6fe0-2001-11e9-ae64-b827eb7c0ccfjpg",
-                        "ingredients": "\n  * 4 dl havregryn\n  * 1 tsk malen kanel\n  * 1/2 tsk malen kardemumma\n  * 1/2 tsk malen ingef\u00e4ra\n  * 2 krm vaniljpulver\n  * 1/2 tsk salt\n  * 1 \u00e4gg\n  * 4 msk honung\n  * 5 dl havredryck\n  * 4 sm\u00e5 bananer\n\n**Tahiniyoghurt**\n\n  * 2 msk tahini\n  * 3 msk honung\n\n**Till servering**\n\n  * grekisk yoghurt\n\n",
+                        "ingredients": "* 4 dl havregryn\n  * 1 tsk malen kanel\n  * 1/2 tsk malen kardemumma\n  * 1/2 tsk malen ingefära\n  * 2 krm vaniljpulver\n  * 1/2 tsk salt\n  * 1 ägg\n  * 4 msk honung\n  * 5 dl havredryck\n  * 4 små bananer\n\n**Tahiniyoghurt**\n\n  * 2 msk tahini\n  * 3 msk honung\n\n**Till servering**\n\n  * grekisk yoghurt",
                         "source": "https://www.ica.se/recept/bakad-banangrot-med-tahinihonung-724918/",
-                        "title": "Bakad banangr\u00f6t med tahinihonung"
+                        "title": "Bakad banangröt med tahinihonung"
                       },
                       "message": "Successfully extracted recipe.",
                       "status": "success"
                     }
-      servers:
-        - url: 'https://api.kalufs.lol'
-    servers:
-      - url: 'https://api.kalufs.lol'
+
+  /get_parsers:
+    get:
+      summary: Get Parsers
+      description: Get a list of the recipe pages for which there is a parser available.
+      tags:
+        - Parsing
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        domain:
+                          type: string
+                        name:
+                          type: string
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: >
+                    {
+                      "data": [
+                        {
+                          "address": "https://www.arla.se/recept/",
+                          "domain": "arla.se",
+                          "name": "Arla"
+                        },
+                        {
+                          "address": "https://www.ica.se/recept/",
+                          "domain": "ica.se",
+                          "name": "ICA"
+                        }
+                      ],
+                      "message": "Successfully retrieved list of parsable pages.",
+                      "status": "success"
+                    }
 
   /view_recipe:
     get:
@@ -202,14 +216,10 @@ paths:
       tags:
         - Recipe Data
       parameters:
-        - name: title
-          in: query
-          schema:
-            type: string
-          example: Pastagrat%C3%A4ng%20med%20bacon
+        - $ref: "#/components/parameters/titleParam"
       responses:
         '200':
-          description: Success
+          description: OK
           content:
             application/json:
               schema:
@@ -243,16 +253,90 @@ paths:
                   value: |
                     {
                       "data": {
-                        "contents": "<ol>\n<li>Tina \u00e4rtorna.</li>\n<li>S\u00e4tt ugnen p\u00e5 225\u00b0C.</li>\n<li>Koka pastan enligt anvisningen p\u00e5 f\u00f6rpackningen. L\u00e5t rinna av.</li>\n<li>Strimla baconet och stek i en stekpanna.</li>\n<li>Vispa ihop cr\u00e8me fraiche, mj\u00f6lk och \u00e4gg. Salta och peppra.</li>\n<li>H\u00e4ll pastan i en smord ugnss\u00e4ker form och v\u00e4nd ner bacon och \u00e4rtor. H\u00e4ll \u00f6ver \u00e4ggstanningen.</li>\n<li>Riv osten i bitar och l\u00e4gg p\u00e5 grat\u00e4ngen och gratinera h\u00f6gt upp i ugnen ca 20 minuter, tills den f\u00e5r f\u00e4rg.</li>\n<li>Sk\u00e4r tomaterna i bitar och servera dem till grat\u00e4ngen.</li>\n</ol>",
+                        "contents": "<ol>\n<li>Tina ärtorna.</li>\n<li>Sätt ugnen på 225\u00b0C.</li>\n<li>Koka pastan enligt anvisningen på förpackningen. Låt rinna av.</li>\n<li>Strimla baconet och stek i en stekpanna.</li>\n<li>Vispa ihop cr\u00e8me fraiche, mjölk och ägg. Salta och peppra.</li>\n<li>Häll pastan i en smord ugnssäker form och vänd ner bacon och ärtor. Häll över äggstanningen.</li>\n<li>Riv osten i bitar och lägg på gratängen och gratinera högt upp i ugnen ca 20 minuter, tills den får färg.</li>\n<li>Skär tomaterna i bitar och servera dem till gratängen.</li>\n</ol>",
                         "image": "img/pastagratang-med-bacon-722019.jpg",
-                        "ingredients": "<ul>\n<li>250 g gr\u00f6na \u00e4rter</li>\n<li>4 port pasta (farfalle)</li>\n<li>2 f\u00f6rp bacon (\u00e0 140 g)</li>\n<li>2 dl cr\u00e8me fraiche</li>\n<li>2 dl mj\u00f6lk</li>\n<li>2 \u00e4gg</li>\n<li>1/2 tsk salt</li>\n<li>2 krm peppar</li>\n<li>1 msk sm\u00f6r till formen</li>\n<li>4 skivor cheddarost</li>\n<li>3 tomater</li>\n</ul>",
+                        "ingredients": "<ul>\n<li>250 g gröna ärter</li>\n<li>4 port pasta (farfalle)</li>\n<li>2 förp bacon (\u00e0 140 g)</li>\n<li>2 dl cr\u00e8me fraiche</li>\n<li>2 dl mjölk</li>\n<li>2 ägg</li>\n<li>1/2 tsk salt</li>\n<li>2 krm peppar</li>\n<li>1 msk smör till formen</li>\n<li>4 skivor cheddarost</li>\n<li>3 tomater</li>\n</ul>",
                         "portions": 4,
                         "source": "https://www.ica.se/recept/pastagratang-med-bacon-722019/",
                         "tags": [
                           "middag"
                         ],
-                        "title": "Pastagrat\u00e4ng med bacon"
+                        "title": "Pastagratäng med bacon"
                       },
                       "message": "Data loaded",
                       "status": "success"
                     }
+
+  /clean_tmp_data:
+    get:
+      summary: Clean temp files
+      description: |
+        Remove temporary data (usually image files) that have have passed their expiration date,
+        i.e. that have not been modified in over a week.
+      tags:
+        - misc
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "message": "Successfully cleaned temporary data!",
+                      "status": "success"
+                    }
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "message": "Cleanup failed: Error message",
+                      "status": "error"
+                    }
+
+components:
+
+  parameters:
+    urlParam:
+      name: url
+      in: query
+      schema:
+        type: string
+      example: 'https://www.ica.se/recept/bakad-banangrot-med-tahinihonung-724918/'
+    titleParam:
+      name: title
+      in: query
+      schema:
+        type: string
+      example: Pastagratäng med bacon
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSIONCOOKIE  # cookie name
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: password
