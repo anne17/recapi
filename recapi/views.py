@@ -84,17 +84,17 @@ def send_tmp(filename):
     return send_from_directory(data_dir, filename)
 
 
-@general.route('/check_authentication', methods=['GET', 'POST'])
+@general.route('/check_authentication', methods=['POST'])
 def check_authentication():
     """Check if current user is authorized in the active session."""
     if session.get("authorized"):
         print("User authorized: %s" % session.get("user"))
         return utils.success_response("User authorized", user=session.get("user"))
     else:
-        return utils.error_response("Access denied")
+        return utils.success_response("Access denied")
 
 
-@general.route('/login', methods=['GET', 'POST'])
+@general.route('/login', methods=['POST'])
 def login():
     """Check user credentials and log in if authorized."""
     if session.get("authorized"):
@@ -115,14 +115,14 @@ def login():
         return utils.error_response("Invalid username or password!"), 401
 
 
-@general.route('/logout', methods=['GET', 'POST'])
+@general.route('/logout', methods=['POST'])
 def logout():
     """Remove session for current user."""
     session.clear()
     return utils.success_response("Logged out successfully")
 
 
-@general.route("/preview_data", methods=['GET', 'POST'])
+@general.route("/preview_data", methods=['POST'])
 def preview_data():
     """Generate recipe preview. Convert markdown data to html."""
     try:
