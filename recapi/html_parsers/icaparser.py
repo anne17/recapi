@@ -41,9 +41,9 @@ class ICAParser(GeneralParser):
         ingredients = self.soup.find(class_="ingredients")
         ingredients = ingredients.find_all(["ul", "strong"])
         ingredients = "".join(str(i) for i in ingredients)
-        self.ingredients = text_maker.handle(ingredients)
+        self.ingredients = text_maker.handle(ingredients).strip()
 
     def get_contents(self):
         """Get recipe description."""
         contents = self.soup.find(class_="recipe-howto-steps").find("ol")
-        self.contents = text_maker.handle(str(contents))
+        self.contents = text_maker.handle(str(contents)).strip()
