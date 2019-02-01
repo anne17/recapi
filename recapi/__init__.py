@@ -14,6 +14,11 @@ def create_app():
     """Instanciate app."""
     # https://github.com/pallets/flask/blob/master/examples/tutorial/flaskr/__init__.py
     app = Flask(__name__)
+
+    # Prevent flask from resorting JSON
+    app.config['JSON_SORT_KEYS'] = False
+
+    # Fix SCRIPT_NAME when proxied
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
     # Enable CORS
