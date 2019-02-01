@@ -12,11 +12,15 @@ servers:
   - url: 'https://api.kalufs.lol/recapi'
 tags:
   - name: Recipe Data
+    description: Paths related to serving, receiving, storing and modifying recipe data.
   - name: Parsing
+    description: Paths related to extracting recipe data from a URL.
   - name: Authentication
+    description: Paths related to user authentication. The authentication is done with Flask session cookies.
   - name: Documentation
-  - name: Static Files
+    description: Paths related the the API documentation.
   - name: misc
+    description: Miscellaneous paths related to amongst others the management of static files like images.
 paths:
 
   /api_doc:
@@ -58,6 +62,71 @@ paths:
       responses:
         '200':
           description: OK
+
+  /login:
+    post:
+      summary: Login
+      description: Creates a session for the current user if the user is authorized.
+      tags:
+        - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                login:
+                  type: string
+            examples:
+              '0':
+                value: '{"login":"hej","password":"hopp"}'
+      responses:
+        '200':
+          description: OK. The session ID is returned in a cookie named `session`.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: session=abcde12345; Path=/; HttpOnly
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  user:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "status": "success",
+                      "message": "User hej logged in successfully!"
+                      "user": "Hej"
+                    }
+        '401':
+          description: "Error: Unauthorized."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "status": "error",
+                      "message": "Invalid username or password!"
+                    }
 
   /check_authentication:
     post:
@@ -111,10 +180,313 @@ paths:
                       "status": "success"
                     }
 
+  /recipe_data:
+    get:
+      summary: Get Recipies
+      description: Get data for all recipies in the data base as a JSON object.
+      tags:
+        - Recipe Data
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      recipies:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            image:
+                              type: string
+                            contents:
+                              type: string
+                            ingredients:
+                              type: string
+                            source:
+                              type: string
+                            title:
+                              type: string
+                            portions:
+                              type: integer
+                            tags:
+                              type: array
+                              items:
+                                type: string
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "data": {
+                        "recipies": [
+                          {
+                            "contents": "1.   Tina\närtorna.\n2.   Sätt ugnen på\n225°C.\n3.   Koka pastan enligt anvisningen på\nförpackningen. Låt rinna av.\n4.   Strimla baconet\noch stek i en stekpanna.\n5.   Vispa ihop crème\nfraiche, mjölk och ägg. Salta och peppra.\n6.\nHäll pastan i en smord ugnssäker form och\nvänd ner bacon och ärtor. Häll över\näggstanningen.\n7.   Riv osten i bitar och lägg\npå gratängen och gratinera högt upp i ugnen\nca 20 minuter, tills den får färg.\n8.   Skär\ntomaterna i bitar och servera dem till\ngratängen.\n",
+                            "image": "img/pastagratang-med-bacon-722019.jpg",
+                            "ingredients": "*\n250 g gröna ärter\n*   4 port pasta\n(farfalle)\n*   2 förp bacon (à 140 g)\n*   2 dl\ncrème fraiche\n*   2 dl mjölk\n*   2 ägg\n*\n1/2 tsk salt\n*   2 krm peppar\n*   1 msk smör till\nformen\n*   4 skivor cheddarost\n*   3\ntomater\n",
+                            "portions": 4,
+                            "source": "https://www.ica.se/recept/pastagratang-med-bacon-722019/",
+                            "tags": [
+                              "middag"
+                            ],
+                            "title": "Pastagratäng\nmed bacon"
+                          },
+                          {
+                            "contents": "1. Skala och hacka vitlöken.\nSkala morötter och palsternackor och skär dem\ni\nbitar. Grovstrimla purjolöken.\n2. Koka riset enligt\nanvisningen på förpackningen.\n3. Stek färsen\ni smör i en stekpanna. Lägg i\nvitlöken och\nlåt den fräsa med.\n4. Lägg över i en\ngryta. Tillsätt morötter,\npalsternacka, krossade\ntomater, chilipulver, kanel, smulad buljongtärning och\n5 dl\nvatten.\n5. Skölj kikärtorna i kallt vatten\noch rör ner dem i grytan. Låt allt koka\nca 15\nmin.\n6. Lägg i purjolöken och låt koka\nytterligare 5 min.\n7. Smaksätt med salt och peppar.\nRör ner persiljan.\n8. Servera med en klick crème\nfraiche.\n",
+                            "image": "img/chili-kikartor.jpg",
+                            "ingredients": "*\nris\n* 400 g nötfärs\n* 2 vitlöksklyftor\n* 2\nmorötter\n* 2 palsternackor\n* 1 purjolök\n* 400 g\nkrossade tomater\n* 2 burkar kikärtor à ca 400\ng\n* 2 tsk chilipulver\n* 1 nypa kanel\n* 1 tärning\nköttbuljong\n* ½ dl hackad färsk persilja\n*\n2 dl Arla Köket lätt crème fraiche tomat &\nbasilika\n* smör\n* salt och\npeppar\n",
+                            "portions": 6,
+                            "source": "https://www.arla.se/recept/chili-con-carne-med-kikarter/",
+                            "tags": [
+                              "middag",
+                              "köttfärs"
+                            ],
+                            "title": "Chili\ncon carne med kikärtor"
+                          },
+                          {
+                            "contents": "1. Skär\nlagom tunna skivor av brödet.\n2. Bre lagom mycket\nsmör på varje skiva.\n3. Lägg på\n**mycket** ost.\n\nKlart! Smakar extragott med några\nskivor gurka eller paprika på!\n",
+                            "ingredients": "*\nbröd\n* ost\n*\nsmör\n",
+                            "portions": 4,
+                            "source": "Annes\nmamma",
+                            "tags": [
+                              "middag",
+                              "snabblagat"
+                            ],
+                            "title": "Mackor med\nost"
+                          },
+                          {
+                            "image": "img/couscous-med-gronsaker-och-halloumi.jpg",
+                            "portions": 4,
+                            "source": "https://alltommat.se/recept/couscous-med-gronsaker-och-halloumi/",
+                            "tags": [
+                              "middag",
+                              "vegetariskt"
+                            ],
+                            "title": "Couscous\nmed grönsaker och\nhalloumi"
+                          },
+                          {
+                            "image": "img/mug-cake.jpg",
+                            "portions": 1,
+                            "source": "https://www.kungsornen.se/recept/kakor/mjuka-kakor/mugcake/",
+                            "tags": [
+                              "dessert",
+                              "kaka",
+                              "snabblagat"
+                            ],
+                            "title": "Mug\ncake"
+                          }
+                        ]
+                      },
+                      "message": "Data loaded",
+                      "status": "success"
+                    }
+
+  /get_recipe:
+    get:
+      summary: Get Recipe
+      description: Get the data for one recipe in its data base format (markdown).
+      tags:
+        - Recipe Data
+      parameters:
+        - $ref: "#/components/parameters/titleParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      contents:
+                        type: string
+                      ingredients:
+                        type: string
+                      source:
+                        type: string
+                      title:
+                        type: string
+                      portions:
+                        type: integer
+                      tags:
+                        type: array
+                        items:
+                          type: string
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "data": {
+                        "contents": "1. Skär lagom tunna skivor av\nbrödet.\n2. Bre lagom mycket smör på varje\nskiva.\n3. Lägg på **mycket** ost.\n\nKlart!\nSmakar extragott med några skivor gurka eller paprika\npå!\n",
+                        "ingredients": "* bröd\n* ost\n*\nsmör\n",
+                        "portions": 4,
+                        "source": "Annes\nmamma",
+                        "tags": [
+                          "middag",
+                          "snabblagat"
+                        ],
+                        "title": "Mackor med\nost"
+                      },
+                      "message": "Data loaded",
+                      "status": "success"
+                    }
+
+  /view_recipe:
+    get:
+      summary: View Recipe
+      description: Get the data for one recipe and generate its view format (convert markdown data to html).
+      tags:
+        - Recipe Data
+      parameters:
+        - $ref: "#/components/parameters/titleParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+                      contents:
+                        type: string
+                      ingredients:
+                        type: string
+                      source:
+                        type: string
+                      title:
+                        type: string
+                      portions:
+                        type: integer
+                      tags:
+                        type: array
+                        items:
+                          type: string
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "data": {
+                        "contents": "<ol>\n<li>Tina ärtorna.</li>\n<li>Sätt ugnen på 225\u00b0C.</li>\n<li>Koka pastan enligt anvisningen på förpackningen. Låt rinna av.</li>\n<li>Strimla baconet och stek i en stekpanna.</li>\n<li>Vispa ihop cr\u00e8me fraiche, mjölk och ägg. Salta och peppra.</li>\n<li>Häll pastan i en smord ugnssäker form och vänd ner bacon och ärtor. Häll över äggstanningen.</li>\n<li>Riv osten i bitar och lägg på gratängen och gratinera högt upp i ugnen ca 20 minuter, tills den får färg.</li>\n<li>Skär tomaterna i bitar och servera dem till gratängen.</li>\n</ol>",
+                        "image": "img/pastagratang-med-bacon-722019.jpg",
+                        "ingredients": "<ul>\n<li>250 g gröna ärter</li>\n<li>4 port pasta (farfalle)</li>\n<li>2 förp bacon (\u00e0 140 g)</li>\n<li>2 dl cr\u00e8me fraiche</li>\n<li>2 dl mjölk</li>\n<li>2 ägg</li>\n<li>1/2 tsk salt</li>\n<li>2 krm peppar</li>\n<li>1 msk smör till formen</li>\n<li>4 skivor cheddarost</li>\n<li>3 tomater</li>\n</ul>",
+                        "portions": 4,
+                        "source": "https://www.ica.se/recept/pastagratang-med-bacon-722019/",
+                        "tags": [
+                          "middag"
+                        ],
+                        "title": "Pastagratäng med bacon"
+                      },
+                      "message": "Data loaded",
+                      "status": "success"
+                    }
+
+  /preview_data:
+    post:
+      summary: Preview Data
+      description: Generate recipe preview. Convert markdown data to html.
+      tags:
+        - Recipe Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                contents:
+                  type: string
+                ingredients:
+                  type: string
+                source:
+                  type: string
+                title:
+                  type: string
+                portions:
+                  type: integer
+                tags:
+                  type: array
+                  items:
+                    type: string
+            examples:
+              '0':
+                value: >-
+                  {"title":"Mackor med ost","portions":4,"ingredients":"*
+                  bröd\n* ost\n* smör\n","contents":"1. Skär lagom tunna skivor
+                  av brödet.\n2. Bre lagom mycket smör på varje skiva.\n3. Lägg
+                  på **mycket** ost.\n\nKlart! Smakar extragott med några skivor
+                  gurka eller paprika på!\n","image":"","source":"Annes
+                  mamma","tags":["middag","snabblagat"]}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+                      contents:
+                        type: string
+                      ingredients:
+                        type: string
+                      source:
+                        type: string
+                      title:
+                        type: string
+                      portions:
+                        type: integer
+                  message:
+                    type: string
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {
+                      "data": {
+                        "contents": "<ol>\n<li>Sk\u00e4r lagom tunna skivor av br\u00f6det.</li>\n<li>Bre lagom mycket sm\u00f6r p\u00e5 varje skiva.</li>\n<li>L\u00e4gg p\u00e5 <strong>mycket</strong> ost.</li>\n</ol>\n<p>Klart! Smakar extragott med n\u00e5gra skivor gurka eller paprika p\u00e5!</p>",
+                        "image": "",
+                        "ingredients": "<ul>\n<li>br\u00f6d</li>\n<li>ost</li>\n<li>sm\u00f6r</li>\n</ul>",
+                        "portions": 4,
+                        "source": "Annes mamma",
+                        "title": "Mackor med ost"
+                      },
+                      "message": "Data converted",
+                      "status": "success"
+                    }
+
   /parse_from_url:
     get:
       summary: Parse recipe
-      description: Extract recipe data from given url and return response with recipe data.
+      description: Extract recipe data from the given URL and return it as JSON.
       tags:
         - Recipe Data
         - Parsing
@@ -209,63 +581,32 @@ paths:
                       "status": "success"
                     }
 
-  /view_recipe:
+  /img:
     get:
-      summary: View recipe
-      description: Generate view for one recipe. Convert markdown data to html.
+      summary: Image File
       tags:
-        - Recipe Data
-      parameters:
-        - $ref: "#/components/parameters/titleParam"
+        - misc
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      image:
-                        type: string
-                      contents:
-                        type: string
-                      ingredients:
-                        type: string
-                      source:
-                        type: string
-                      title:
-                        type: string
-                      portions:
-                        type: integer
-                      tags:
-                        type: array
-                        items:
-                          type: string
-                  message:
-                    type: string
-                  status:
-                    type: string
-              examples:
-                '0':
-                  value: |
-                    {
-                      "data": {
-                        "contents": "<ol>\n<li>Tina ärtorna.</li>\n<li>Sätt ugnen på 225\u00b0C.</li>\n<li>Koka pastan enligt anvisningen på förpackningen. Låt rinna av.</li>\n<li>Strimla baconet och stek i en stekpanna.</li>\n<li>Vispa ihop cr\u00e8me fraiche, mjölk och ägg. Salta och peppra.</li>\n<li>Häll pastan i en smord ugnssäker form och vänd ner bacon och ärtor. Häll över äggstanningen.</li>\n<li>Riv osten i bitar och lägg på gratängen och gratinera högt upp i ugnen ca 20 minuter, tills den får färg.</li>\n<li>Skär tomaterna i bitar och servera dem till gratängen.</li>\n</ol>",
-                        "image": "img/pastagratang-med-bacon-722019.jpg",
-                        "ingredients": "<ul>\n<li>250 g gröna ärter</li>\n<li>4 port pasta (farfalle)</li>\n<li>2 förp bacon (\u00e0 140 g)</li>\n<li>2 dl cr\u00e8me fraiche</li>\n<li>2 dl mjölk</li>\n<li>2 ägg</li>\n<li>1/2 tsk salt</li>\n<li>2 krm peppar</li>\n<li>1 msk smör till formen</li>\n<li>4 skivor cheddarost</li>\n<li>3 tomater</li>\n</ul>",
-                        "portions": 4,
-                        "source": "https://www.ica.se/recept/pastagratang-med-bacon-722019/",
-                        "tags": [
-                          "middag"
-                        ],
-                        "title": "Pastagratäng med bacon"
-                      },
-                      "message": "Data loaded",
-                      "status": "success"
-                    }
+
+  /tmp:
+    get:
+      summary: Temporary File
+      tags:
+        - misc
+      responses:
+        '200':
+          description: OK
+
+  /static:
+    get:
+      summary: Static File
+      tags:
+        - misc
+      responses:
+        '200':
+          description: OK
 
   /clean_tmp_data:
     get:
@@ -335,7 +676,7 @@ components:
     cookieAuth:
       type: apiKey
       in: cookie
-      name: SESSIONCOOKIE  # cookie name
+      name: session
     ApiKeyAuth:
       type: apiKey
       in: query
