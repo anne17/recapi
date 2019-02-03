@@ -12,10 +12,10 @@ from flask import current_app, Blueprint, request
 from recapi import utils, html_parsers
 from recapi.html_parsers import GeneralParser
 
-parser_views = Blueprint("parser_views", __name__)
+bp = Blueprint("parser_views", __name__)
 
 
-@parser_views.route("/parse_from_url")
+@bp.route("/parse_from_url")
 def parse_from_url():
     """Extract recipe data from given url and return response with recipe data."""
     url = request.args.get("url")
@@ -45,7 +45,7 @@ def parse_from_url():
         return utils.error_response(f"No parser found for URL {url}."), 400
 
 
-@parser_views.route("/get_parsers")
+@bp.route("/get_parsers")
 def get_parsers():
     """Get a list of recipe pages for which there is a parser available."""
     import_parsers()

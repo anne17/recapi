@@ -62,9 +62,12 @@ def create_app():
     # Init session
     Session(app)
 
-    from . import views, parse_html
-    app.register_blueprint(views.general)
-    app.register_blueprint(parse_html.parser_views)
+    from .views import general, authentication, parse_html, recipe_data, documentation
+    app.register_blueprint(general.bp)
+    app.register_blueprint(recipe_data.bp)
+    app.register_blueprint(authentication.bp)
+    app.register_blueprint(parse_html.bp)
+    app.register_blueprint(documentation.bp)
 
     return app
 
