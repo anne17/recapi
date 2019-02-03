@@ -1,6 +1,6 @@
 """Collection of utilities and auxiliaries."""
 
-# import functools
+import functools
 import os
 import time
 import traceback
@@ -9,7 +9,7 @@ import uuid
 from validator_collection import checkers
 import yaml
 import markdown
-from flask import jsonify, current_app
+from flask import jsonify, current_app, session
 
 
 IMAGE_FORMATS = {
@@ -139,18 +139,12 @@ def remove_file(filepath):
         raise e
 
 
-# def gatekeeper(function):
-#     """Stop unauthorized users. Use as decorator where authorization is needed."""
-#     @functools.wraps(function)  # Copy original function's information, needed by Flask
-#     def wrapper(*args, **kwargs):
-#         if not session.get("authorized"):
-#             return jsonify({"error": "Access denied"})
-#         else:
-#             return function(*args, **kwargs)
-#
-#     return wrapper
-
-# Example:
-# @app.route("/coolfunc")
-# @gatekeeper
-# def coolfunc():
+def gatekeeper(function):
+    """Stop unauthorized users. Use as decorator where authorization is needed."""
+    @functools.wraps(function)  # Copy original function's information, needed by Flask
+    def wrapper(*args, **kwargs):
+        if not session.get("authorized"):
+            return error_response("Access denied"), 401
+        else:
+            return function(*args, **kwargs)
+    return wrapper
