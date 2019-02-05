@@ -19,15 +19,15 @@ def api_spec():
 @bp.route("/")
 def base_route():
     """Redirect to /api_doc."""
-    return redirect(url_for('general.api_doc', _external=True))
+    return redirect(url_for('documentation.api_doc', _external=True))
 
 
 @bp.route("/api_doc")
 def api_doc():
     """Render HTML API documentation."""
-    current_app.logger.info("URL: %s", url_for("general.api_spec", _external=True))
+    current_app.logger.info("URL: %s", url_for("documentation.api_spec", _external=True))
     return render_template('apidoc.html',
                            title="recAPI documentation",
                            favicon=url_for("static", filename="favicon.ico", _external=True),
-                           spec_url=url_for("general.api_spec", _external=True)
+                           spec_url=url_for("documentation.api_spec", _external=True)
                            )
