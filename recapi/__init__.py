@@ -24,12 +24,12 @@ def create_app():
     # Enable CORS
     CORS(app, supports_credentials=True)
 
-    # Read config
-    if os.path.exists(os.path.join(os.path.dirname(app.config.root_path), 'config.py')) is False:
-        print("Config file 'config.py' is missing! Cannot run application.")
-        exit()
+    # Set default config
+    app.config.from_object("config")
 
-    app.config.from_object('config.Config')
+    # Overwrite with instance config
+    if os.path.exists(os.path.join(app.instance_path, 'config.py')):
+        app.config.from_pyfile(os.path.join(app.instance_path, "config.py"))
 
     # Set root path (parent dir to recapi package)
     app.config["ROOT_PATH"] = os.path.abspath(os.path.join(app.root_path, os.pardir))
