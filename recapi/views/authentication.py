@@ -2,7 +2,7 @@
 
 from flask import request, session, current_app, Blueprint
 
-from recapi.models import User
+from recapi.models.user import User
 from recapi import utils
 
 bp = Blueprint("authentication", __name__)

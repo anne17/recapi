@@ -17,6 +17,7 @@ bs4 = "*"
 requests = "*"
 validator-collection = "*"
 html2text = "*"
+peewee = "*"
 
 [requires]
 python_version = "3.6"

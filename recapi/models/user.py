@@ -1,14 +1,19 @@
+"""Collection of different models to communicate with the data base."""
+
 from werkzeug.security import check_password_hash
+# import peewee as pw
 
 from recapi.edit_user import UserDB
+# from recapi.models import BaseModel
 
 
 class User():
+    """User model."""
+
     def __init__(self, username):
-        """User model"""
+        """Retrieve the user's data from the data base."""
         self.username = username
 
-        # Retrieve user information from data base.
         userdb = UserDB()
         userdata = userdb.get(self.username)
         if userdata:
@@ -25,3 +30,11 @@ class User():
         if not self.user_password:
             return False
         return check_password_hash(self.user_password, password)
+
+
+# class User2(BaseModel):
+#     """User model (peewee)."""
+#
+#     user = pw.TextField()
+#     display = pw.TextField()
+#     password = pw.TextField()
