@@ -22,7 +22,7 @@ def check_authentication():
 def login():
     """Check user credentials and log in if authorized."""
     if session.get("authorized"):
-        return utils.success_response("User already authorized!")
+        return utils.success_response("User already authorized!", user=session.get("user"))
     else:
         username = request.get_json().get("login")
         password = request.get_json().get("password")
