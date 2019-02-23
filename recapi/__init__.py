@@ -16,7 +16,7 @@ def create_app():
     app = Flask(__name__)
 
     # Prevent flask from resorting JSON
-    app.config['JSON_SORT_KEYS'] = False
+    app.config["JSON_SORT_KEYS"] = False
 
     # Fix SCRIPT_NAME when proxied
     app.wsgi_app = ReverseProxied(app.wsgi_app)
@@ -28,15 +28,15 @@ def create_app():
     app.config.from_object("config")
 
     # Overwrite with instance config
-    if os.path.exists(os.path.join(app.instance_path, 'config.py')):
+    if os.path.exists(os.path.join(app.instance_path, "config.py")):
         app.config.from_pyfile(os.path.join(app.instance_path, "config.py"))
 
     # Set root path (parent dir to recapi package)
     app.config["ROOT_PATH"] = os.path.abspath(os.path.join(app.root_path, os.pardir))
 
     # Configure logger
-    logfmt = '%(asctime)-15s - %(levelname)s: %(message)s'
-    datefmt = '%Y-%m-%d %H:%M:%S'
+    logfmt = "%(asctime)-15s - %(levelname)s: %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
 
     if app.config.get("DEBUG"):
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
@@ -95,14 +95,14 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        script_name = environ.get('HTTP_X_SCRIPT_NAME', '')
+        script_name = environ.get("HTTP_X_SCRIPT_NAME", "")
         if script_name:
-            environ['SCRIPT_NAME'] = script_name
-            path_info = environ['PATH_INFO']
+            environ["SCRIPT_NAME"] = script_name
+            path_info = environ["PATH_INFO"]
             if path_info.startswith(script_name):
-                environ['PATH_INFO'] = path_info[len(script_name):]
+                environ["PATH_INFO"] = path_info[len(script_name):]
 
-        scheme = environ.get('HTTP_X_SCHEME', '')
+        scheme = environ.get("HTTP_X_SCHEME", "")
         if scheme:
-            environ['wsgi.url_scheme'] = scheme
+            environ["wsgi.url_scheme"] = scheme
         return self.app(environ, start_response)
