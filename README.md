@@ -34,7 +34,7 @@ Command line interface for administration of the user data base.
 
 ## Setup
 
-Start serving the command-line API:
+Start serving the command-line API on a suitable port, e.g.:
 
 ```
     export FLASK_APP=recapi/user_cli.py FLASK_RUN_PORT=8083
@@ -42,27 +42,18 @@ Start serving the command-line API:
 
 ## Command line options
 
-    pipenv run flask adduser --user USER --display DISPLAY_NAME
+Prefix every command with `pipenv run flask`.
 
-Creates an user with username `USER`, and display name `DISPLAY_NAME`.
-Will prompt for password.
+Available commands:
 
+* `add --user USER --display DISPLAY_NAME`: Creates a new user. Will prompt for password.
 
-    pipenv run flask viewuser --user USER
+* `show --user USER`:  Displays user ID, username, displayname in stdout.
 
-Displays user ID, username, displayname in stdout.
+* `showall`: Shows the entire user data base.
 
+* `check --user USER`: Authenticates user `USER`. Will prompt for password.
 
-    pipenv run flask viewall
+* `deactivate --user USER`: Sets `USER`'s status to passive.
 
-Shows the entire user data base.
-
-
-    pipenv run flask checkuser --user USER
-
-Authenticates user `USER`. Will prompt for password.
-
-
-    pipenv run flask deleteuser --user USER
-
-Deletes user from data base.
+* `changepw --user USER`: Change password for `USER`.

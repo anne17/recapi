@@ -1,13 +1,13 @@
 """Instanciation of flask app."""
 
+import logging
 import os
 import sys
-import logging
 import time
 
 from flask import Flask
-from flask_session import Session
 from flask_cors import CORS
+from flask_session import Session
 
 
 def create_app():
@@ -62,6 +62,17 @@ def create_app():
     # Init session
     Session(app)
 
+    # Init database
+    from .models import DATABASE
+    DATABASE.init(
+        app.config.get("DB_NAME"),
+        user=app.config.get("DB_USER"),
+        host=app.config.get("DB_HOST"),
+        port=app.config.get("DB_PORT"))
+    # DATABASE.create_tables([Recipe, User])
+    app.config["SQLDB"] = DATABASE
+
+    # Register blueprints
     from .views import general, authentication, parse_html, recipe_data, documentation
     app.register_blueprint(general.bp)
     app.register_blueprint(recipe_data.bp)

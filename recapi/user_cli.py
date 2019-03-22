@@ -1,82 +1,83 @@
-import sys
-import os
-import click
-from getpass import getpass
-from flask import Flask
+"""Command line interface for administering the user data base."""
 
-from recapi.edit_user import UserDB
+import os
+
+import click
+from flask import Flask
+from getpass import getpass
+
+from recapi.models import DATABASE, usermodel
 
 app = Flask(__name__)
 
-# Get data base path from config
-if os.path.exists(os.path.join(os.path.dirname(app.config.root_path), 'config.py')) is False:
-    print("Config file 'config.py' is missing! Cannot run application.")
-    exit()
+# Set default config
+app.config.from_object("config")
 
-sys.path.append(os.path.dirname(app.config.root_path))
+# Overwrite with instance config
+if os.path.exists(os.path.join(app.instance_path, "config.py")):
+    app.config.from_pyfile(os.path.join(app.instance_path, "config.py"))
 
-from config import Config
-
-UserDB = UserDB(db_path=Config.DATABASE_PATH)
-
-
-@app.cli.command()
-def hello():
-    """Greet the user."""
-    click.echo('Hello!')
+DATABASE.init(
+    app.config.get("DB_NAME"),
+    user=app.config.get("DB_USER"),
+    host=app.config.get("DB_HOST"),
+    port=app.config.get("DB_PORT"))
+usermodel.User.create_table()
+app.config["SQLDB"] = DATABASE
 
 
 @app.cli.command()
-def viewall():
+def showall():
     """View entire database."""
-    users = UserDB.getall()
+    users = usermodel.show_all_users()
     if not users:
         click.echo("Data base is empty!")
     else:
-        for u in users:
-            click.echo(u)
+        for username, values in users.items():
+            click.echo(stringify_user_info(values))
 
 
 @app.cli.command()
-@click.option('--user', default="")
-def viewuser(user):
+@click.option("--user", default="")
+def show(user):
     """Get the user's data set."""
-    click.echo(UserDB.get(user))
+    userinfo = usermodel.show_user(user)
+    click.echo(stringify_user_info(userinfo))
 
 
 @app.cli.command()
-@click.option('--user', default="")
-@click.option('--display', default="")
-def adduser(user, display):
-    """Adds a user to the data base."""
+@click.option("--user", default="")
+@click.option("--display", default="")
+def add(user, display):
+    """Add a user to the data base."""
     pw = input_pw("Please select a password: ")
     pw2 = input_pw("Please confirm password: ")
     if pw != pw2:
         click.echo("Password not confirmed. Aborting.")
         exit()
     try:
-        UserDB.add_user(user, pw, display)
+        usermodel.add_user(user, pw, display)
         click.echo("Successfully added user: %s" % user)
     except Exception as e:
-        click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
+        click.echo("Error: %s" % e)
 
 
 @app.cli.command()
-@click.option('--user', default="")
-def checkuser(user):
+@click.option("--user", default="")
+def check(user):
     """Check if password for user is correct."""
     pw = input_pw()
     try:
-        if UserDB.check_user(user, pw):
+        if usermodel.show_user(user, pw):
             click.echo("Successfully authenticated user: %s" % user)
         else:
             click.echo("Invalid username or password!")
     except Exception as e:
-        click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
+        click.echo("Unexpected error occurred! %s" % e)
 
 
 @app.cli.command()
-@click.option('--user', default="")
+@click.option("--user", default="")
 def changepw(user):
     """Change password for user."""
     pw = input_pw("Please enter new password: ")
@@ -85,23 +86,33 @@ def changepw(user):
         click.echo("Password not confirmed. Aborting.")
         exit()
     try:
-        UserDB.update_pw(user, pw)
+        usermodel.update_password(user, pw)
         click.echo("Successfully changed password for user: %s" % user)
     except Exception as e:
-        click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
+        click.echo("Unexpected error occurred! %s" % e)
 
 
 @app.cli.command()
-@click.option('--user', default="")
-def deleteuser(user):
-    """Deletes a user from the data base."""
+@click.option("--user", default="")
+def deactivate(user):
+    """Set status passive on user."""
     try:
-        UserDB.delete_user(user)
-        click.echo("Deleted user: %s" % user)
+        usermodel.deactivate_user(user)
+        click.echo("Deactivated user: %s" % user)
     except Exception as e:
-        click.echo("Unexpected error occurred! %s" % sys.exc_info()[0])
+        click.echo("Unexpected error occurred! %s" % e)
 
 
 def input_pw(prompt="Password: "):
     """Prompt for password."""
     return getpass(prompt)
+
+
+def stringify_user_info(userdict):
+    """Turn user info into string."""
+    user_status = "active" if userdict.get("active") is True else "passive"
+    return 'username: "%s" displayname: "%s" status: "%s"' % (
+        userdict.get("username"),
+        userdict.get("displayname"),
+        user_status
+    )

@@ -2,7 +2,7 @@
 
 from flask import request, session, current_app, Blueprint
 
-from recapi.models.user import User
+from recapi.models.usermodel import User, get_user
 from recapi import utils
 
 bp = Blueprint("authentication", __name__)
@@ -26,13 +26,16 @@ def login():
     else:
         username = request.get_json().get("login")
         password = request.get_json().get("password")
-        user = User(username)
-        current_app.logger.debug(f"User: {user.username}, {user.displayname}, {user.is_authenticated(password)}")
+        try:
+            user = get_user(username)
+            current_app.logger.debug(f"User: {user.username}, {user.displayname}, {user.is_authenticated(password)}")
+        except User.DoesNotExist:
+            return utils.error_response("Invalid username or password!"), 401
 
         if user.is_authenticated(password):
             session["authorized"] = True
             session["user"] = user.displayname
-            session["uid"] = user.uid
+            session["uid"] = user.id
             current_app.logger.debug("User %s logged in successfully" % username)
             return utils.success_response("User %s logged in successfully!" % username,
                                           user=user.displayname)
