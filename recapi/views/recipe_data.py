@@ -3,9 +3,11 @@
 import os
 import traceback
 
-from flask import request, current_app, Blueprint
+from flask import request, current_app, Blueprint, session
+import peewee as pw
 
 from recapi import utils
+from recapi.models import recipemodel
 
 bp = Blueprint("recipe_data", __name__)
 
@@ -68,3 +70,36 @@ def get_recipe():
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to load recipe: {e}"), 400
+
+
+@bp.route("/save_recipe", methods=['POST'])
+@utils.gatekeeper
+def save_recpie():
+    """Save recipe to the data base."""
+    recipe_id = None
+    try:
+        data = request.get_json()
+        data["user"] = session.get("uid")
+        image_file = request.files.get("image")
+        print("\nImage %s", image_file)
+        recipe_id = recipemodel.add_recipe(data)
+        # Get filename and save image
+        if image_file:
+            filename = utils.make_filename(image_file, id=recipe_id)
+            print("\nFilename:", filename)
+            print("ID:", recipe_id)
+            utils.save_upload_file(image_file, filename, current_app.config.get("IMAGE_PATH"))
+            # Edit row to add image path
+            data["image"] = "img/" + filename
+            recipemodel.edit_recipe(data)
+        return utils.success_response(msg="Recipe saved")
+
+    except pw.IntegrityError:
+        return utils.error_response(f"Recipe title already exists!")
+
+    except Exception as e:
+        # ToDo: Delete image!
+        if recipe_id is not None:
+            recipemodel.delete_recipe(recipe_id)
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Failed to save data: {e}")

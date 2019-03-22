@@ -9,6 +9,9 @@ from flask import Flask
 from flask_cors import CORS
 from flask_session import Session
 
+from recapi.models import usermodel
+from recapi.models import recipemodel
+
 
 def create_app():
     """Instanciate app."""
@@ -69,8 +72,11 @@ def create_app():
         user=app.config.get("DB_USER"),
         host=app.config.get("DB_HOST"),
         port=app.config.get("DB_PORT"))
-    # DATABASE.create_tables([Recipe, User])
     app.config["SQLDB"] = DATABASE
+
+    # Create tables
+    usermodel.User.create_table()
+    recipemodel.Recipe.create_table()
 
     # Register blueprints
     from .views import general, authentication, parse_html, recipe_data, documentation
