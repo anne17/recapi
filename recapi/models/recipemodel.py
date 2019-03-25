@@ -3,6 +3,7 @@
 import datetime
 
 import peewee as pw
+from playhouse.shortcuts import model_to_dict, dict_to_model
 
 from recapi.models import BaseModel, usermodel
 
@@ -39,7 +40,7 @@ def add_recipe(data):
 
 def get_recipe(in_title):
     """Retrieve a recipe by title."""
-    return pw.model_to_dict(Recipe.get(Recipe.title == in_title))
+    return model_to_dict(Recipe.get(Recipe.title == in_title))
 
 
 def get_all_recipies():
@@ -54,7 +55,7 @@ def get_all_recipies():
 def edit_recipe(in_title, data):
     """Override data of an existing recipe."""
     recipe = Recipe.get(Recipe.title == in_title)
-    recipe = pw.dict_to_model(Recipe, data)
+    recipe = dict_to_model(Recipe, data)
     recipe.save()
 
 

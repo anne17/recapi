@@ -29,7 +29,7 @@ def recipe_data():
 def preview_data():
     """Generate recipe preview. Convert markdown data to html."""
     try:
-        data = utils.md2htmlform(request.get_json())
+        data = utils.md2htmlform(request.form.to_dict())
         image_file = request.files.get("image")
         if image_file:
             filename = utils.make_filename(image_file)
@@ -77,29 +77,30 @@ def get_recipe():
 def save_recpie():
     """Save recipe to the data base."""
     recipe_id = None
+    filename = None
     try:
-        data = request.get_json()
+        data = request.form.to_dict()
         data["user"] = session.get("uid")
         image_file = request.files.get("image")
-        print("\nImage %s", image_file)
         recipe_id = recipemodel.add_recipe(data)
         # Get filename and save image
         if image_file:
-            filename = utils.make_filename(image_file, id=recipe_id)
-            print("\nFilename:", filename)
-            print("ID:", recipe_id)
+            filename = utils.make_filename(image_file, id=str(recipe_id))
             utils.save_upload_file(image_file, filename, current_app.config.get("IMAGE_PATH"))
             # Edit row to add image path
             data["image"] = "img/" + filename
-            recipemodel.edit_recipe(data)
+            recipemodel.edit_recipe(data["title"], data)
         return utils.success_response(msg="Recipe saved")
 
     except pw.IntegrityError:
-        return utils.error_response(f"Recipe title already exists!")
+        return utils.error_response("Recipe title already exists!")
 
     except Exception as e:
-        # ToDo: Delete image!
+        # Delete recipe data and image
         if recipe_id is not None:
             recipemodel.delete_recipe(recipe_id)
+        if filename is not None:
+            filepath = os.path.join(current_app.config.get("IMAGE_PATH"), filename)
+            utils.remove_file(filepath)
         current_app.logger.error(traceback.format_exc())
-        return utils.error_response(f"Failed to save data: {e}")
+        return utils.error_response(f"Failed to save data: {e}"), 400

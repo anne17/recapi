@@ -86,7 +86,7 @@ def make_filename(infile, file_extension=None, id=False):
     if not file_extension:
         _filename, file_extension = os.path.splitext(infile.filename)
     if id:
-        filename = id + file_extension
+        filename = id
     else:
         filename = str(uuid.uuid1())
     return filename + file_extension
