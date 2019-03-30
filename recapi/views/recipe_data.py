@@ -30,7 +30,7 @@ def preview_data():
         data = utils.recipe2html(request.form.to_dict())
         image_file = request.files.get("image")
         if image_file:
-            filename = utils.make_filename(image_file)
+            filename = utils.make_random_filename(image_file)
             directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
             utils.save_upload_file(image_file, filename, directory)
             data["image"] = "tmp/" + filename
@@ -80,13 +80,7 @@ def add_recpie():
         data["user"] = session.get("uid")
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
-        # Get filename and save image
-        if image_file:
-            filename = utils.make_filename(image_file, id=str(recipe_id))
-            utils.save_upload_file(image_file, filename, current_app.config.get("IMAGE_PATH"))
-            # Edit row to add image path
-            data["image"] = "img/" + filename
-            recipemodel.edit_recipe(recipe_id, data)
+        save_image(data, recipe_id, image_file)
         return utils.success_response(msg="Recipe saved")
 
     except pw.IntegrityError:
@@ -112,18 +106,34 @@ def edit_recpie():
         # data["user"] = session.get("uid") # Make visible who edited last?
         image_file = request.files.get("image")
         recipemodel.edit_recipe(data["id"], data)
-        # Save image
-        if image_file:
-            filename = utils.make_filename(image_file, id=str(data["id"]))
-            utils.save_upload_file(image_file, filename, current_app.config.get("IMAGE_PATH"))
-            # Edit row to add image path
-            data["image"] = "img/" + filename
-            recipemodel.edit_recipe(data["id"], data)
+        save_image(data, data["id"], image_file)
         return utils.success_response(msg="Recipe saved")
 
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to save data: {e}"), 400
+
+
+def save_image(data, recipe_id, image_file):
+    """Save uploaded image in data base."""
+    if image_file:
+        # Get filename and save image
+        filename = utils.make_db_filename(image_file, id=str(recipe_id))
+        utils.save_upload_file(image_file, filename, current_app.config.get("IMAGE_PATH"))
+        # Edit row to add image path
+        data["image"] = "img/" + filename
+        recipemodel.edit_recipe(recipe_id, data)
+
+    # When recipe was parsed from external source, image is already uploaded
+    elif data.get("image") and data.get("changed_image"):
+        filename = utils.make_db_filename(data["image"], id=str(recipe_id))
+        # Get path to file and copy it from tmp to img folder
+        src_directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
+        src = os.path.join(src_directory, os.path.split(data["image"])[1])
+        utils.copy_file(src, current_app.config.get("IMAGE_PATH"), filename)
+        # Edit row to add image path
+        data["image"] = "img/" + filename
+        recipemodel.edit_recipe(recipe_id, data)
 
 
 @bp.route("/delete_recipe")

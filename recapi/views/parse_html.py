@@ -39,6 +39,8 @@ def parse_from_url():
         recipe["source"] = parser.url
         image_path = download_image(parser.image)
         recipe["image"] = image_path
+        if image_path:
+            recipe["changed_image"] = True
 
         return utils.success_response("Successfully extracted recipe.", data=recipe)
     else:
@@ -99,13 +101,13 @@ def download_image(image_url):
 
         # Get image data and save in tmp dir
         img_data = requests.get(image_url).content
-        filename = utils.make_filename("", file_extension=file_ending)
+        filename = utils.make_random_filename("", file_extension=file_ending)
         directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
         utils.save_upload_data(img_data, filename, directory)
 
         filepath = "tmp/" + filename
         return filepath
 
-    except Exception as e:
+    except Exception:
         current_app.logger.error(traceback.format_exc())
         return ""

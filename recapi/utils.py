@@ -2,6 +2,7 @@
 
 import functools
 import os
+import shutil
 import time
 import traceback
 import uuid
@@ -9,6 +10,7 @@ import uuid
 from validator_collection import checkers
 import markdown
 from flask import jsonify, current_app, session
+from werkzeug.datastructures import FileStorage
 
 
 IMAGE_FORMATS = {
@@ -49,19 +51,26 @@ def recipe2html(recipe):
     return recipe
 
 
-def make_filename(infile, file_extension=None, id=False):
-    """
-    Generate a (random) file name with extension from infile.
-
-    If id is supplied, the filename will be id + extension.
-    """
+def make_random_filename(infile, file_extension=None):
+    """Generate a random file name with extension from infile."""
     if not file_extension:
-        _filename, file_extension = os.path.splitext(infile.filename)
-    if id:
-        filename = id
-    else:
-        filename = str(uuid.uuid1())
+        file_extension = get_file_extension(infile)
+    filename = str(uuid.uuid1())
     return filename + file_extension
+
+
+def make_db_filename(filename, id):
+    """Generate a filename with id + file extension."""
+    file_extension = get_file_extension(filename)
+    return id + file_extension
+
+
+def get_file_extension(file):
+    """Get file extension for file (FileStorage or string with file name)."""
+    if isinstance(file, FileStorage):
+        return os.path.splitext(file.filename)[1]
+    else:
+        return os.path.splitext(file)[1]
 
 
 def save_upload_file(file, filename, upload_folder):
@@ -83,6 +92,19 @@ def save_upload_data(data, filename, upload_folder):
             os.makedirs(upload_folder)
         with open(os.path.join(upload_folder, filename), 'wb') as f:
             f.write(data)
+        return True
+    except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        raise e
+
+
+def copy_file(src, destfolder, destfilename):
+    """Copy file from src to destfolder with destfilename."""
+    try:
+        if not os.path.exists(destfolder):
+            os.makedirs(destfolder)
+        dest = os.path.join(destfolder, destfilename)
+        shutil.copyfile(src, dest)
         return True
     except Exception as e:
         current_app.logger.error(traceback.format_exc())

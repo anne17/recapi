@@ -58,7 +58,12 @@ def get_all_recipies():
 def edit_recipe(in_id, data):
     """Override data of an existing recipe. Find recipe by ID."""
     recipe = Recipe.get(Recipe.id == in_id)
-    recipe = dict_to_model(Recipe, data)
+    recipe.title = data.get("title")
+    recipe.image = data.get("image", "")
+    recipe.source = data.get("source", "")
+    recipe.ingredients = data.get("ingredients", "")
+    recipe.contents = data.get("contents", "")
+    recipe.portions = data.get("portions", 0)
     recipe.save()
 
 
