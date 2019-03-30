@@ -1,12 +1,10 @@
 """
 Default configuration for recAPI backed.
 
-Can be overwritten with default.py in instance folder.
+Can be overwritten with config.py in instance folder.
 """
 
 # Relative to application root
-DATABASE = "data/database.yaml"
-DATABASE_PATH = "data/database.sql"
 IMAGE_PATH = "data/img"
 
 # Relative to instance folder
