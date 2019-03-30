@@ -7,7 +7,6 @@ import traceback
 import uuid
 
 from validator_collection import checkers
-import yaml
 import markdown
 from flask import jsonify, current_app, session
 
@@ -17,12 +16,6 @@ IMAGE_FORMATS = {
     "image/png": "png",
     "image/gif": "gif"
 }
-
-
-def load_data(yamlfile):
-    """Load yaml file and return json object."""
-    with open(yamlfile, encoding="UTF-8") as f:
-        return yaml.load(f)
 
 
 def error_response(msg):
@@ -44,36 +37,15 @@ def success_response(msg, **kwargs):
     return jsonify(response)
 
 
-def md2htmlform(form):
-    """Convert markdown recipe data to form with html."""
-    data = {}
-    data["title"] = form.get("title")
-    data["portions"] = form.get("portions")
-    data["ingredients"] = md2html(form.get("ingredients"))
-    data["contents"] = md2html(form.get("contents"))
-    data["source"] = form.get("source")
-    data["image"] = form.get("image")
-    return data
-
-
 def md2html(data):
     """Convert markdown to html."""
     return markdown.markdown(data)
 
 
-def get_recipe_by_title(recipies, title, convert=False):
-    """Find recipe with matching title in data base."""
-    recipies = recipies.get("recipies")
-    recipe = {}
-
-    for r in recipies:
-        if r.get("title") == title:
-            recipe = r
-            break
-
-    if convert and recipe:
-        recipe["ingredients"] = md2html(recipe.get("ingredients", ""))
-        recipe["contents"] = md2html(recipe.get("contents", ""))
+def recipe2html(recipe):
+    """Convert markdown recipe fields into html."""
+    recipe["ingredients"] = md2html(recipe.get("ingredients", ""))
+    recipe["contents"] = md2html(recipe.get("contents", ""))
     return recipe
 
 

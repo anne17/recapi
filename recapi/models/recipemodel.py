@@ -48,13 +48,16 @@ def get_all_recipies():
     recipies = Recipe.select()
     data = []
     for recipe in recipies:
-        data.append(pw.model_to_dict(recipe))
+        r = model_to_dict(recipe)
+        # Remove password hash
+        r.get("created_by", {}).pop("password")
+        data.append(r)
     return data
 
 
-def edit_recipe(in_title, data):
-    """Override data of an existing recipe."""
-    recipe = Recipe.get(Recipe.title == in_title)
+def edit_recipe(in_id, data):
+    """Override data of an existing recipe. Find recipe by ID."""
+    recipe = Recipe.get(Recipe.id == in_id)
     recipe = dict_to_model(Recipe, data)
     recipe.save()
 

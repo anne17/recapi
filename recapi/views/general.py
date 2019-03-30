@@ -58,10 +58,3 @@ def clean_tmp_data():
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Cleanup failed: {e}"), 400
-
-
-@bp.route("/save_pretend")
-@utils.gatekeeper
-def save_pretend():
-    """Pretending to save data. For test purposes only."""
-    return utils.success_response("Pretended to save data!")

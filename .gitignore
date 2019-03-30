@@ -2,6 +2,9 @@
 data/database.sql
 flask_session
 
+# lock file
+Pipfile.lock
+
 # Server stuff
 .htaccess
 
