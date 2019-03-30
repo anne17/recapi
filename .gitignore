@@ -1,5 +1,4 @@
 # Data
-data/database.sql
 flask_session
 
 # lock file

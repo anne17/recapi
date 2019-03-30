@@ -4,11 +4,9 @@ Default configuration for recAPI backed.
 Can be overwritten with config.py in instance folder.
 """
 
-# Relative to application root
-IMAGE_PATH = "data/img"
-
-# Relative to instance folder
+# Paths relative to the instance folder
 TMP_DIR = "tmp"
+IMAGE_PATH = "img"
 
 ADMIN_PASSWORD = "password"
 
@@ -18,4 +16,4 @@ WSGI_PORT = 9005
 
 SECRET_KEY = "super secret key"
 SESSION_TYPE = "filesystem"
-SESSION_FILE_DIR = "data/flask_session"
+SESSION_FILE_DIR = "instance/flask_session"

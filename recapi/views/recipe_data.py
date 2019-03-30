@@ -91,7 +91,8 @@ def add_recpie():
         if recipe_id is not None:
             recipemodel.delete_recipe(recipe_id)
         if filename is not None:
-            filepath = os.path.join(current_app.config.get("IMAGE_PATH"), filename)
+            img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
+            filepath = os.path.join(img_path, filename)
             utils.remove_file(filepath)
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to save data: {e}"), 400
@@ -119,7 +120,8 @@ def save_image(data, recipe_id, image_file):
     if image_file:
         # Get filename and save image
         filename = utils.make_db_filename(image_file, id=str(recipe_id))
-        utils.save_upload_file(image_file, filename, current_app.config.get("IMAGE_PATH"))
+        img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
+        utils.save_upload_file(image_file, filename, img_path)
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.edit_recipe(recipe_id, data)
@@ -130,7 +132,8 @@ def save_image(data, recipe_id, image_file):
         # Get path to file and copy it from tmp to img folder
         src_directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
         src = os.path.join(src_directory, os.path.split(data["image"])[1])
-        utils.copy_file(src, current_app.config.get("IMAGE_PATH"), filename)
+        img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
+        utils.copy_file(src, img_path, filename)
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.edit_recipe(recipe_id, data)

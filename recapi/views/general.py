@@ -29,6 +29,11 @@ def handle_unauthorized(e):
     return utils.error_response("Unauthorized.")
 
 
+@bp.route('/defaultimg')
+def send_default_img():
+    return current_app.send_static_file("default.png")
+
+
 @bp.route('/img/<filename>')
 def send_img(filename):
     """Serve images."""
