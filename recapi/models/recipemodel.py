@@ -3,7 +3,7 @@
 import datetime
 
 import peewee as pw
-from playhouse.shortcuts import model_to_dict, dict_to_model
+from playhouse.shortcuts import model_to_dict
 
 from recapi.models import BaseModel, usermodel
 

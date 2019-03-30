@@ -7,7 +7,7 @@ info:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
   x-logo:
-    url: 'https://api.kalufs.lol/recapi/img/default.png'
+    url: 'https://api.kalufs.lol/recapi/defaultimg'
 servers:
   - url: 'https://api.kalufs.lol/recapi'
 tags:
@@ -55,7 +55,7 @@ paths:
 
   /api_spec:
     get:
-      summary: API spec
+      summary: API Spec
       description: View the API specification in JSON
       tags:
         - Documentation
@@ -130,7 +130,7 @@ paths:
 
   /check_authentication:
     post:
-      summary: Check authentication
+      summary: Check Authentication
       description: Check if current user is authorized in the active session.
       tags:
         - Authentication
@@ -485,7 +485,7 @@ paths:
 
   /parse_from_url:
     get:
-      summary: Parse recipe
+      summary: Parse Recipe
       description: Extract recipe data from the given URL and return it as JSON.
       tags:
         - Recipe Data
@@ -590,6 +590,15 @@ paths:
         '200':
           description: OK
 
+  /defaultimg:
+    get:
+      summary: Default Image File
+      tags:
+        - misc
+      responses:
+        '200':
+          description: OK
+
   /tmp:
     get:
       summary: Temporary File
@@ -610,7 +619,7 @@ paths:
 
   /clean_tmp_data:
     get:
-      summary: Clean temp files
+      summary: Clean Temp Files
       description: |
         Remove temporary data (usually image files) that have have passed their expiration date,
         i.e. that have not been modified in over a week.
