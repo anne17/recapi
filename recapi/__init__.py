@@ -70,6 +70,7 @@ def create_app():
     DATABASE.init(
         app.config.get("DB_NAME"),
         user=app.config.get("DB_USER"),
+        password=app.config.get("DB_PASSWORD"),
         host=app.config.get("DB_HOST"),
         port=app.config.get("DB_PORT"))
     app.config["SQLDB"] = DATABASE

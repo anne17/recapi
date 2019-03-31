@@ -37,7 +37,7 @@ def send_default_img():
 @bp.route('/img/<filename>')
 def send_img(filename):
     """Serve images."""
-    image_dir = os.path.join(current_app.config.get("ROOT_PATH"),
+    image_dir = os.path.join(current_app.instance_path,
                              current_app.config.get("IMAGE_PATH"))
     return send_from_directory(image_dir, filename)
 
