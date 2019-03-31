@@ -20,6 +20,7 @@ if os.path.exists(os.path.join(app.instance_path, "config.py")):
 DATABASE.init(
     app.config.get("DB_NAME"),
     user=app.config.get("DB_USER"),
+    password=app.config.get("DB_PASSWORD"),
     host=app.config.get("DB_HOST"),
     port=app.config.get("DB_PORT"))
 usermodel.User.create_table()
