@@ -43,9 +43,10 @@ def get_recipe(in_title):
     return model_to_dict(Recipe.get(Recipe.title == in_title))
 
 
-def get_all_recipies():
+def get_all_recipies(recipies=None):
     """Return all recipies in the database."""
-    recipies = Recipe.select()
+    if recipies is None:
+        recipies = Recipe.select()
     data = []
     for recipe in recipies:
         r = model_to_dict(recipe)

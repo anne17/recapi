@@ -150,3 +150,16 @@ def delete_recpie():
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to remove recipe: {e}"), 400
+
+
+@bp.route("/search")
+def search():
+    """Search recipe data base."""
+    try:
+        q = request.args.get("q")
+        query = recipemodel.Recipe.select().where(recipemodel.Recipe.title.contains(q))
+        data = recipemodel.get_all_recipies(recipies=query)
+        return utils.success_response(msg=f"Query: {q}", data=data)
+    except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Query failed: {e}"), 400
