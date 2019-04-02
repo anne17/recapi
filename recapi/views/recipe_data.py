@@ -8,6 +8,7 @@ import peewee as pw
 
 from recapi import utils
 from recapi.models import recipemodel
+from recapi.models.usermodel import User
 
 bp = Blueprint("recipe_data", __name__)
 
@@ -156,10 +157,19 @@ def delete_recpie():
 def search():
     """Search recipe data base."""
     try:
-        q = request.args.get("q")
-        query = recipemodel.Recipe.select().where(recipemodel.Recipe.title.contains(q))
+        s = request.args.get("q")
+        query = recipemodel.Recipe.select(
+        ).join(
+            User, pw.JOIN.LEFT_OUTER
+        ).where(
+            (recipemodel.Recipe.title.contains(s)) |
+            (recipemodel.Recipe.contents.contains(s)) |
+            (recipemodel.Recipe.ingredients.contains(s)) |
+            (recipemodel.Recipe.source.contains(s)) |
+            (User.username.contains(s))
+        )
         data = recipemodel.get_all_recipes(recipes=query)
-        return utils.success_response(msg=f"Query: {q}", data=data)
+        return utils.success_response(msg=f"Query: {s}", data=data)
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Query failed: {e}"), 400
