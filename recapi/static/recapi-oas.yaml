@@ -183,7 +183,7 @@ paths:
   /recipe_data:
     get:
       summary: Get Recipies
-      description: Get data for all recipies in the data base as a JSON object.
+      description: Get data for all recipes in the data base as a JSON object.
       tags:
         - Recipe Data
       responses:
@@ -195,29 +195,26 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: object
-                    properties:
-                      recipies:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            image:
-                              type: string
-                            contents:
-                              type: string
-                            ingredients:
-                              type: string
-                            source:
-                              type: string
-                            title:
-                              type: string
-                            portions:
-                              type: integer
-                            tags:
-                              type: array
-                              items:
-                                type: string
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        image:
+                          type: string
+                        contents:
+                          type: string
+                        ingredients:
+                          type: string
+                        source:
+                          type: string
+                        title:
+                          type: string
+                        portions:
+                          type: integer
+                        tags:
+                          type: array
+                          items:
+                            type: string
                   message:
                     type: string
                   status:
@@ -226,65 +223,63 @@ paths:
                 '0':
                   value: |
                     {
-                      "data": {
-                        "recipies": [
-                          {
-                            "contents": "1.   Tina\närtorna.\n2.   Sätt ugnen på\n225°C.\n3.   Koka pastan enligt anvisningen på\nförpackningen. Låt rinna av.\n4.   Strimla baconet\noch stek i en stekpanna.\n5.   Vispa ihop crème\nfraiche, mjölk och ägg. Salta och peppra.\n6.\nHäll pastan i en smord ugnssäker form och\nvänd ner bacon och ärtor. Häll över\näggstanningen.\n7.   Riv osten i bitar och lägg\npå gratängen och gratinera högt upp i ugnen\nca 20 minuter, tills den får färg.\n8.   Skär\ntomaterna i bitar och servera dem till\ngratängen.\n",
-                            "image": "img/pastagratang-med-bacon-722019.jpg",
-                            "ingredients": "*\n250 g gröna ärter\n*   4 port pasta\n(farfalle)\n*   2 förp bacon (à 140 g)\n*   2 dl\ncrème fraiche\n*   2 dl mjölk\n*   2 ägg\n*\n1/2 tsk salt\n*   2 krm peppar\n*   1 msk smör till\nformen\n*   4 skivor cheddarost\n*   3\ntomater\n",
-                            "portions": 4,
-                            "source": "https://www.ica.se/recept/pastagratang-med-bacon-722019/",
-                            "tags": [
-                              "middag"
-                            ],
-                            "title": "Pastagratäng\nmed bacon"
-                          },
-                          {
-                            "contents": "1. Skala och hacka vitlöken.\nSkala morötter och palsternackor och skär dem\ni\nbitar. Grovstrimla purjolöken.\n2. Koka riset enligt\nanvisningen på förpackningen.\n3. Stek färsen\ni smör i en stekpanna. Lägg i\nvitlöken och\nlåt den fräsa med.\n4. Lägg över i en\ngryta. Tillsätt morötter,\npalsternacka, krossade\ntomater, chilipulver, kanel, smulad buljongtärning och\n5 dl\nvatten.\n5. Skölj kikärtorna i kallt vatten\noch rör ner dem i grytan. Låt allt koka\nca 15\nmin.\n6. Lägg i purjolöken och låt koka\nytterligare 5 min.\n7. Smaksätt med salt och peppar.\nRör ner persiljan.\n8. Servera med en klick crème\nfraiche.\n",
-                            "image": "img/chili-kikartor.jpg",
-                            "ingredients": "*\nris\n* 400 g nötfärs\n* 2 vitlöksklyftor\n* 2\nmorötter\n* 2 palsternackor\n* 1 purjolök\n* 400 g\nkrossade tomater\n* 2 burkar kikärtor à ca 400\ng\n* 2 tsk chilipulver\n* 1 nypa kanel\n* 1 tärning\nköttbuljong\n* ½ dl hackad färsk persilja\n*\n2 dl Arla Köket lätt crème fraiche tomat &\nbasilika\n* smör\n* salt och\npeppar\n",
-                            "portions": 6,
-                            "source": "https://www.arla.se/recept/chili-con-carne-med-kikarter/",
-                            "tags": [
-                              "middag",
-                              "köttfärs"
-                            ],
-                            "title": "Chili\ncon carne med kikärtor"
-                          },
-                          {
-                            "contents": "1. Skär\nlagom tunna skivor av brödet.\n2. Bre lagom mycket\nsmör på varje skiva.\n3. Lägg på\n**mycket** ost.\n\nKlart! Smakar extragott med några\nskivor gurka eller paprika på!\n",
-                            "ingredients": "*\nbröd\n* ost\n*\nsmör\n",
-                            "portions": 4,
-                            "source": "Annes\nmamma",
-                            "tags": [
-                              "middag",
-                              "snabblagat"
-                            ],
-                            "title": "Mackor med\nost"
-                          },
-                          {
-                            "image": "img/couscous-med-gronsaker-och-halloumi.jpg",
-                            "portions": 4,
-                            "source": "https://alltommat.se/recept/couscous-med-gronsaker-och-halloumi/",
-                            "tags": [
-                              "middag",
-                              "vegetariskt"
-                            ],
-                            "title": "Couscous\nmed grönsaker och\nhalloumi"
-                          },
-                          {
-                            "image": "img/mug-cake.jpg",
-                            "portions": 1,
-                            "source": "https://www.kungsornen.se/recept/kakor/mjuka-kakor/mugcake/",
-                            "tags": [
-                              "dessert",
-                              "kaka",
-                              "snabblagat"
-                            ],
-                            "title": "Mug\ncake"
-                          }
-                        ]
-                      },
+                      "data": [
+                        {
+                          "contents": "1.   Tina\närtorna.\n2.   Sätt ugnen på\n225°C.\n3.   Koka pastan enligt anvisningen på\nförpackningen. Låt rinna av.\n4.   Strimla baconet\noch stek i en stekpanna.\n5.   Vispa ihop crème\nfraiche, mjölk och ägg. Salta och peppra.\n6.\nHäll pastan i en smord ugnssäker form och\nvänd ner bacon och ärtor. Häll över\näggstanningen.\n7.   Riv osten i bitar och lägg\npå gratängen och gratinera högt upp i ugnen\nca 20 minuter, tills den får färg.\n8.   Skär\ntomaterna i bitar och servera dem till\ngratängen.\n",
+                          "image": "img/pastagratang-med-bacon-722019.jpg",
+                          "ingredients": "*\n250 g gröna ärter\n*   4 port pasta\n(farfalle)\n*   2 förp bacon (à 140 g)\n*   2 dl\ncrème fraiche\n*   2 dl mjölk\n*   2 ägg\n*\n1/2 tsk salt\n*   2 krm peppar\n*   1 msk smör till\nformen\n*   4 skivor cheddarost\n*   3\ntomater\n",
+                          "portions": 4,
+                          "source": "https://www.ica.se/recept/pastagratang-med-bacon-722019/",
+                          "tags": [
+                            "middag"
+                          ],
+                          "title": "Pastagratäng med bacon"
+                        },
+                        {
+                          "contents": "1. Skala och hacka vitlöken.\nSkala morötter och palsternackor och skär dem\ni\nbitar. Grovstrimla purjolöken.\n2. Koka riset enligt\nanvisningen på förpackningen.\n3. Stek färsen\ni smör i en stekpanna. Lägg i\nvitlöken och\nlåt den fräsa med.\n4. Lägg över i en\ngryta. Tillsätt morötter,\npalsternacka, krossade\ntomater, chilipulver, kanel, smulad buljongtärning och\n5 dl\nvatten.\n5. Skölj kikärtorna i kallt vatten\noch rör ner dem i grytan. Låt allt koka\nca 15\nmin.\n6. Lägg i purjolöken och låt koka\nytterligare 5 min.\n7. Smaksätt med salt och peppar.\nRör ner persiljan.\n8. Servera med en klick crème\nfraiche.\n",
+                          "image": "img/chili-kikartor.jpg",
+                          "ingredients": "*\nris\n* 400 g nötfärs\n* 2 vitlöksklyftor\n* 2\nmorötter\n* 2 palsternackor\n* 1 purjolök\n* 400 g\nkrossade tomater\n* 2 burkar kikärtor à ca 400\ng\n* 2 tsk chilipulver\n* 1 nypa kanel\n* 1 tärning\nköttbuljong\n* ½ dl hackad färsk persilja\n*\n2 dl Arla Köket lätt crème fraiche tomat &\nbasilika\n* smör\n* salt och\npeppar\n",
+                          "portions": 6,
+                          "source": "https://www.arla.se/recept/chili-con-carne-med-kikarter/",
+                          "tags": [
+                            "middag",
+                            "köttfärs"
+                          ],
+                          "title": "Chili con carne med kikärtor"
+                        },
+                        {
+                          "contents": "1. Skär\nlagom tunna skivor av brödet.\n2. Bre lagom mycket\nsmör på varje skiva.\n3. Lägg på\n**mycket** ost.\n\nKlart! Smakar extragott med några\nskivor gurka eller paprika på!\n",
+                          "ingredients": "*\nbröd\n* ost\n*\nsmör\n",
+                          "portions": 4,
+                          "source": "Annes mamma",
+                          "tags": [
+                            "middag",
+                            "snabblagat"
+                          ],
+                          "title": "Mackor med ost"
+                        },
+                        {
+                          "image": "img/couscous-med-gronsaker-och-halloumi.jpg",
+                          "portions": 4,
+                          "source": "https://alltommat.se/recept/couscous-med-gronsaker-och-halloumi/",
+                          "tags": [
+                            "middag",
+                            "vegetariskt"
+                          ],
+                          "title": "Couscous med grönsaker och halloumi"
+                        },
+                        {
+                          "image": "img/mug-cake.jpg",
+                          "portions": 1,
+                          "source": "https://www.kungsornen.se/recept/kakor/mjuka-kakor/mugcake/",
+                          "tags": [
+                            "dessert",
+                            "kaka",
+                            "snabblagat"
+                          ],
+                          "title": "Mug cake"
+                        }
+                      ],
                       "message": "Data loaded",
                       "status": "success"
                     }

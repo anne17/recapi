@@ -16,7 +16,7 @@ bp = Blueprint("recipe_data", __name__)
 def recipe_data():
     """Return all available recipe data."""
     try:
-        data = recipemodel.get_all_recipies()
+        data = recipemodel.get_all_recipes()
         return utils.success_response(msg="Data loaded", data=data)
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -158,7 +158,7 @@ def search():
     try:
         q = request.args.get("q")
         query = recipemodel.Recipe.select().where(recipemodel.Recipe.title.contains(q))
-        data = recipemodel.get_all_recipies(recipies=query)
+        data = recipemodel.get_all_recipes(recipes=query)
         return utils.success_response(msg=f"Query: {q}", data=data)
     except Exception as e:
         current_app.logger.error(traceback.format_exc())

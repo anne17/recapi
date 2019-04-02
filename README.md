@@ -1,6 +1,6 @@
 # recAPI
 
-Flask REST-API for storing, editing and searching recipies.
+Flask REST-API for storing, editing and searching recipes.
 
 
 ## Prerequisites

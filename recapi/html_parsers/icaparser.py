@@ -11,7 +11,7 @@ text_maker.emphasis_mark = "*"
 
 
 class ICAParser(GeneralParser):
-    """Parser for recipies at ica.se."""
+    """Parser for recipes at ica.se."""
 
     domain = "ica.se"
     name = "ICA"

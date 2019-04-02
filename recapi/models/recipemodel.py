@@ -43,12 +43,12 @@ def get_recipe(in_title):
     return model_to_dict(Recipe.get(Recipe.title == in_title))
 
 
-def get_all_recipies(recipies=None):
-    """Return all recipies in the database."""
-    if recipies is None:
-        recipies = Recipe.select()
+def get_all_recipes(recipes=None):
+    """Return all recipes in the database."""
+    if recipes is None:
+        recipes = Recipe.select()
     data = []
-    for recipe in recipies:
+    for recipe in recipes:
         r = model_to_dict(recipe)
         # Remove password hash
         r.get("created_by", {}).pop("password")

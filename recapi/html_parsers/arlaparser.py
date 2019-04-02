@@ -11,7 +11,7 @@ text_maker.ignore_images = True
 
 
 class ArlaParser(GeneralParser):
-    """Parser for recipies at ica.se."""
+    """Parser for recipes at ica.se."""
 
     domain = "arla.se"
     name = "Arla"
