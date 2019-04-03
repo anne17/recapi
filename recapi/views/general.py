@@ -31,6 +31,7 @@ def handle_unauthorized(e):
 
 @bp.route('/defaultimg')
 def send_default_img():
+    """Serve the default recipe image."""
     return current_app.send_static_file("default.png")
 
 

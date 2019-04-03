@@ -79,6 +79,17 @@ def create_app():
     usermodel.User.create_table()
     recipemodel.Recipe.create_table()
 
+    @app.before_request
+    def before_request():
+        """Connect to database before request."""
+        app.config.get("SQLDB").connect()
+
+    @app.after_request
+    def after_request(response):
+        """Close connection to database after request."""
+        app.config.get("SQLDB").close()
+        return response
+
     # Register blueprints
     from .views import general, authentication, parse_html, recipe_data, documentation
     app.register_blueprint(general.bp)
