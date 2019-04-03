@@ -19,6 +19,8 @@ class Recipe(BaseModel):
     portions = pw.IntegerField()
     created_by = pw.ForeignKeyField(usermodel.User)
     created = pw.DateTimeField()
+    changed_by = pw.ForeignKeyField(usermodel.User)
+    changed = pw.DateTimeField()
     # tags = pw.ForeignKeyField()
 
 
@@ -32,7 +34,9 @@ def add_recipe(data):
         contents=data.get("contents", ""),
         portions=data.get("portions", 0),
         created=datetime.datetime.now(),
-        created_by=data.get("user")
+        created_by=data.get("user"),
+        changed_by=None,
+        changed=None
     )
     recipe.save()
     return recipe.id
@@ -52,6 +56,8 @@ def get_all_recipes(recipes=None):
         r = model_to_dict(recipe)
         # Remove password hash
         r.get("created_by", {}).pop("password")
+        if r.get("changed_by") is not None:
+            r.get("changed_by", {}).pop("password")
         data.append(r)
     return data
 
@@ -65,6 +71,8 @@ def edit_recipe(in_id, data):
     recipe.ingredients = data.get("ingredients", "")
     recipe.contents = data.get("contents", "")
     recipe.portions = data.get("portions", 0)
+    recipe.changed_by = data.get("user")
+    recipe.changed = datetime.datetime.now()
     recipe.save()
 
 

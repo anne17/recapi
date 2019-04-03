@@ -64,6 +64,9 @@ def get_recipe_from_db(convert=False):
             return utils.error_response(f"Could not find recipe '{title}'."), 404
         # Remove password hash from response
         recipe.get("created_by", {}).pop("password")
+        if recipe.get("changed_by", {}) is not None:
+            recipe.get("changed_by", {}).pop("password")
+
         return utils.success_response(msg="Data loaded", data=recipe)
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -105,7 +108,7 @@ def edit_recpie():
     """Edit a recipe that already exists in the data base."""
     try:
         data = request.form.to_dict()
-        # data["user"] = session.get("uid") # Make visible who edited last?
+        data["user"] = session.get("uid")  # Make visible which user edited last
         image_file = request.files.get("image")
         recipemodel.edit_recipe(data["id"], data)
         save_image(data, data["id"], image_file)
