@@ -76,8 +76,10 @@ def create_app():
     app.config["SQLDB"] = DATABASE
 
     # Create tables
+    app.config.get("SQLDB").connect()
     usermodel.User.create_table()
     recipemodel.Recipe.create_table()
+    app.config.get("SQLDB").close()
 
     @app.before_request
     def before_request():
