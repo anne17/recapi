@@ -163,7 +163,7 @@ def search():
         s = request.args.get("q")
         query = recipemodel.Recipe.select(
         ).join(
-            User, pw.JOIN.LEFT_OUTER
+            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by)
         ).where(
             (recipemodel.Recipe.title.contains(s)) |
             (recipemodel.Recipe.contents.contains(s)) |
