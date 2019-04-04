@@ -1,6 +1,7 @@
 """Recipe database model."""
 
 import datetime
+import re
 
 import peewee as pw
 from playhouse.shortcuts import model_to_dict
@@ -16,23 +17,26 @@ class Recipe(BaseModel):
     source = pw.TextField()
     ingredients = pw.TextField()
     contents = pw.TextField()
+    portions_text = pw.CharField(max_length="20")
     portions = pw.IntegerField()
     created_by = pw.ForeignKeyField(usermodel.User)
     created = pw.DateTimeField()
-    changed_by = pw.ForeignKeyField(usermodel.User)
-    changed = pw.DateTimeField()
+    changed_by = pw.ForeignKeyField(usermodel.User, null=True)
+    changed = pw.DateTimeField(null=True)
     # tags = pw.ForeignKeyField()
 
 
 def add_recipe(data):
     """Add recipe to database."""
+    portions = portion_str_to_number(data.get("portions_text", ""))
     recipe = Recipe(
         title=data.get("title"),
         image=data.get("image", ""),
         source=data.get("source", ""),
         ingredients=data.get("ingredients", ""),
         contents=data.get("contents", ""),
-        portions=data.get("portions", 0),
+        portions_text=data.get("portions_text", ""),
+        portions=portions,
         created=datetime.datetime.now(),
         created_by=data.get("user"),
         changed_by=None,
@@ -70,7 +74,8 @@ def edit_recipe(in_id, data):
     recipe.source = data.get("source", "")
     recipe.ingredients = data.get("ingredients", "")
     recipe.contents = data.get("contents", "")
-    recipe.portions = data.get("portions", 0)
+    recipe.portions_text = data.get("portions_text", "")
+    recipe.portions = portion_str_to_number(data.get("portions_text", ""))
     recipe.changed_by = data.get("user")
     recipe.changed = datetime.datetime.now()
     recipe.save()
@@ -80,3 +85,11 @@ def delete_recipe(in_id):
     """Find recipe by id and remove from data base."""
     recipe = Recipe.get(Recipe.id == in_id)
     return recipe.delete_instance()
+
+
+def portion_str_to_number(in_str):
+    """Extract a numerical value from a portion_text field."""
+    match = re.search(r"(\d+)", in_str)
+    if match is not None:
+        return int(match.group(1))
+    return 0
