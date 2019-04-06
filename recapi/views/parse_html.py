@@ -37,6 +37,7 @@ def parse_from_url():
         recipe["contents"] = parser.contents
         recipe["ingredients"] = parser.ingredients
         recipe["source"] = parser.url
+        recipe["portions_text"] = parser.portions
         image_path = download_image(parser.image)
         recipe["image"] = image_path
         if image_path:

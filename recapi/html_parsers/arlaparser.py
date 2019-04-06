@@ -1,5 +1,9 @@
 """Arla parser class."""
 
+import re
+import traceback
+
+from flask import current_app
 import html2text
 
 from recapi.html_parsers import GeneralParser
@@ -25,6 +29,7 @@ class ArlaParser(GeneralParser):
         self.get_image()
         self.get_ingredients()
         self.get_contents()
+        self.get_portions()
 
     def get_title(self):
         """Get recipe title."""
@@ -32,7 +37,11 @@ class ArlaParser(GeneralParser):
 
     def get_image(self):
         """Get recipe main image."""
-        self.image = self.soup.find(class_="image-box-recipe__image focuspoint").find("img").get("src", "")
+        try:
+            self.image = self.soup.find(class_="image-box-recipe__image").find("img").get("src", "")
+        except Exception:
+            current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
+            self.image = ""
 
     def get_ingredients(self):
         """Get recipe ingredients list."""
@@ -45,3 +54,23 @@ class ArlaParser(GeneralParser):
         """Get recipe description."""
         contents = self.soup.find(class_="instructions-area__text")
         self.contents = text_maker.handle(str(contents)).strip()
+        if not contents:
+            contents = self.soup.find(class_="instructions-area__steps")
+            contents = text_maker.handle(str(contents)).strip()
+            # Remove indentation
+            self.contents = re.sub(r"\n{2}\s+", r"\n", contents)
+
+    def get_portions(self):
+        """Get number of portions."""
+        # Portions in plain text
+        portions = self.soup.find(class_="servings-selector__label")
+        if portions:
+            self.portions = portions.text.lstrip("Receptet gäller för ")
+            return
+        # Portions in selector
+        portions = self.soup.find(class_="servings-selector__select").find("option", {"selected": "selected"})
+        if portions:
+            self.portions = portions.text.rstrip(" port")
+            return
+        # No info about portions
+        self.portions = ""

@@ -37,3 +37,8 @@ class GeneralParser(ABC):
     def get_contents(self):
         """Get recipe description."""
         pass
+
+    @abstractmethod
+    def get_portions(self):
+        """Get number of portions for recipe."""
+        pass

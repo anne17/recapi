@@ -25,6 +25,7 @@ class ICAParser(GeneralParser):
         self.get_image()
         self.get_ingredients()
         self.get_contents()
+        self.get_portions()
 
     def get_title(self):
         """Get recipe title."""
@@ -46,4 +47,16 @@ class ICAParser(GeneralParser):
     def get_contents(self):
         """Get recipe description."""
         contents = self.soup.find(class_="recipe-howto-steps").find("ol")
-        self.contents = text_maker.handle(str(contents)).strip()
+        contents = text_maker.handle(str(contents)).strip()
+        # Remove indentation
+        self.contents = re.sub(r"\n\s+", r"\n", contents)
+
+    def get_portions(self):
+        """Get number of portions for recipe."""
+        portions = self.soup.find(class_="servings-picker__servings")
+        print()
+        print(portions)
+        if portions:
+            self.portions = portions.text
+            return
+        self.portions = ""
