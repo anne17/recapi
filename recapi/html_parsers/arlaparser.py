@@ -33,7 +33,11 @@ class ArlaParser(GeneralParser):
 
     def get_title(self):
         """Get recipe title."""
-        self.title = self.soup.find(class_="recipe-header__heading").text
+        try:
+            self.title = self.soup.find(class_="recipe-header__heading").text
+        except Exception:
+            current_app.logger.error(f"Could not extract title: {traceback.format_exc()}")
+            self.title = ""
 
     def get_image(self):
         """Get recipe main image."""
@@ -45,32 +49,42 @@ class ArlaParser(GeneralParser):
 
     def get_ingredients(self):
         """Get recipe ingredients list."""
-        ingredients = self.soup.find(class_="recipe-ingredients")
-        ingredients = ingredients.find_all(["li"])
-        ingredients = "".join(str(i) for i in ingredients)
-        self.ingredients = text_maker.handle(ingredients).strip()
+        try:
+            ingredients = self.soup.find(class_="recipe-ingredients")
+            ingredients = ingredients.find_all(["li"])
+            ingredients = "".join(str(i) for i in ingredients)
+            self.ingredients = text_maker.handle(ingredients).strip("\n")
+        except Exception:
+            current_app.logger.error(f"Could not extract ingredients: {traceback.format_exc()}")
+            self.ingredients = ""
 
     def get_contents(self):
         """Get recipe description."""
-        contents = self.soup.find(class_="instructions-area__text")
-        self.contents = text_maker.handle(str(contents)).strip()
-        if not contents:
-            contents = self.soup.find(class_="instructions-area__steps")
-            contents = text_maker.handle(str(contents)).strip()
-            # Remove indentation
-            self.contents = re.sub(r"\n{2}\s+", r"\n", contents)
+        try:
+            contents = self.soup.find(class_="instructions-area__text")
+            self.contents = text_maker.handle(str(contents)).strip()
+            if not contents:
+                contents = self.soup.find(class_="instructions-area__steps")
+                contents = text_maker.handle(str(contents)).strip()
+                # Remove indentation
+                self.contents = re.sub(r"\n{2}\s+", r"\n", contents)
+        except Exception:
+            current_app.logger.error(f"Could not extract contents: {traceback.format_exc()}")
+            self.contents = ""
 
     def get_portions(self):
         """Get number of portions."""
-        # Portions in plain text
-        portions = self.soup.find(class_="servings-selector__label")
-        if portions:
-            self.portions = portions.text.lstrip("Receptet gäller för ")
-            return
-        # Portions in selector
-        portions = self.soup.find(class_="servings-selector__select").find("option", {"selected": "selected"})
-        if portions:
-            self.portions = portions.text.rstrip(" port")
-            return
-        # No info about portions
-        self.portions = ""
+        try:
+            # Portions in plain text
+            portions = self.soup.find(class_="servings-selector__label")
+            if portions:
+                self.portions = portions.text.lstrip("Receptet gäller för ")
+                return
+            # Portions in selector
+            portions = self.soup.find(class_="servings-selector__select").find("option", {"selected": "selected"})
+            if portions:
+                self.portions = portions.text.rstrip(" port")
+                return
+        except Exception:
+            current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
+            self.portions = ""
