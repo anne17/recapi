@@ -46,7 +46,7 @@ Prefix every command with `pipenv run flask`.
 
 Available commands:
 
-* `add --user USER --display DISPLAY_NAME`: Creates a new user. Will prompt for password.
+* `add --user USER --display DISPLAY_NAME --admin true|false`: Creates a new user. Will prompt for password.
 
 * `show --user USER`:  Displays user ID, username, displayname in stdout.
 

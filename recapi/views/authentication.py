@@ -13,7 +13,8 @@ def check_authentication():
     """Check if current user is authorized in the active session."""
     if session.get("authorized"):
         current_app.logger.debug("User authorized: %s" % session.get("user"))
-        return utils.success_response("User authorized", authenticated=True, user=session.get("user"))
+        return utils.success_response("User authorized", authenticated=True,
+                                      user=session.get("user"), admin=session.get("admin"))
     else:
         return utils.success_response("Access denied", authenticated=False)
 
@@ -36,6 +37,7 @@ def login():
             session["authorized"] = True
             session["user"] = user.displayname
             session["uid"] = user.id
+            session["admin"] = user.admin
             current_app.logger.debug("User %s logged in successfully" % username)
             return utils.success_response("User %s logged in successfully!" % username,
                                           user=user.displayname)

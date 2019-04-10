@@ -62,12 +62,12 @@ if __name__ == '__main__':
     # )
     # update_recipes()
 
-    playhouse.migrate.migrate(
-        migrator.add_column("user", "admin", pw.BooleanField(default=False)),
-    )
-
-    update_users()
-
-    playhouse.migrate.migrate(
-        migrator.add_column("recipe", "published", pw.BooleanField(default=True)),
-    )
+    # playhouse.migrate.migrate(
+    #     migrator.add_column("user", "admin", pw.BooleanField(default=False)),
+    # )
+    #
+    # update_users()
+    #
+    # playhouse.migrate.migrate(
+    #     migrator.add_column("recipe", "published", pw.BooleanField(default=True)),
+    # )
