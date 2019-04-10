@@ -18,7 +18,7 @@ def recipe_data():
     """Return all available recipe data."""
     try:
         data = recipemodel.get_all_recipes()
-        return utils.success_response(msg="Data loaded", data=data)
+        return utils.success_response(msg="Data loaded", data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to load data: {e}")
@@ -172,7 +172,7 @@ def search():
             (User.username.contains(s))
         )
         data = recipemodel.get_all_recipes(recipes=query)
-        return utils.success_response(msg=f"Query: {s}", data=data)
+        return utils.success_response(msg=f"Query: {s}", data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Query failed: {e}"), 400

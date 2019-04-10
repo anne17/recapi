@@ -63,6 +63,8 @@ def get_all_recipes(recipes=None):
         if r.get("changed_by") is not None:
             r.get("changed_by", {}).pop("password")
         data.append(r)
+    # Reverse list to display the newest recipe first
+    data.reverse()
     return data
 
 
