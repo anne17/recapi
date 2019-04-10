@@ -23,6 +23,7 @@ class Recipe(BaseModel):
     created = pw.DateTimeField()
     changed_by = pw.ForeignKeyField(usermodel.User, null=True)
     changed = pw.DateTimeField(null=True)
+    published = pw.BooleanField(default=True)
     # tags = pw.ForeignKeyField()
 
 
@@ -40,7 +41,8 @@ def add_recipe(data):
         created=datetime.datetime.now(),
         created_by=data.get("user"),
         changed_by=None,
-        changed=None
+        changed=None,
+        published=data.get("published", True)
     )
     recipe.save()
     return recipe.id

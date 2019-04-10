@@ -34,6 +34,15 @@ def update_recipes():
         recipe.save()
 
 
+def update_users():
+    """Example: convert all roles to admin."""
+    from recapi.models import usermodel
+    users = usermodel.User.select()
+    for user in users:
+        user.admin = True
+        user.save()
+
+
 if __name__ == '__main__':
     init_db()
 
@@ -51,5 +60,14 @@ if __name__ == '__main__':
     #     # Drop column
     #     # migrator.drop_column("recipe", "changed_by"),
     # )
-
     # update_recipes()
+
+    playhouse.migrate.migrate(
+        migrator.add_column("user", "admin", pw.BooleanField(default=False)),
+    )
+
+    update_users()
+
+    playhouse.migrate.migrate(
+        migrator.add_column("recipe", "published", pw.BooleanField(default=True)),
+    )

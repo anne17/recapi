@@ -12,6 +12,7 @@ class User(BaseModel):
     displayname = pw.CharField()
     username = pw.CharField(unique=True, max_length="20")
     password = pw.CharField()
+    admin = pw.BooleanField(default=False)
     active = pw.BooleanField()
 
     def is_authenticated(self, check_password):
@@ -21,13 +22,14 @@ class User(BaseModel):
         return check_password_hash(self.password, check_password)
 
 
-def add_user(username, password, displayname):
+def add_user(username, password, displayname, admin=False):
     """Add new user to db."""
     try:
         user = User(
             username=username,
             password=generate_password_hash(password),
             displayname=displayname,
+            admin=admin,
             active=True
         )
         user.save()
