@@ -24,6 +24,7 @@ class Recipe(BaseModel):
     changed_by = pw.ForeignKeyField(usermodel.User, null=True)
     changed = pw.DateTimeField(null=True)
     published = pw.BooleanField(default=True)
+    suggestor = pw.CharField(max_length="100", null=True)
     # tags = pw.ForeignKeyField()
 
 
@@ -42,7 +43,8 @@ def add_recipe(data):
         created_by=data.get("user"),
         changed_by=None,
         changed=None,
-        published=data.get("published", True)
+        published=data.get("published", True),
+        suggestor=data.get("suggestor", None)
     )
     recipe.save()
     return recipe.id
@@ -53,10 +55,11 @@ def get_recipe(in_title):
     return model_to_dict(Recipe.get(Recipe.title == in_title))
 
 
-def get_all_recipes(recipes=None):
+def get_all_recipes(recipes=None, published=True):
     """Return all recipes in the database."""
     if recipes is None:
-        recipes = Recipe.select()
+        recipes = Recipe.select().where(
+            Recipe.published == published)
     data = []
     for recipe in recipes:
         r = model_to_dict(recipe)

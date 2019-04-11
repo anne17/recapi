@@ -68,6 +68,6 @@ if __name__ == '__main__':
     #
     # update_users()
     #
-    # playhouse.migrate.migrate(
-    #     migrator.add_column("recipe", "published", pw.BooleanField(default=True)),
-    # )
+    playhouse.migrate.migrate(
+        migrator.add_column("recipe", "suggestor", pw.CharField(max_length="100", null=True))
+    )

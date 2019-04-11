@@ -17,7 +17,8 @@ bp = Blueprint("recipe_data", __name__)
 def recipe_data():
     """Return all available recipe data."""
     try:
-        data = recipemodel.get_all_recipes()
+        published = request.args.get("published", "true").lower() == "true"
+        data = recipemodel.get_all_recipes(published=published)
         return utils.success_response(msg="Data loaded", data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -102,7 +103,7 @@ def add_recpie():
         return utils.error_response(f"Failed to save data: {e}"), 400
 
 
-@bp.route("/edit_recipe", methods=['POST'])
+@bp.route("/edit_recipe", methods=["POST"])
 @utils.gatekeeper
 def edit_recpie():
     """Edit a recipe that already exists in the data base."""
@@ -115,6 +116,36 @@ def edit_recpie():
         return utils.success_response(msg="Recipe saved")
 
     except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Failed to save data: {e}"), 400
+
+
+@bp.route("/suggest", methods=["POST"])
+@utils.gatekeeper
+def suggest_recipe():
+    """Save a recipe suggestion in the data base (published=False)."""
+    recipe_id = None
+    filename = None
+    try:
+        data = request.form.to_dict()
+        data["user"] = session.get("uid")
+        data["published"] = False
+        image_file = request.files.get("image")
+        recipe_id = recipemodel.add_recipe(data)
+        save_image(data, recipe_id, image_file)
+        return utils.success_response(msg="Recipe saved")
+
+    except pw.IntegrityError:
+        return utils.error_response("Recipe title already exists!"), 409
+
+    except Exception as e:
+        # Delete recipe data and image
+        if recipe_id is not None:
+            recipemodel.delete_recipe(recipe_id)
+        if filename is not None:
+            img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
+            filepath = os.path.join(img_path, filename)
+            utils.remove_file(filepath)
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to save data: {e}"), 400
 
@@ -165,11 +196,12 @@ def search():
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by)
         ).where(
-            (recipemodel.Recipe.title.contains(s)) |
-            (recipemodel.Recipe.contents.contains(s)) |
-            (recipemodel.Recipe.ingredients.contains(s)) |
-            (recipemodel.Recipe.source.contains(s)) |
-            (User.username.contains(s))
+            recipemodel.Recipe.published == True &
+            recipemodel.Recipe.title.contains(s) |
+            recipemodel.Recipe.contents.contains(s) |
+            recipemodel.Recipe.ingredients.contains(s) |
+            recipemodel.Recipe.source.contains(s) |
+            User.username.contains(s)
         )
         data = recipemodel.get_all_recipes(recipes=query)
         return utils.success_response(msg=f"Query: {s}", data=data, hits=len(data))
