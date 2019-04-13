@@ -85,6 +85,8 @@ def edit_recipe(in_id, data):
     recipe.portions = portion_str_to_number(data.get("portions_text", ""))
     recipe.changed_by = data.get("user")
     recipe.changed = datetime.datetime.now()
+    recipe.published = data.get("published", True)
+    recipe.suggestor = data.get("suggestor", None)
     recipe.save()
 
 

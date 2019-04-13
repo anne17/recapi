@@ -40,7 +40,7 @@ def login():
             session["admin"] = user.admin
             current_app.logger.debug("User %s logged in successfully" % username)
             return utils.success_response("User %s logged in successfully!" % username,
-                                          user=user.displayname)
+                                          user=user.displayname, admin=user.admin)
         return utils.error_response("Invalid username or password!"), 401
 
 

@@ -140,12 +140,14 @@ def remove_file(filepath):
         raise e
 
 
-def gatekeeper(function):
+def gatekeeper(allow_guest=False):
     """Stop unauthorized users. Use as decorator where authorization is needed."""
-    @functools.wraps(function)  # Copy original function's information, needed by Flask
-    def wrapper(*args, **kwargs):
-        if not session.get("authorized"):
-            return error_response("Access denied"), 401
-        else:
-            return function(*args, **kwargs)
-    return wrapper
+    def decorator(function):
+        @functools.wraps(function)  # Copy original function's information, needed by Flask
+        def wrapper(*args, **kwargs):
+            if not session.get("authorized") or (not session.get("admin") and not allow_guest):
+                return error_response("Access denied"), 401
+            else:
+                return function(*args, **kwargs)
+        return wrapper
+    return decorator

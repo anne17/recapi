@@ -75,7 +75,7 @@ def get_recipe_from_db(convert=False):
 
 
 @bp.route("/add_recipe", methods=['POST'])
-@utils.gatekeeper
+@utils.gatekeeper()
 def add_recpie():
     """Add new recipe to the data base."""
     recipe_id = None
@@ -104,7 +104,7 @@ def add_recpie():
 
 
 @bp.route("/edit_recipe", methods=["POST"])
-@utils.gatekeeper
+@utils.gatekeeper()
 def edit_recpie():
     """Edit a recipe that already exists in the data base."""
     try:
@@ -121,7 +121,7 @@ def edit_recpie():
 
 
 @bp.route("/suggest", methods=["POST"])
-@utils.gatekeeper
+@utils.gatekeeper(allow_guest=True)
 def suggest_recipe():
     """Save a recipe suggestion in the data base (published=False)."""
     recipe_id = None
@@ -175,7 +175,7 @@ def save_image(data, recipe_id, image_file):
 
 
 @bp.route("/delete_recipe")
-@utils.gatekeeper
+@utils.gatekeeper()
 def delete_recpie():
     """Remove recipe from data base."""
     try:
