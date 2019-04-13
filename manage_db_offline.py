@@ -68,6 +68,17 @@ if __name__ == '__main__':
     #
     # update_users()
     #
-    playhouse.migrate.migrate(
-        migrator.add_column("recipe", "suggestor", pw.CharField(max_length="100", null=True))
-    )
+
+    from recapi.models import tagmodel
+    cat = tagmodel.TagCategory(categoryname="Måltid")
+    cat.save()
+    cat = tagmodel.TagCategory(categoryname="Recepttyp")
+    cat.save()
+    cat = tagmodel.TagCategory(categoryname="Ingrediens")
+    cat.save()
+    cat = tagmodel.TagCategory(categoryname="Svårighet")
+    cat.save()
+    cat = tagmodel.TagCategory(categoryname="Kök")
+    cat.save()
+    cat = tagmodel.TagCategory(categoryname="Specialkost")
+    cat.save()

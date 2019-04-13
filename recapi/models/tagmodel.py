@@ -17,7 +17,7 @@ class Tag(BaseModel):
     """Tag table (peewee model)."""
 
     tagname = pw.CharField(unique=True, max_length="50")
-    parent = pw.ForeignKeyField(TagCategory)
+    parent = pw.ForeignKeyField(TagCategory, null=True)
 
 
 class RecipeTags(BaseModel):
@@ -25,3 +25,14 @@ class RecipeTags(BaseModel):
 
     recipeID = pw.ForeignKeyField(Recipe)
     tagID = pw.ForeignKeyField(Tag)
+
+
+# def get_tag_structure():
+#     """Get all categories, their tags and the number of recipies per tag."""
+#     categories = TagCategory.select()
+#     # Join with tags
+#     data = []
+#     # for category in categories:
+#         # r = model_to_dict(category)
+#         # data.append(r)
+#     return data

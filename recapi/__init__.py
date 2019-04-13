@@ -11,6 +11,7 @@ from flask_session import Session
 
 from recapi.models import usermodel
 from recapi.models import recipemodel
+from recapi.models import tagmodel
 
 
 def create_app():
@@ -79,6 +80,9 @@ def create_app():
     app.config.get("SQLDB").connect()
     usermodel.User.create_table()
     recipemodel.Recipe.create_table()
+    tagmodel.TagCategory.create_table()
+    tagmodel.Tag.create_table()
+    tagmodel.RecipeTags.create_table()
     app.config.get("SQLDB").close()
 
     @app.before_request
