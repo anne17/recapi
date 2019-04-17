@@ -10,6 +10,7 @@ from recapi.models.recipemodel import Recipe
 class TagCategory(BaseModel):
     """Tag category table (peewee model)."""
 
+    categoryorder = pw.IntegerField()
     categoryname = pw.CharField(unique=True, max_length="50")
 
 
@@ -27,12 +28,30 @@ class RecipeTags(BaseModel):
     tagID = pw.ForeignKeyField(Tag)
 
 
-# def get_tag_structure():
-#     """Get all categories, their tags and the number of recipies per tag."""
-#     categories = TagCategory.select()
-#     # Join with tags
-#     data = []
-#     # for category in categories:
-#         # r = model_to_dict(category)
-#         # data.append(r)
-#     return data
+def get_tag_categories():
+    """Get a list of tag categories."""
+    categories = TagCategory.select()
+    data = []
+    for category in categories:
+        catname = category.categoryname
+        data.append(catname)
+    return data
+
+
+def get_tag_structure():
+    """Get all categories, their tags and the number of recipies per tag."""
+    data = []
+    categories = TagCategory.select()
+    tags = Tag.select().join(TagCategory)
+    for category in categories:
+        catname = category.categoryname
+        thesetags = tags.where(TagCategory.categoryname == catname)
+        taglist = [{"name": t.tagname} for t in thesetags]
+        # Todo: Get amount of recipies for earch tag
+        thiscat = {
+            "category": catname,
+            "tags": taglist
+        }
+        data.append(thiscat)
+
+    return data

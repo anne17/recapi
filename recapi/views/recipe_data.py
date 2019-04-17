@@ -8,6 +8,7 @@ import peewee as pw
 
 from recapi import utils
 from recapi.models import recipemodel
+from recapi.models import tagmodel
 from recapi.models.usermodel import User
 
 bp = Blueprint("recipe_data", __name__)
@@ -208,3 +209,17 @@ def search():
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Query failed: {e}"), 400
+
+
+@bp.route("/get_tag_categories")
+def get_tag_categories():
+    cats = tagmodel.get_tag_categories()
+    # data = {"categories": cats}
+    return utils.success_response(msg="", data=cats)
+
+
+@bp.route("/get_tag_structure")
+def get_tag_structure():
+    cats = tagmodel.get_tag_structure()
+    # data = {"categories": cats}
+    return utils.success_response(msg="", data=cats)
