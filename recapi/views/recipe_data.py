@@ -31,6 +31,7 @@ def preview_data():
     """Generate recipe preview. Convert markdown data to html."""
     try:
         data = utils.recipe2html(request.form.to_dict())
+        data = utils.deserialize(data)
         image_file = request.files.get("image")
         if image_file:
             filename = utils.make_random_filename(image_file)
@@ -83,6 +84,7 @@ def add_recpie():
     filename = None
     try:
         data = request.form.to_dict()
+        data = utils.deserialize(data)
         data["user"] = session.get("uid")
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
@@ -110,6 +112,7 @@ def edit_recpie():
     """Edit a recipe that already exists in the data base."""
     try:
         data = request.form.to_dict()
+        data = utils.deserialize(data)
         data["user"] = session.get("uid")  # Make visible which user edited last
         image_file = request.files.get("image")
         recipemodel.edit_recipe(data["id"], data)
@@ -129,6 +132,7 @@ def suggest_recipe():
     filename = None
     try:
         data = request.form.to_dict()
+        data = utils.deserialize(data)
         data["user"] = session.get("uid")
         data["published"] = False
         image_file = request.files.get("image")
@@ -213,13 +217,18 @@ def search():
 
 @bp.route("/get_tag_categories")
 def get_tag_categories():
+    """Return a list of tag categories."""
     cats = tagmodel.get_tag_categories()
-    # data = {"categories": cats}
     return utils.success_response(msg="", data=cats)
 
 
 @bp.route("/get_tag_structure")
 def get_tag_structure():
     cats = tagmodel.get_tag_structure()
-    # data = {"categories": cats}
+    return utils.success_response(msg="", data=cats)
+
+
+@bp.route("/get_tag_structure_simple")
+def get_tag_structure_simple():
+    cats = tagmodel.get_tag_structure(simple=True)
     return utils.success_response(msg="", data=cats)

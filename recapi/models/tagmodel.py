@@ -28,6 +28,12 @@ class RecipeTags(BaseModel):
     tagID = pw.ForeignKeyField(Tag)
 
 
+def add_tags(recipe_data, recipe_id):
+    """Add entries for Tag, TagCategory and RecipeTags."""
+    tags = recipe_data.get("tags", [])
+    newTags = recipe_data.get("newTags", [])
+
+
 def get_tag_categories():
     """Get a list of tag categories."""
     categories = TagCategory.select()
@@ -38,7 +44,7 @@ def get_tag_categories():
     return data
 
 
-def get_tag_structure():
+def get_tag_structure(simple=False):
     """Get all categories, their tags and the number of recipies per tag."""
     data = []
     categories = TagCategory.select()
@@ -46,12 +52,14 @@ def get_tag_structure():
     for category in categories:
         catname = category.categoryname
         thesetags = tags.where(TagCategory.categoryname == catname)
-        taglist = [{"name": t.tagname} for t in thesetags]
+        if simple:
+            taglist = [t.tagname for t in thesetags]
+        else:
+            taglist = [{"name": t.tagname} for t in thesetags]
         # Todo: Get amount of recipies for earch tag
         thiscat = {
             "category": catname,
             "tags": taglist
         }
         data.append(thiscat)
-
     return data

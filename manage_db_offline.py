@@ -76,19 +76,16 @@ if __name__ == '__main__':
         cat = TagCategory(categoryname=newcat, categoryorder=n)
         cat.save()
 
-    # tag = Tag(tagname="gratäng", parent=TagCategory.get(TagCategory.categoryname == "Recepttyp"))
-    # tag.save()
-    # tag = Tag(tagname="gryta", parent=TagCategory.get(TagCategory.categoryname == "Recepttyp"))
-    # tag.save()
-    # tag = Tag(tagname="soppa", parent=TagCategory.get(TagCategory.categoryname == "Recepttyp"))
-    # tag.save()
-    # tag = Tag(tagname="paj", parent=TagCategory.get(TagCategory.categoryname == "Recepttyp"))
-    # tag.save()
-    # tag = Tag(tagname="pasta", parent=TagCategory.get(TagCategory.categoryname == "Ingrediens"))
-    # tag.save()
-    # tag = Tag(tagname="ris", parent=TagCategory.get(TagCategory.categoryname == "Ingrediens"))
-    # tag.save()
-    # tag = Tag(tagname="vegetariskt", parent=TagCategory.get(TagCategory.categoryname == "Specialkost"))
-    # tag.save()
-    # tag = Tag(tagname="veganskt", parent=TagCategory.get(TagCategory.categoryname == "Specialkost"))
-    # tag.save()
+    newtagnames = [
+        ("gratäng", "Recepttyp"),
+        ("gryta", "Recepttyp"),
+        ("soppa", "Recepttyp"),
+        ("paj", "Recepttyp"),
+        ("pasta", "Ingrediens"),
+        ("ris", "Ingrediens"),
+        ("vegetariskt", "Specialkost"),
+        ("veganskt", "Specialkost")
+    ]
+    for newtagname, cat in newtagnames:
+        tag = Tag(tagname=newtagname, parent=TagCategory.get(TagCategory.categoryname == cat))
+        tag.save()

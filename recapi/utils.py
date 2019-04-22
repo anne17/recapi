@@ -1,6 +1,7 @@
 """Collection of utilities and auxiliaries."""
 
 import functools
+import json
 import os
 import shutil
 import time
@@ -48,6 +49,13 @@ def recipe2html(recipe):
     """Convert markdown recipe fields into html."""
     recipe["ingredients"] = md2html(recipe.get("ingredients", ""))
     recipe["contents"] = md2html(recipe.get("contents", ""))
+    return recipe
+
+
+def deserialize(recipe):
+    """Deserialise JSON strings."""
+    recipe["tags"] = json.loads(recipe.get("tags", ""))
+    recipe["newTags"] = json.loads(recipe.get("newTags", ""))
     return recipe
 
 
