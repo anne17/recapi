@@ -6,7 +6,7 @@ import re
 import peewee as pw
 from playhouse.shortcuts import model_to_dict
 
-from recapi.models import BaseModel, usermodel, tagmodel
+from recapi.models import BaseModel, usermodel
 
 
 class Recipe(BaseModel):
@@ -46,7 +46,6 @@ def add_recipe(data):
         suggestor=data.get("suggestor", None)
     )
     recipe.save()
-    tagmodel.add_tags(data, recipe.id)
     return recipe.id
 
 
@@ -88,7 +87,6 @@ def edit_recipe(in_id, data):
     recipe.published = data.get("published", True)
     recipe.suggestor = data.get("suggestor", None)
     recipe.save()
-    tagmodel.add_tags(data, recipe.id)
 
 
 def delete_recipe(in_id):

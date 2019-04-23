@@ -1,7 +1,7 @@
 """Tag table models."""
 
 import peewee as pw
-# from playhouse.shortcuts import model_to_dict
+from playhouse.shortcuts import model_to_dict
 
 from recapi.models import BaseModel
 from recapi.models.recipemodel import Recipe
@@ -29,9 +29,28 @@ class RecipeTags(BaseModel):
 
 
 def add_tags(recipe_data, recipe_id):
-    """Add entries for Tag, TagCategory and RecipeTags."""
+    """Add entries for Tag and RecipeTags."""
+    newTags = recipe_data.get("newTags", {})
+    for tagname, category in newTags.items():
+        tag = Tag(tagname=tagname, parent=TagCategory.get(TagCategory.categoryname == category))
+        tag.save()
+
     tags = recipe_data.get("tags", [])
-    newTags = recipe_data.get("newTags", [])
+    for tagname in tags:
+        recipetags = RecipeTags(recipeID=Recipe.get(Recipe.id == recipe_id), tagID=Tag.get(Tag.tagname == tagname))
+        recipetags.save()
+
+
+def get_tags_for_recipe(recipe_id):
+    """Get a list of tags for a given recipe title."""
+    tags = []
+    entries = RecipeTags.select().join(Tag).where(RecipeTags.recipeID == recipe_id)
+    # entries = RecipeTags.select().where(RecipeTags.recipeID == recipe_id)
+    for entry in entries:
+        e = model_to_dict(entry)
+        tagname = e.get("tagID", {}).get("tagname", "")
+        tags.append(tagname)
+    return tags
 
 
 def get_tag_categories():

@@ -54,8 +54,8 @@ def recipe2html(recipe):
 
 def deserialize(recipe):
     """Deserialise JSON strings."""
-    recipe["tags"] = json.loads(recipe.get("tags", ""))
-    recipe["newTags"] = json.loads(recipe.get("newTags", ""))
+    recipe["tags"] = json.loads(recipe.get("tags", []))
+    recipe["newTags"] = json.loads(recipe.get("newTags", {}))
     return recipe
 
 

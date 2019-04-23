@@ -7,8 +7,7 @@ from flask import request, current_app, Blueprint, session
 import peewee as pw
 
 from recapi import utils
-from recapi.models import recipemodel
-from recapi.models import tagmodel
+from recapi.models import recipemodel, tagmodel
 from recapi.models.usermodel import User
 
 bp = Blueprint("recipe_data", __name__)
@@ -69,6 +68,9 @@ def get_recipe_from_db(convert=False):
         recipe.get("created_by", {}).pop("password")
         if recipe.get("changed_by", {}) is not None:
             recipe.get("changed_by", {}).pop("password")
+        # Add tags
+        tags = tagmodel.get_tags_for_recipe(recipe.get("id"))
+        recipe["tags"] = tags
 
         return utils.success_response(msg="Data loaded", data=recipe)
     except Exception as e:
@@ -88,6 +90,7 @@ def add_recpie():
         data["user"] = session.get("uid")
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
+        tagmodel.add_tags(data, recipe_id)
         save_image(data, recipe_id, image_file)
         return utils.success_response(msg="Recipe saved")
 
@@ -116,6 +119,7 @@ def edit_recpie():
         data["user"] = session.get("uid")  # Make visible which user edited last
         image_file = request.files.get("image")
         recipemodel.edit_recipe(data["id"], data)
+        tagmodel.add_tags(data, data["id"])
         save_image(data, data["id"], image_file)
         return utils.success_response(msg="Recipe saved")
 
@@ -137,6 +141,7 @@ def suggest_recipe():
         data["published"] = False
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
+        tagmodel.add_tags(data, recipe_id)
         save_image(data, recipe_id, image_file)
         return utils.success_response(msg="Recipe saved")
 
@@ -165,6 +170,7 @@ def save_image(data, recipe_id, image_file):
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.edit_recipe(recipe_id, data)
+        tagmodel.add_tags(data, recipe_id)
 
     # When recipe was parsed from external source, image is already uploaded
     elif data.get("image") and data.get("changed_image"):
@@ -177,6 +183,7 @@ def save_image(data, recipe_id, image_file):
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.edit_recipe(recipe_id, data)
+        tagmodel.add_tags(data, recipe_id)
 
 
 @bp.route("/delete_recipe")
