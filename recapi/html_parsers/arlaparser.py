@@ -50,8 +50,11 @@ class ArlaParser(GeneralParser):
     def get_ingredients(self):
         """Get recipe ingredients list."""
         try:
-            ingredients = self.soup.find(class_="recipe-ingredients")
-            ingredients = ingredients.find_all(["li"])
+            ingredients = self.soup.find(class_="ingredients")
+            # Convert h4 into div
+            for x in ingredients.find_all("h4"):
+                x.name = "div"
+            ingredients = ingredients.find_all(True, {"class": ["recipe-information__subheading", "recipe-ingredients"]})
             ingredients = "".join(str(i) for i in ingredients)
             self.ingredients = text_maker.handle(ingredients).strip("\n")
         except Exception:
