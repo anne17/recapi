@@ -76,16 +76,16 @@ if __name__ == '__main__':
         cat = TagCategory(categoryname=newcat, categoryorder=n)
         cat.save()
 
-    newtagnames = [
-        ("gratäng", "Recepttyp"),
-        ("gryta", "Recepttyp"),
-        ("soppa", "Recepttyp"),
-        ("paj", "Recepttyp"),
-        ("pasta", "Ingrediens"),
-        ("ris", "Ingrediens"),
-        ("vegetariskt", "Specialkost"),
-        ("veganskt", "Specialkost")
-    ]
-    for newtagname, cat in newtagnames:
-        tag = Tag(tagname=newtagname, parent=TagCategory.get(TagCategory.categoryname == cat))
-        tag.save()
+    # newtagnames = [
+    #     ("gratäng", "Recepttyp"),
+    #     ("gryta", "Recepttyp"),
+    #     ("soppa", "Recepttyp"),
+    #     ("paj", "Recepttyp"),
+    #     ("pasta", "Ingrediens"),
+    #     ("ris", "Ingrediens"),
+    #     ("vegetariskt", "Specialkost"),
+    #     ("veganskt", "Specialkost")
+    # ]
+    # for newtagname, cat in newtagnames:
+    #     tag = Tag(tagname=newtagname, parent=TagCategory.get(TagCategory.categoryname == cat))
+    #     tag.save()
