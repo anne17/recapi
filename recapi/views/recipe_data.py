@@ -16,9 +16,23 @@ bp = Blueprint("recipe_data", __name__)
 @bp.route("/recipe_data")
 def recipe_data():
     """Return all available recipe data."""
+    return get_recipe_data(published=True)
+
+
+@bp.route("/recipe_suggestions")
+@utils.gatekeeper()
+def recipe_suggestions():
+    """Return data for all unpublished recipes."""
+    return get_recipe_data(published=False)
+
+
+def get_recipe_data(published=False):
+    """Return published or unpublished recipe data."""
     try:
-        published = request.args.get("published", "true").lower() == "true"
         data = recipemodel.get_all_recipes(published=published)
+        # Add tags
+        for recipe in data:
+            recipe["tags"] = tagmodel.get_tags_for_recipe(recipe.get("id"))
         return utils.success_response(msg="Data loaded", data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -69,8 +83,7 @@ def get_recipe_from_db(convert=False):
         if recipe.get("changed_by", {}) is not None:
             recipe.get("changed_by", {}).pop("password")
         # Add tags
-        tags = tagmodel.get_tags_for_recipe(recipe.get("id"))
-        recipe["tags"] = tags
+        recipe["tags"] = tagmodel.get_tags_for_recipe(recipe.get("id"))
 
         return utils.success_response(msg="Data loaded", data=recipe)
     except Exception as e:

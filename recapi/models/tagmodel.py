@@ -45,10 +45,8 @@ def get_tags_for_recipe(recipe_id):
     """Get a list of tags for a given recipe title."""
     tags = []
     entries = RecipeTags.select().join(Tag).where(RecipeTags.recipeID == recipe_id)
-    # entries = RecipeTags.select().where(RecipeTags.recipeID == recipe_id)
     for entry in entries:
-        e = model_to_dict(entry)
-        tagname = e.get("tagID", {}).get("tagname", "")
+        tagname = model_to_dict(entry).get("tagID", {}).get("tagname", "")
         tags.append(tagname)
     return tags
 
