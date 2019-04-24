@@ -7,7 +7,7 @@ from flask import request, current_app, Blueprint, session
 import peewee as pw
 
 from recapi import utils
-from recapi.models import recipemodel
+from recapi.models import recipemodel, tagmodel
 from recapi.models.usermodel import User
 
 bp = Blueprint("recipe_data", __name__)
@@ -16,9 +16,23 @@ bp = Blueprint("recipe_data", __name__)
 @bp.route("/recipe_data")
 def recipe_data():
     """Return all available recipe data."""
+    return get_recipe_data(published=True)
+
+
+@bp.route("/recipe_suggestions")
+@utils.gatekeeper()
+def recipe_suggestions():
+    """Return data for all unpublished recipes."""
+    return get_recipe_data(published=False)
+
+
+def get_recipe_data(published=False):
+    """Return published or unpublished recipe data."""
     try:
-        published = request.args.get("published", "true").lower() == "true"
         data = recipemodel.get_all_recipes(published=published)
+        # Add tags
+        for recipe in data:
+            recipe["tags"] = tagmodel.get_tags_for_recipe(recipe.get("id"))
         return utils.success_response(msg="Data loaded", data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -30,6 +44,7 @@ def preview_data():
     """Generate recipe preview. Convert markdown data to html."""
     try:
         data = utils.recipe2html(request.form.to_dict())
+        data = utils.deserialize(data)
         image_file = request.files.get("image")
         if image_file:
             filename = utils.make_random_filename(image_file)
@@ -67,6 +82,8 @@ def get_recipe_from_db(convert=False):
         recipe.get("created_by", {}).pop("password")
         if recipe.get("changed_by", {}) is not None:
             recipe.get("changed_by", {}).pop("password")
+        # Add tags
+        recipe["tags"] = tagmodel.get_tags_for_recipe(recipe.get("id"))
 
         return utils.success_response(msg="Data loaded", data=recipe)
     except Exception as e:
@@ -82,9 +99,11 @@ def add_recpie():
     filename = None
     try:
         data = request.form.to_dict()
+        data = utils.deserialize(data)
         data["user"] = session.get("uid")
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
+        tagmodel.add_tags(data, recipe_id)
         save_image(data, recipe_id, image_file)
         return utils.success_response(msg="Recipe saved")
 
@@ -109,9 +128,11 @@ def edit_recpie():
     """Edit a recipe that already exists in the data base."""
     try:
         data = request.form.to_dict()
+        data = utils.deserialize(data)
         data["user"] = session.get("uid")  # Make visible which user edited last
         image_file = request.files.get("image")
         recipemodel.edit_recipe(data["id"], data)
+        tagmodel.add_tags(data, data["id"])
         save_image(data, data["id"], image_file)
         return utils.success_response(msg="Recipe saved")
 
@@ -128,10 +149,12 @@ def suggest_recipe():
     filename = None
     try:
         data = request.form.to_dict()
+        data = utils.deserialize(data)
         data["user"] = session.get("uid")
         data["published"] = False
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
+        tagmodel.add_tags(data, recipe_id)
         save_image(data, recipe_id, image_file)
         return utils.success_response(msg="Recipe saved")
 
@@ -160,6 +183,7 @@ def save_image(data, recipe_id, image_file):
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.edit_recipe(recipe_id, data)
+        tagmodel.add_tags(data, recipe_id)
 
     # When recipe was parsed from external source, image is already uploaded
     elif data.get("image") and data.get("changed_image"):
@@ -172,6 +196,7 @@ def save_image(data, recipe_id, image_file):
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.edit_recipe(recipe_id, data)
+        tagmodel.add_tags(data, recipe_id)
 
 
 @bp.route("/delete_recipe")
@@ -208,3 +233,22 @@ def search():
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Query failed: {e}"), 400
+
+
+@bp.route("/get_tag_categories")
+def get_tag_categories():
+    """Return a list of tag categories."""
+    cats = tagmodel.get_tag_categories()
+    return utils.success_response(msg="", data=cats)
+
+
+@bp.route("/get_tag_structure")
+def get_tag_structure():
+    cats = tagmodel.get_tag_structure()
+    return utils.success_response(msg="", data=cats)
+
+
+@bp.route("/get_tag_structure_simple")
+def get_tag_structure_simple():
+    cats = tagmodel.get_tag_structure(simple=True)
+    return utils.success_response(msg="", data=cats)

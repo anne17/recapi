@@ -25,7 +25,6 @@ class Recipe(BaseModel):
     changed = pw.DateTimeField(null=True)
     published = pw.BooleanField(default=True)
     suggestor = pw.CharField(max_length="100", null=True)
-    # tags = pw.ForeignKeyField()
 
 
 def add_recipe(data):

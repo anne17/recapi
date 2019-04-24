@@ -62,23 +62,30 @@ if __name__ == '__main__':
     # )
     # update_recipes()
 
-    # playhouse.migrate.migrate(
-    #     migrator.add_column("user", "admin", pw.BooleanField(default=False)),
-    # )
-    #
-    # update_users()
-    #
+    from recapi.models.tagmodel import Tag, TagCategory
 
-    from recapi.models import tagmodel
-    cat = tagmodel.TagCategory(categoryname="Måltid")
-    cat.save()
-    cat = tagmodel.TagCategory(categoryname="Recepttyp")
-    cat.save()
-    cat = tagmodel.TagCategory(categoryname="Ingrediens")
-    cat.save()
-    cat = tagmodel.TagCategory(categoryname="Svårighet")
-    cat.save()
-    cat = tagmodel.TagCategory(categoryname="Kök")
-    cat.save()
-    cat = tagmodel.TagCategory(categoryname="Specialkost")
-    cat.save()
+    newcatnames = [
+        "Måltid",
+        "Recepttyp",
+        "Ingrediens",
+        "Svårighet",
+        "Kök",
+        "Specialkost"
+    ]
+    for n, newcat in enumerate(newcatnames, start=1):
+        cat = TagCategory(categoryname=newcat, categoryorder=n)
+        cat.save()
+
+    newtagnames = [
+        ("gratäng", "Recepttyp"),
+        ("gryta", "Recepttyp"),
+        ("soppa", "Recepttyp"),
+        ("paj", "Recepttyp"),
+        ("pasta", "Ingrediens"),
+        ("ris", "Ingrediens"),
+        ("vegetariskt", "Specialkost"),
+        ("veganskt", "Specialkost")
+    ]
+    for newtagname, cat in newtagnames:
+        tag = Tag(tagname=newtagname, parent=TagCategory.get(TagCategory.categoryname == cat))
+        tag.save()
