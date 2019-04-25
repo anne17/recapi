@@ -221,12 +221,12 @@ def search():
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by)
         ).where(
-            recipemodel.Recipe.published == True &
-            recipemodel.Recipe.title.contains(s) |
-            recipemodel.Recipe.contents.contains(s) |
-            recipemodel.Recipe.ingredients.contains(s) |
-            recipemodel.Recipe.source.contains(s) |
-            User.username.contains(s)
+            (recipemodel.Recipe.published == True)
+            & recipemodel.Recipe.title.contains(s)
+            | recipemodel.Recipe.contents.contains(s)
+            | recipemodel.Recipe.ingredients.contains(s)
+            | recipemodel.Recipe.source.contains(s)
+            | User.username.contains(s)
         )
         data = recipemodel.get_all_recipes(recipes=query)
         return utils.success_response(msg=f"Query: {s}", data=data, hits=len(data))
