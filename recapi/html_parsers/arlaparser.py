@@ -67,10 +67,13 @@ class ArlaParser(GeneralParser):
             contents = self.soup.find(class_="instructions-area__text")
             self.contents = text_maker.handle(str(contents)).strip()
             if not contents:
-                contents = self.soup.find(class_="instructions-area__steps")
-                contents = text_maker.handle(str(contents)).strip()
-                # Remove indentation
-                self.contents = re.sub(r"\n{2}\s+", r"\n", contents)
+                contents = self.soup.find(class_="recipe-information__sub-column")
+                # Convert h3 into div
+                for x in contents.find_all("h3"):
+                    x.name = "div"
+                # Remove first heading
+                contents.find("div", text=re.compile("Gör så här")).decompose()
+                self.contents = text_maker.handle(str(contents)).strip("\n")
         except Exception:
             current_app.logger.error(f"Could not extract contents: {traceback.format_exc()}")
             self.contents = ""
