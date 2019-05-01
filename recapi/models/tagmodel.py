@@ -59,6 +59,13 @@ def add_tags(recipe_data, recipe_id):
             recipetags.delete_instance()
 
 
+def delete_recipe(recipe_id):
+    """Remove all records belonging to a recipe."""
+    recipetags = RecipeTags.select().where(RecipeTags.recipeID == recipe_id)
+    for record in recipetags:
+        record.delete_instance()
+
+
 def get_tags_for_recipe(recipe_id):
     """Get a list of tags for a given recipe title."""
     tags = []

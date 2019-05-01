@@ -205,6 +205,7 @@ def delete_recpie():
     """Remove recipe from data base."""
     try:
         recipe_id = request.args.get("id")
+        tagmodel.delete_recipe(recipe_id)
         recipemodel.delete_recipe(recipe_id)
         return utils.success_response(msg="Recipe removed")
     except Exception as e:
