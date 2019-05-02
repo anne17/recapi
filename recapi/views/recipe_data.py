@@ -186,7 +186,7 @@ def save_image(data, recipe_id, image_file):
         tagmodel.add_tags(data, recipe_id)
 
     # When recipe was parsed from external source, image is already uploaded
-    elif data.get("image") and data.get("changed_image"):
+    elif data.get("image") and data.get("image", "").startswith("tmp"):
         filename = utils.make_db_filename(data["image"], id=str(recipe_id))
         # Get path to file and copy it from tmp to img folder
         src_directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))

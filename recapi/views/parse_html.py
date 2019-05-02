@@ -40,8 +40,6 @@ def parse_from_url():
         recipe["portions_text"] = parser.portions
         image_path = download_image(parser.image)
         recipe["image"] = image_path
-        if image_path:
-            recipe["changed_image"] = True
 
         return utils.success_response("Successfully extracted recipe.", data=recipe)
     else:
