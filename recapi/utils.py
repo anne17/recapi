@@ -138,13 +138,26 @@ def clean_tmp_folder(tmp_folder, timeout=604800):
     return removed
 
 
-def remove_file(filepath):
+def remove_file(filepath, relative=False):
     """Delete file."""
     try:
+        if relative:
+            # Find absolute path for filepath
+            head, tail = os.path.split(filepath)
+            if head.startswith("img"):
+                image_dir = os.path.join(current_app.instance_path,
+                                         current_app.config.get("IMAGE_PATH"))
+                filepath = os.path.join(image_dir, tail)
+            elif head.startswith("tmp"):
+                tmp_path = os.path.join(current_app.instance_path,
+                                        current_app.config.get("TMP_DIR"))
+                filepath = os.path.join(tmp_path, tail)
+            else:
+                raise Exception("Could not find absolute path for file %s" % filepath)
         if os.path.exists(filepath):
             os.remove(filepath)
     except Exception as e:
-        current_app.logger.error(traceback.format_exc())
+        current_app.logger.error("Could not delete file: %s", traceback.format_exc())
         raise e
 
 

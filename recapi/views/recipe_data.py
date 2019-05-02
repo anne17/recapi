@@ -205,6 +205,9 @@ def delete_recpie():
     """Remove recipe from data base."""
     try:
         recipe_id = request.args.get("id")
+        recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == recipe_id)
+        if recipe.image:
+            utils.remove_file(recipe.image, relative=True)
         tagmodel.delete_recipe(recipe_id)
         recipemodel.delete_recipe(recipe_id)
         return utils.success_response(msg="Recipe removed")
