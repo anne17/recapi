@@ -49,16 +49,10 @@ def add_recipe(data):
     return recipe.id
 
 
-def get_recipe(in_title):
-    """Retrieve a recipe by title."""
-    return model_to_dict(Recipe.get(Recipe.title == in_title))
-
-
-def get_all_recipes(recipes=None, published=True):
+def get_recipes(recipes):
     """Return all recipes in the database."""
     data = []
     for recipe in recipes:
-        # r = model_to_dict(recipe)
         r = model_to_dict(recipe, recurse=False)
         # Add user data
         r["created_by"] = model_to_dict(recipe.a)

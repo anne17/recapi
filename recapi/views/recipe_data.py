@@ -48,7 +48,7 @@ def get_recipe_data(published=False):
             tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
         ).group_by(recipemodel.Recipe.id)
 
-        data = recipemodel.get_all_recipes(recipes=recipes, published=published)
+        data = recipemodel.get_recipes(recipes)
         return utils.success_response(msg="Data loaded", data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -89,17 +89,31 @@ def get_recipe_from_db(convert=False):
     """Get data for one recipe. Convert to html if convert=True."""
     try:
         title = request.args.get("title")
-        recipe = recipemodel.get_recipe(title)
+
+        Changed = User.alias()
+        recipes = recipemodel.Recipe.select(
+            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+        ).where(
+            recipemodel.Recipe.title == title
+        ).join(
+            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
+        ).join(
+            tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
+        ).group_by(recipemodel.Recipe.id)
+        recipe = recipemodel.get_recipes(recipes)[0]
+
         if convert:
             recipe = utils.recipe2html(recipe)
         if not recipe:
             return utils.error_response(f"Could not find recipe '{title}'."), 404
-        # Remove password hash from response
-        recipe.get("created_by", {}).pop("password")
-        if recipe.get("changed_by", {}) is not None:
-            recipe.get("changed_by", {}).pop("password")
-        # Add tags
-        recipe["tags"] = tagmodel.get_tags_for_recipe(recipe.get("id"))
 
         return utils.success_response(msg="Data loaded", data=recipe)
     except Exception as e:
