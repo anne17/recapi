@@ -29,10 +29,26 @@ def recipe_suggestions():
 def get_recipe_data(published=False):
     """Return published or unpublished recipe data."""
     try:
-        data = recipemodel.get_all_recipes(published=published)
-        # Add tags
-        for recipe in data:
-            recipe["tags"] = tagmodel.get_tags_for_recipe(recipe.get("id"))
+        Changed = User.alias()
+        recipes = recipemodel.Recipe.select(
+            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+        ).where(
+            recipemodel.Recipe.published == published
+        ).join(
+            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
+        ).join(
+            tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
+        ).group_by(recipemodel.Recipe.id)
+
+        data = recipemodel.get_all_recipes(recipes=recipes, published=published)
         return utils.success_response(msg="Data loaded", data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())

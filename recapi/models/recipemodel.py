@@ -56,16 +56,17 @@ def get_recipe(in_title):
 
 def get_all_recipes(recipes=None, published=True):
     """Return all recipes in the database."""
-    if recipes is None:
-        recipes = Recipe.select().where(
-            Recipe.published == published)
     data = []
     for recipe in recipes:
-        r = model_to_dict(recipe)
-        # Remove password hash
-        r.get("created_by", {}).pop("password")
-        if r.get("changed_by") is not None:
-            r.get("changed_by", {}).pop("password")
+        # r = model_to_dict(recipe)
+        r = model_to_dict(recipe, recurse=False)
+        # Add user data
+        r["created_by"] = model_to_dict(recipe.a)
+        r["created_by"].pop("password")
+        r["changed_by"] = model_to_dict(recipe.a)
+        r["changed_by"].pop("password")
+        # Add tags
+        r["tags"] = recipe.taglist.split(",") if recipe.taglist else []
         data.append(r)
     # Reverse list to display the newest recipe first
     data.reverse()
