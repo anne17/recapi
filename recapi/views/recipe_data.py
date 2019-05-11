@@ -251,7 +251,6 @@ def search():
     """Search recipe data base."""
     try:
         user = request.args.get("user")
-        print(user)
         if user:
             # User search
             Changed = User.alias()
@@ -273,7 +272,7 @@ def search():
                 recipemodel.Recipe.id
             ).where(
                 (recipemodel.Recipe.published == True)
-                & (User.username == user)
+                & (User.displayname == user)
             )
             data = recipemodel.get_recipes(query)
             return utils.success_response(msg=f"Query: user={user}", data=data, hits=len(data))
@@ -305,7 +304,7 @@ def search():
                 | recipemodel.Recipe.ingredients.contains(q)
                 | recipemodel.Recipe.source.contains(q)
                 | User.username.contains(q)
-                | tagmodel.Tag.tagname.contains(q)
+                | (tagmodel.Tag.tagname == q)
             )
 
             data = recipemodel.get_recipes(query)
