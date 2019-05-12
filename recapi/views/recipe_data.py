@@ -250,8 +250,37 @@ def delete_recpie():
 def search():
     """Search recipe data base."""
     try:
+        tag = request.args.get("tag")
         user = request.args.get("user")
-        if user:
+        q = request.args.get("q")
+
+        if tag:
+            # Tag Search
+            Changed = User.alias()
+            query = recipemodel.Recipe.select(
+                recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            ).join(
+                User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
+            ).switch(
+                recipemodel.Recipe
+            ).join(
+                Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
+            ).switch(
+                recipemodel.Recipe
+            ).join(
+                tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
+            ).join(
+                tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
+            ).group_by(
+                recipemodel.Recipe.id
+            ).where(
+                (recipemodel.Recipe.published == True)
+                & (tagmodel.Tag.tagname == tag)
+            )
+            data = recipemodel.get_recipes(query)
+            message = f"Query: tag={tag}"
+
+        elif user:
             # User search
             Changed = User.alias()
             query = recipemodel.Recipe.select(
@@ -275,11 +304,10 @@ def search():
                 & (User.displayname == user)
             )
             data = recipemodel.get_recipes(query)
-            return utils.success_response(msg=f"Query: user={user}", data=data, hits=len(data))
+            message = f"Query: user={user}"
+
         else:
             # String search
-            q = request.args.get("q")
-
             Changed = User.alias()
             query = recipemodel.Recipe.select(
                 recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
@@ -308,7 +336,9 @@ def search():
             )
 
             data = recipemodel.get_recipes(query)
-            return utils.success_response(msg=f"Query: q={q}", data=data, hits=len(data))
+            message = f"Query: q={q}"
+
+        return utils.success_response(msg=message, data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Query failed: {e}"), 400
