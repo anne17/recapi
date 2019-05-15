@@ -275,7 +275,8 @@ def search():
                 recipemodel.Recipe.id
             ).where(
                 (recipemodel.Recipe.published == True)
-                & (tagmodel.Tag.tagname == tag)
+            ).having(
+                pw.fn.FIND_IN_SET(tag, pw.fn.group_concat(tagmodel.Tag.tagname))
             )
             data = recipemodel.get_recipes(query)
             message = f"Query: tag={tag}"
