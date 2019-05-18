@@ -328,12 +328,12 @@ def search():
                 recipemodel.Recipe.id
             ).where(
                 (recipemodel.Recipe.published == True)
-                & recipemodel.Recipe.title.contains(q)
-                | recipemodel.Recipe.contents.contains(q)
+            ).having(
+                recipemodel.Recipe.contents.contains(q)
                 | recipemodel.Recipe.ingredients.contains(q)
                 | recipemodel.Recipe.source.contains(q)
                 | User.username.contains(q)
-                | (tagmodel.Tag.tagname == q)
+                | pw.fn.FIND_IN_SET(q, pw.fn.group_concat(tagmodel.Tag.tagname))
             )
 
             data = recipemodel.get_recipes(query)
