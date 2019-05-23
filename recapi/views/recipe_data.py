@@ -163,7 +163,11 @@ def edit_recpie():
         image_file = request.files.get("image")
         recipemodel.edit_recipe(data["id"], data)
         tagmodel.add_tags(data, data["id"])
-        save_image(data, data["id"], image_file)
+        if not image_file and not data["image"]:
+            recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == data["id"])
+            utils.remove_file(recipe.image, relative=True)
+        else:
+            save_image(data, data["id"], image_file)
         return utils.success_response(msg="Recipe saved")
 
     except Exception as e:
