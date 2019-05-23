@@ -7,7 +7,7 @@ info:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
   x-logo:
-    url: 'https://api.kalufs.lol/recapi/defaultimg'
+    url: 'https://api.kalufs.lol/recapi/logo'
 servers:
   - url: 'https://api.kalufs.lol/recapi'
 tags:

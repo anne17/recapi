@@ -29,13 +29,19 @@ def handle_unauthorized(e):
     return utils.error_response("Unauthorized.")
 
 
-@bp.route('/defaultimg')
+@bp.route("/defaultimg")
 def send_default_img():
     """Serve the default recipe image."""
-    return current_app.send_static_file("default.png")
+    return current_app.send_static_file("default.jpg")
 
 
-@bp.route('/img/<filename>')
+@bp.route("/logo")
+def send_logo():
+    """Serve the recapi logo."""
+    return current_app.send_static_file("logo.png")
+
+
+@bp.route("/img/<filename>")
 def send_img(filename):
     """Serve images."""
     image_dir = os.path.join(current_app.instance_path,
@@ -43,7 +49,7 @@ def send_img(filename):
     return send_from_directory(image_dir, filename)
 
 
-@bp.route('/tmp/<filename>')
+@bp.route("/tmp/<filename>")
 def send_tmp(filename):
     """Serve temporary files."""
     data_dir = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
