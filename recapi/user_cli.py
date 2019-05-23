@@ -61,7 +61,7 @@ def add(user, display, admin):
         click.echo("Password not confirmed. Aborting.")
         exit()
     try:
-        usermodel.add_user(user, pw, display)
+        usermodel.add_user(user, pw, display, admin)
         click.echo("Successfully added user: %s" % user)
     except Exception as e:
         click.echo("Error: %s" % e)

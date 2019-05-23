@@ -48,7 +48,7 @@ Available commands:
 
 * `add --user USER --display DISPLAY_NAME --admin true|false`: Creates a new user. Will prompt for password.
 
-* `show --user USER`:  Displays user ID, username, displayname in stdout.
+* `show --user USER`:  Displays user info.
 
 * `showall`: Shows the entire user data base.
 

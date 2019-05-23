@@ -43,7 +43,8 @@ def show_user(in_username):
     return {
         "username": user.username,
         "displayname": user.displayname,
-        "active": user.active}
+        "active": user.active,
+        "admin": user.admin}
 
 
 def show_all_users():
@@ -54,7 +55,8 @@ def show_all_users():
         data[user.username] = {
             "username": user.username,
             "displayname": user.displayname,
-            "active": user.active}
+            "active": user.active,
+            "admin": user.admin}
     return data
 
 
