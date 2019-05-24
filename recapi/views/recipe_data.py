@@ -159,15 +159,15 @@ def edit_recpie():
     try:
         data = request.form.to_dict()
         data = utils.deserialize(data)
-        data["user"] = session.get("uid")  # Make visible which user edited last
+        data["user"] = session.get("uid")  # Store info about which user edited last
         image_file = request.files.get("image")
-        recipemodel.edit_recipe(data["id"], data)
-        tagmodel.add_tags(data, data["id"])
         if not image_file and not data["image"]:
             recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == data["id"])
             utils.remove_file(recipe.image, relative=True)
         else:
             save_image(data, data["id"], image_file)
+        recipemodel.edit_recipe(data["id"], data)
+        tagmodel.add_tags(data, data["id"])
         return utils.success_response(msg="Recipe saved")
 
     except Exception as e:
