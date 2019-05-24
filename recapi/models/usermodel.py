@@ -1,6 +1,7 @@
 """Collection of different models to communicate with the data base."""
 
 import peewee as pw
+from playhouse.shortcuts import model_to_dict
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from recapi.models import BaseModel
@@ -40,23 +41,19 @@ def add_user(username, password, displayname, admin=False):
 def show_user(in_username):
     """Show information for one user."""
     user = User.get(User.username == in_username)
-    return {
-        "username": user.username,
-        "displayname": user.displayname,
-        "active": user.active,
-        "admin": user.admin}
+    userdict = model_to_dict(user)
+    userdict.pop("password")
+    return userdict
 
 
 def show_all_users():
     """Return a summary of all users in the database."""
-    users = User.select(User.username, User.displayname, User.active)
+    users = User.select()
     data = {}
     for user in users:
-        data[user.username] = {
-            "username": user.username,
-            "displayname": user.displayname,
-            "active": user.active,
-            "admin": user.admin}
+        userdict = model_to_dict(user)
+        userdict.pop("password")
+        data[user.username] = userdict
     return data
 
 
