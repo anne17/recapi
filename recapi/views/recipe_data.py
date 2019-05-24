@@ -217,7 +217,6 @@ def save_image(data, recipe_id, image_file):
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.edit_recipe(recipe_id, data)
-        tagmodel.add_tags(data, recipe_id)
 
     # When recipe was parsed from external source, image is already uploaded
     elif data.get("image") and data.get("image", "").startswith("tmp"):
@@ -230,7 +229,6 @@ def save_image(data, recipe_id, image_file):
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.edit_recipe(recipe_id, data)
-        tagmodel.add_tags(data, recipe_id)
 
 
 @bp.route("/delete_recipe")
