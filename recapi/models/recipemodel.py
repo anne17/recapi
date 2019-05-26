@@ -60,7 +60,7 @@ def get_recipes(recipes):
         r["changed_by"] = model_to_dict(recipe.a)
         r["changed_by"].pop("password")
         # Add tags
-        r["tags"] = recipe.taglist.split(",") if recipe.taglist else []
+        r["tags"] = sorted(recipe.taglist.split(",")) if recipe.taglist else []
         data.append(r)
     # Reverse list to display the newest recipe first
     data.reverse()

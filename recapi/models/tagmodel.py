@@ -85,7 +85,7 @@ def get_tag_structure(simple=False):
         catname = category.categoryname
         thesetags = tags.where(TagCategory.categoryname == catname)
         if simple:
-            taglist = [t.tagname for t in thesetags]
+            taglist = sorted(t.tagname for t in thesetags)
         else:
             taglist = [{"name": t.tagname} for t in thesetags]
         # Todo: Get amount of recipies for earch tag
