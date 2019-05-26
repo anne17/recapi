@@ -163,7 +163,10 @@ def edit_recpie():
         image_file = request.files.get("image")
         if not image_file and not data["image"]:
             recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == data["id"])
-            utils.remove_file(recipe.image, relative=True)
+            try:
+                utils.remove_file(recipe.image, relative=True)
+            except OSError:
+                current_app.logger.error(traceback.format_exc())
         else:
             save_image(data, data["id"], image_file)
         recipemodel.edit_recipe(data["id"], data)

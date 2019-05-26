@@ -153,7 +153,7 @@ def remove_file(filepath, relative=False):
                                         current_app.config.get("TMP_DIR"))
                 filepath = os.path.join(tmp_path, tail)
             else:
-                raise Exception("Could not find absolute path for file %s" % filepath)
+                raise OSError("Could not find absolute path for file %s" % filepath)
         if os.path.exists(filepath):
             os.remove(filepath)
     except Exception as e:
