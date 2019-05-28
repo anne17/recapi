@@ -33,7 +33,7 @@ class ICAParser(GeneralParser):
     def get_title(self):
         """Get recipe title."""
         try:
-            self.title = self.soup.find(class_="recipepage__headline").text
+            self.title = self.soup.find(class_="recipepage__headline").text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract title: {traceback.format_exc()}")
             self.title = ""
