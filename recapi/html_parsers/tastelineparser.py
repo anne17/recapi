@@ -54,9 +54,9 @@ class TastelineParser(GeneralParser):
             ingredients = self.soup.find_all(class_="ingredient-group")
             out = []
             for i in ingredients:
-                # Convert h3 into b
+                # Convert h3 into div
                 for x in i.find_all("h3"):
-                    x.name = "b"
+                    x.name = "div"
                 out.append(text_maker.handle(str(i)).strip())
             self.ingredients = "\n\n".join(i for i in out)
         except Exception:
