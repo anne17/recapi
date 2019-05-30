@@ -1,4 +1,4 @@
-"""Allt om Mat parser class."""
+"""Mitt kök parser class."""
 
 import re
 import traceback
@@ -11,15 +11,14 @@ from recapi.html_parsers import GeneralParser
 # Set html2text options
 text_maker = html2text.HTML2Text()
 text_maker.emphasis_mark = "*"
-text_maker.ignore_tables = True
 
 
 class ICAParser(GeneralParser):
-    """Parser for recipes at alltommat.se."""
+    """Parser for recipes at mittkok.expressen.se."""
 
-    domain = "alltommat.se"
-    name = "Allt om Mat"
-    address = "https://alltommat.se/recept/"
+    domain = "expressen.se"
+    name = "Mitt kök"
+    address = "https://mittkok.expressen.se/recept/"
 
     def __init__(self, url):
         """Init the parser."""
@@ -34,7 +33,7 @@ class ICAParser(GeneralParser):
     def get_title(self):
         """Get recipe title."""
         try:
-            self.title = self.soup.find(class_="entry-title").text.strip()
+            self.title = self.soup.find(class_="recipe__title").text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract title: {traceback.format_exc()}")
             self.title = ""
@@ -42,9 +41,7 @@ class ICAParser(GeneralParser):
     def get_image(self):
         """Get recipe main image."""
         try:
-            image = self.soup.find(class_="featured-image-body").find("style").text
-            match = re.match(r".*background-image: url\((.*)\)", image)
-            self.image = match.group(1)
+            self.image = self.soup.find(class_="recipe__image").find("img").get("src", "")
         except Exception:
             current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
             self.image = ""
@@ -52,16 +49,14 @@ class ICAParser(GeneralParser):
     def get_ingredients(self):
         """Get recipe ingredients list."""
         try:
-            ingredients = self.soup.find_all(class_=["recipe-table", "table-list-header"])
-            ingredients_list = []
-            for elem in ingredients:
-                if elem.name == "h4" and elem.text.strip() != "":
-                    ingredients_list.append("\n\n" + elem.text.strip() + "\n\n")
-                elif elem.name == "table":
-                    rows = text_maker.handle(str(elem)).split("\n")
-                    rows = "\n".join("* " + r for r in rows if r.strip())
-                    ingredients_list.append(rows)
-            self.ingredients = "".join(ingredients_list).strip()
+            ingredients = self.soup.find(class_="recipe__ingredients--inner").find_all(["h3", "ul"])
+            # Convert h3 into div
+            for i in ingredients:
+                if i.name == "h3":
+                    i.name = "div"
+            ingredients = "\n\n".join(str(i) for i in ingredients)
+            ingredients = text_maker.handle(ingredients)
+            self.ingredients = ingredients.rstrip()
         except Exception:
             current_app.logger.error(f"Could not extract ingredients: {traceback.format_exc()}")
             self.ingredients = ""
@@ -69,7 +64,7 @@ class ICAParser(GeneralParser):
     def get_contents(self):
         """Get recipe description."""
         try:
-            contents = self.soup.find(class_="entry-content").find("ol")
+            contents = self.soup.find(class_="recipe__instructions--inner").find("ol")
             contents = text_maker.handle(str(contents)).strip()
             # Remove indentation
             self.contents = re.sub(r"\n\s+", r"\n", contents)
@@ -80,10 +75,8 @@ class ICAParser(GeneralParser):
     def get_portions(self):
         """Get number of portions for recipe."""
         try:
-            portions = self.soup.find(class_="recipe-servings").text
-            portions = portions.rstrip(":")
-            portions = re.sub(r"^För ", r"", portions)
-            self.portions = re.sub(r" personer$", r"", portions)
+            portions = self.soup.find(class_="recipe__portions").text.strip()
+            self.portions = re.sub(r" portioner$", r"", portions)
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""
