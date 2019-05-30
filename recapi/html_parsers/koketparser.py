@@ -43,7 +43,6 @@ class ICAParser(GeneralParser):
         try:
             image = self.soup.find(class_="image-container").find("picture").find("source").get("srcset", "")
             self.image = image.split(",")[0]
-            print(self.image)
         except Exception:
             current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
             self.image = ""
