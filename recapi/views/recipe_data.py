@@ -1,5 +1,6 @@
 """Routes related to recipe data."""
 
+from functools import reduce
 import os
 import traceback
 
@@ -261,90 +262,74 @@ def search():
 
         if tag:
             # Tag Search
-            Changed = User.alias()
-            query = recipemodel.Recipe.select(
-                recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
-            ).join(
-                User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
-            ).switch(
-                recipemodel.Recipe
-            ).join(
-                Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
-            ).switch(
-                recipemodel.Recipe
-            ).join(
-                tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
-            ).join(
-                tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
-            ).group_by(
-                recipemodel.Recipe.id
-            ).where(
-                (recipemodel.Recipe.published == True)
-            ).having(
-                pw.fn.FIND_IN_SET(tag, pw.fn.group_concat(tagmodel.Tag.tagname))
-            )
-            data = recipemodel.get_recipes(query)
-            message = f"Query: tag={tag}"
+            querytype = "tag"
+
+            tagset = set(tag.split(","))
+            tagstructure = tagmodel.get_tag_structure(simple=True)
+            taggroups = []
+            for cat in tagstructure:
+                selected_tags = list(set(cat.get("tags")).intersection(tagset))
+                if selected_tags:
+                    taggroups.append(selected_tags)
+
+            # Chain tags with OR within a category and with AND between categories
+            and_expressions = []
+            for taggroup in taggroups:
+                or_expressions = [
+                    pw.fn.FIND_IN_SET(tag, pw.fn.group_concat(tagmodel.Tag.tagname))
+                    for tag in taggroup
+                ]
+                and_expressions.append(reduce(pw.operator.or_, or_expressions))
+            expr = reduce(pw.operator.and_, and_expressions)
 
         elif user:
             # User search
-            Changed = User.alias()
-            query = recipemodel.Recipe.select(
-                recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
-            ).join(
-                User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
-            ).switch(
-                recipemodel.Recipe
-            ).join(
-                Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
-            ).switch(
-                recipemodel.Recipe
-            ).join(
-                tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
-            ).join(
-                tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
-            ).group_by(
-                recipemodel.Recipe.id
-            ).where(
-                (recipemodel.Recipe.published == True)
-                & (User.displayname == user)
-            )
-            data = recipemodel.get_recipes(query)
-            message = f"Query: user={user}"
+            querytype = "user"
+            expr = (User.displayname == user)
 
         else:
-            # String search
-            Changed = User.alias()
-            query = recipemodel.Recipe.select(
-                recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
-            ).join(
-                User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
-            ).switch(
-                recipemodel.Recipe
-            ).join(
-                Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
-            ).switch(
-                recipemodel.Recipe
-            ).join(
-                tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
-            ).join(
-                tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
-            ).group_by(
-                recipemodel.Recipe.id
-            ).where(
-                (recipemodel.Recipe.published == True)
-            ).having(
-                recipemodel.Recipe.contents.contains(q)
-                | recipemodel.Recipe.ingredients.contains(q)
-                | recipemodel.Recipe.source.contains(q)
-                | User.username.contains(q)
-                | pw.fn.FIND_IN_SET(q, pw.fn.group_concat(tagmodel.Tag.tagname))
-            )
+            # String search: seperate by whitespace and search in all relevant fields
+            querytype = "q"
+            searchitems = q.split(" ")
+            searchitems = [i.rstrip(",") for i in searchitems]
 
-            data = recipemodel.get_recipes(query)
-            message = f"Query: q={q}"
+            expr_list = [
+                (
+                    recipemodel.Recipe.contents.contains(s)
+                    | recipemodel.Recipe.ingredients.contains(s)
+                    | recipemodel.Recipe.source.contains(s)
+                    | User.username.contains(s)
+                    | pw.fn.FIND_IN_SET(s, pw.fn.group_concat(tagmodel.Tag.tagname))
+                ) for s in searchitems
+            ]
+            expr = reduce(pw.operator.and_, expr_list)
 
+        # Build query
+        Changed = User.alias()
+        query = recipemodel.Recipe.select(
+            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+        ).join(
+            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
+        ).join(
+            tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
+        ).group_by(
+            recipemodel.Recipe.id
+        ).where(
+            (recipemodel.Recipe.published == True)
+        ).having(expr)
+
+        data = recipemodel.get_recipes(query)
+        message = f"Query: {querytype}={q}"
         return utils.success_response(msg=message, data=data, hits=len(data))
+
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Query failed: {e}"), 400
