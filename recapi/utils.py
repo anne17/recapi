@@ -8,6 +8,8 @@ import time
 import traceback
 import uuid
 
+import bleach
+from bleach_whitelist import markdown_tags, markdown_attrs
 from validator_collection import checkers
 import markdown
 from flask import jsonify, current_app, session
@@ -42,7 +44,8 @@ def success_response(msg, **kwargs):
 
 def md2html(data):
     """Convert markdown to html."""
-    return markdown.markdown(data)
+    html = bleach.clean(markdown.markdown(data), markdown_tags, markdown_attrs)
+    return html
 
 
 def recipe2html(recipe):

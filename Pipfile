@@ -16,9 +16,11 @@ bs4 = "*"
 requests = "*"
 validator-collection = "*"
 html2text = "*"
-peewee = "*"
+peewee = "3.9.3"
 pyyaml = "*"
 pymysql = "*"
+bleach = "*"
+bleach-whitelist = "*"
 
 [requires]
 python_version = "3.6"
