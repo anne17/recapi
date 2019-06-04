@@ -1,0 +1,15 @@
+bleach
+bleach-whitelist
+click
+flask
+flask-session
+flask-cors
+gunicorn
+markdown
+bs4
+requests
+validator-collection
+html2text
+peewee
+pyyaml
+pymysql
