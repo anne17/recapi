@@ -290,8 +290,11 @@ def search():
         else:
             # String search: seperate by whitespace and search in all relevant fields
             querytype = "q"
-            searchitems = q.split(" ")
-            searchitems = [i.rstrip(",") for i in searchitems]
+            if len(q) > 1 and q.startswith('"') and q.endswith('"'):
+                searchitems = [q[1:-1]]
+            else:
+                searchitems = q.split(" ")
+                searchitems = [i.rstrip(",") for i in searchitems]
 
             expr_list = [
                 (
