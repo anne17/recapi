@@ -87,6 +87,13 @@ def edit_recipe(in_id, data):
     recipe.save()
 
 
+def set_image(in_id, data):
+    """Set image of recipe without changing any other data."""
+    recipe = Recipe.get(Recipe.id == in_id)
+    recipe.image = data.get("image", "")
+    recipe.save()
+
+
 def delete_recipe(in_id):
     """Find recipe by id and remove from data base."""
     recipe = Recipe.get(Recipe.id == in_id)
