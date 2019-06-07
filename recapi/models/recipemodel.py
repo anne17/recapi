@@ -57,7 +57,10 @@ def get_recipes(recipes):
         # Add user data
         r["created_by"] = model_to_dict(recipe.a)
         r["created_by"].pop("password")
-        r["changed_by"] = model_to_dict(recipe.b)
+        if hasattr(recipe, "b"):
+            r["changed_by"] = model_to_dict(recipe.b)
+        else:
+            r["changed_by"] = model_to_dict(usermodel.User())
         r["changed_by"].pop("password")
         # Add tags
         r["tags"] = sorted(recipe.taglist.split(",")) if recipe.taglist else []
