@@ -57,13 +57,26 @@ def add_tags(recipe_data, recipe_id):
         if tagname not in tags:
             recipetags = RecipeTags.get(RecipeTags.recipeID == recipe_id, RecipeTags.tagID == Tag.get(Tag.tagname == tagname).id)
             recipetags.delete_instance()
+            # Remove this tag from Tag table if no other recipe uses it
+            delete_abandoned_tag(in_tagname=tagname)
 
 
 def delete_recipe(recipe_id):
     """Remove all records belonging to a recipe."""
     recipetags = RecipeTags.select().where(RecipeTags.recipeID == recipe_id)
     for record in recipetags:
+        tagID = record.tagID
         record.delete_instance()
+        delete_abandoned_tag(tag_instance=Tag.get(Tag.id == tagID))
+
+
+def delete_abandoned_tag(in_tagname="", tag_instance=None):
+    """Remove tag from database (by name or peewee instance) if there are no references of it left in RecipeTags."""
+    if not tag_instance:
+        tag_instance = Tag.get(Tag.tagname == in_tagname)
+    recipetags = RecipeTags.select().where(RecipeTags.tagID == tag_instance.id).count()
+    if recipetags == 0:
+        tag_instance.delete_instance()
 
 
 def get_tag_categories():
