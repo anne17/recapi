@@ -148,7 +148,10 @@ def add_recpie():
         if filename is not None:
             img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
             filepath = os.path.join(img_path, filename)
-            utils.remove_file(filepath)
+            try:
+                utils.remove_file(filepath)
+            except Exception:
+                current_app.logger.warning(f"Could not delete file: {filepath}")
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to save data: {e}"), 400
 
@@ -167,7 +170,7 @@ def edit_recpie():
             try:
                 utils.remove_file(recipe.image, relative=True)
             except OSError:
-                current_app.logger.error(traceback.format_exc())
+                current_app.logger.warning(traceback.format_exc())
         else:
             save_image(data, data["id"], image_file)
         recipemodel.edit_recipe(data["id"], data)
@@ -206,7 +209,10 @@ def suggest_recipe():
         if filename is not None:
             img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
             filepath = os.path.join(img_path, filename)
-            utils.remove_file(filepath)
+            try:
+                utils.remove_file(filepath)
+            except Exception:
+                current_app.logger.warning(f"Could not delete file: {filepath}")
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to save data: {e}"), 400
 
