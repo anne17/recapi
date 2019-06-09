@@ -24,6 +24,7 @@ jsonschema==3.0.1         # via validator-collection
 markdown==3.1.1
 markupsafe==1.1.1         # via jinja2
 peewee==3.9.6
+pillow==6.0.0
 pymysql==0.9.3
 pyrsistent==0.15.2        # via jsonschema
 pyyaml==5.1.1

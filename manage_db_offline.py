@@ -43,7 +43,8 @@ def update_users():
         user.save()
 
 
-if __name__ == '__main__':
+def migrate_example():
+    """Example: migrate some user data."""
     init_db()
 
     # Check documentation for more info:
@@ -51,18 +52,20 @@ if __name__ == '__main__':
     migrator = playhouse.migrate.MySQLMigrator(config.SQLDB)
 
     # Some examples for altering data
-    # from recapi.models import usermodel
-    # playhouse.migrate.migrate(
-    #     # Add column with or without foreign key
-    #     # migrator.add_column("recipe", "changed_by_id", pw.ForeignKeyField(usermodel.User, null=True, field=usermodel.User.id)),
-    #     # migrator.add_column("recipe", "changed", pw.DateTimeField(null=True)),
-    #
-    #     # Drop column
-    #     # migrator.drop_column("recipe", "changed_by"),
-    # )
-    # update_recipes()
+    from recapi.models import usermodel
+    playhouse.migrate.migrate(
+        # Add column with or without foreign key
+        migrator.add_column("recipe", "changed_by_id", pw.ForeignKeyField(usermodel.User, null=True, field=usermodel.User.id)),
+        migrator.add_column("recipe", "changed", pw.DateTimeField(null=True)),
+        # Drop column
+        # migrator.drop_column("recipe", "changed_by")
+    )
+    update_recipes()
 
-    from recapi.models.tagmodel import Tag, TagCategory
+
+def create_categories():
+    """Create the recipe categories."""
+    from recapi.models.tagmodel import TagCategory
 
     newcatnames = [
         "Måltid",
@@ -76,16 +79,37 @@ if __name__ == '__main__':
         cat = TagCategory(categoryname=newcat, categoryorder=n)
         cat.save()
 
-    # newtagnames = [
-    #     ("gratäng", "Recepttyp"),
-    #     ("gryta", "Recepttyp"),
-    #     ("soppa", "Recepttyp"),
-    #     ("paj", "Recepttyp"),
-    #     ("pasta", "Ingrediens"),
-    #     ("ris", "Ingrediens"),
-    #     ("vegetariskt", "Specialkost"),
-    #     ("veganskt", "Specialkost")
-    # ]
-    # for newtagname, cat in newtagnames:
-    #     tag = Tag(tagname=newtagname, parent=TagCategory.get(TagCategory.categoryname == cat))
-    #     tag.save()
+
+def create_tags():
+    """Create some example tags."""
+    from recapi.models.tagmodel import Tag, TagCategory
+
+    newtagnames = [
+        ("gratäng", "Recepttyp"),
+        ("gryta", "Recepttyp"),
+        ("soppa", "Recepttyp"),
+        ("paj", "Recepttyp"),
+        ("pasta", "Ingrediens"),
+        ("ris", "Ingrediens"),
+        ("vegetariskt", "Specialkost"),
+        ("veganskt", "Specialkost")
+    ]
+    for newtagname, cat in newtagnames:
+        tag = Tag(tagname=newtagname, parent=TagCategory.get(TagCategory.categoryname == cat))
+        tag.save()
+
+
+def make_thumbnails():
+    """Create thumbnails for existing images."""
+    from recapi import utils
+    srcfolder = os.path.join("instance", "img")
+    destfolder = os.path.join("instance", "thumb")
+    for imgfile in os.listdir(srcfolder):
+        src = os.path.join(srcfolder, imgfile)
+        print(src, destfolder)
+        utils.save_thumbnail(src, destfolder)
+
+
+if __name__ == '__main__':
+    # print("Nothing to be done!")
+    make_thumbnails()

@@ -35,6 +35,12 @@ def send_default_img():
     return current_app.send_static_file("default.jpg")
 
 
+@bp.route("/defaultthumb")
+def send_default_thumb():
+    """Serve the thumbnail of the default recipe image."""
+    return current_app.send_static_file("default_thumb.jpg")
+
+
 @bp.route("/logo")
 def send_logo():
     """Serve the recapi logo."""
@@ -47,6 +53,14 @@ def send_img(filename):
     image_dir = os.path.join(current_app.instance_path,
                              current_app.config.get("IMAGE_PATH"))
     return send_from_directory(image_dir, filename)
+
+
+@bp.route("/thumbnail/<id>")
+def send_thumbnail(id):
+    """Serve thumbnail images."""
+    image_dir = os.path.join(current_app.instance_path,
+                             current_app.config.get("THUMBNAIL_PATH"))
+    return send_from_directory(image_dir, id + "_thumb.jpg", mimetype="image/jpeg")
 
 
 @bp.route("/tmp/<filename>")

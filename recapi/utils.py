@@ -10,6 +10,7 @@ import uuid
 
 import bleach
 from bleach_whitelist import markdown_tags, markdown_attrs
+from PIL import Image
 from validator_collection import checkers
 import markdown
 from flask import jsonify, current_app, session
@@ -117,6 +118,25 @@ def copy_file(src, destfolder, destfilename):
         dest = os.path.join(destfolder, destfilename)
         shutil.copyfile(src, dest)
         return True
+    except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        raise e
+
+
+def save_thumbnail(src, destfolder):
+    """Create thumbnail from src and save it under thumbnail path."""
+    try:
+        if not os.path.exists(destfolder):
+            os.makedirs(destfolder)
+
+        filename = os.path.basename(src)
+        file, ext = os.path.splitext(filename)
+
+        size = 512, 512
+        im = Image.open(src)
+        im.thumbnail(size)
+        outpath = os.path.join(destfolder, file + "_thumb.jpg")
+        im.save(outpath, "JPEG")
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         raise e

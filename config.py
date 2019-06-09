@@ -7,6 +7,7 @@ Can be overwritten with config.py in instance folder.
 # Paths relative to the instance folder
 TMP_DIR = "tmp"
 IMAGE_PATH = "img"
+THUMBNAIL_PATH = "thumb"
 
 ADMIN_PASSWORD = "password"
 

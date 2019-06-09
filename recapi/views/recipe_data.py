@@ -219,14 +219,19 @@ def suggest_recipe():
 
 def save_image(data, recipe_id, image_file):
     """Save uploaded image in data base."""
+    img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
+    thumb_destfolder = os.path.join(current_app.instance_path, current_app.config.get("THUMBNAIL_PATH"))
+
     if image_file:
         # Get filename and save image
         filename = utils.make_db_filename(image_file, id=str(recipe_id))
-        img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
         utils.save_upload_file(image_file, filename, img_path)
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.set_image(recipe_id, data)
+        # Save thumbnail
+        src = os.path.join(img_path, filename)
+        utils.save_thumbnail(src, thumb_destfolder)
 
     # When recipe was parsed from external source, image is already uploaded
     elif data.get("image") and data.get("image", "").startswith("tmp"):
@@ -234,11 +239,13 @@ def save_image(data, recipe_id, image_file):
         # Get path to file and copy it from tmp to img folder
         src_directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
         src = os.path.join(src_directory, os.path.split(data["image"])[1])
-        img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
         utils.copy_file(src, img_path, filename)
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.set_image(recipe_id, data)
+        # Save thumbnail
+        src = os.path.join(img_path, filename)
+        utils.save_thumbnail(src, thumb_destfolder)
 
 
 @bp.route("/delete_recipe")

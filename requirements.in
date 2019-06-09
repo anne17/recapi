@@ -11,5 +11,6 @@ requests
 validator-collection
 html2text
 peewee
+pillow
 pyyaml
 pymysql
