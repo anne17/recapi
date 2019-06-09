@@ -111,5 +111,4 @@ def make_thumbnails():
 
 
 if __name__ == '__main__':
-    # print("Nothing to be done!")
-    make_thumbnails()
+    print("Nothing to be done!")

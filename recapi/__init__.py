@@ -9,6 +9,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_session import Session
 
+from recapi import utils
 from recapi.models import usermodel
 from recapi.models import recipemodel
 from recapi.models import tagmodel
@@ -62,6 +63,13 @@ def create_app():
 
         logging.basicConfig(filename=logfile, level=logging.INFO,
                             format=logfmt, datefmt=datefmt)
+
+    # Create thumbnails
+    srcfolder = os.path.join(app.instance_path, app.config.get("IMAGE_PATH"))
+    destfolder = os.path.join(app.instance_path, app.config.get("THUMBNAIL_PATH"))
+    for imgfile in os.listdir(srcfolder):
+        src = os.path.join(srcfolder, imgfile)
+        utils.save_thumbnail(src, destfolder)
 
     # Init session
     Session(app)
