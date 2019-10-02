@@ -35,7 +35,7 @@ class CoopParser(GeneralParser):
     def get_title(self):
         """Get recipe title."""
         try:
-            self.title = self.soup.find(class_="Recipe-title").text.strip()
+            self.title = self.soup.find(itemprop="name").text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract title: {traceback.format_exc()}")
             self.title = ""
@@ -43,7 +43,8 @@ class CoopParser(GeneralParser):
     def get_image(self):
         """Get recipe main image."""
         try:
-            image = self.soup.find(class_="Recipe-imageWrapperContainer").find("img").get("src", "")
+
+            image = self.soup.find(itemprop="image").get("src")
             self.image = "http://" + image.lstrip("/")
         except Exception:
             current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
@@ -52,13 +53,16 @@ class CoopParser(GeneralParser):
     def get_ingredients(self):
         """Get recipe ingredients list."""
         try:
-            ingredients = self.soup.find(class_="Recipe-ingredients")
-            portions = ingredients.find(class_="Recipe-portions")  # Remove portions
-            portions.decompose()
-            legend = ingredients.find(class_="Recipe-ingredientLegend")
-            legend.decompose()
-            for h2 in ingredients("h2"):  # Remove "Ingredients"
-                h2.decompose()
+            ingredients = self.soup.find(class_="IngredientList-container")
+            header = ingredients.find(class_="List-heading")  # Remove header
+            header.decompose()
+
+            for li in ingredients("li"):
+                if not li.text:  # Remove empty list items
+                    li.decompose()
+                else:
+                    if "List-heading" in li.get("class"):  # Make headers headers
+                        li.name = "ul"
             self.ingredients = text_maker.handle(str(ingredients)).strip("\n")
         except Exception:
             current_app.logger.error(f"Could not extract ingredients: {traceback.format_exc()}")
@@ -78,8 +82,9 @@ class CoopParser(GeneralParser):
     def get_portions(self):
         """Get number of portions."""
         try:
-            portions = self.soup.find(class_="Recipe-portionsCount").text
-            self.portions = re.sub(r" portioner$", r"", portions)
+            portions = self.soup.find(class_="Grid-cell Grid-cell--fit").text
+            portions = re.sub(r" portioner$", r"", portions)
+            self.portions = portions.strip()
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""
