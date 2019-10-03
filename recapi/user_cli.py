@@ -49,12 +49,13 @@ def show(user):
 @app.cli.command()
 @click.option("--user", default="")
 @click.option("--display", default="")
-@click.option("--admin", default="true")
+@click.option("--admin", default="false")
 def add(user, display, admin):
     """Add a user to the data base."""
     if admin.lower() not in ["true", "false"]:
         click.echo("'admin' must be 'true' or 'false'")
         return
+    admin = True if admin.lower() == "true" else False
     pw = input_pw("Please select a password: ")
     pw2 = input_pw("Please confirm password: ")
     if pw != pw2:
