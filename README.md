@@ -7,25 +7,27 @@ Flask REST-API for storing, editing and searching recipes.
 
 * A Unix-like environment (e.g. Linux, OS X)
 * [Python 3.6](http://python.org/) or newer
-* pipenv
 
 
 ## Installation
 
-* Install the requirements with pipenv:
+* Install the requirements, e.g. with virtualenv:
 
-    ```
-    pipenv install
-    ```
+  ```
+  python3 -m venv venv
+  source venv/bin/activate
+  pip install -r requirements.txt
+  ```
+
 * Copy file `config_default.py` to `config.py` and adjust configuration.
 
 ## Running the backend
 
-* Run in development mode:
+* Run in development mode (with `venv` activated):
 
-    ```
-    pipenv run python run.py
-    ```
+  ```
+  python run.py
+  ```
 
 
 # User CLI
@@ -37,23 +39,21 @@ Command line interface for administration of the user data base.
 Start serving the command-line API on a suitable port, e.g.:
 
 ```
-    export FLASK_APP=recapi/user_cli.py FLASK_RUN_PORT=8083
+  export FLASK_APP=recapi/user_cli.py FLASK_RUN_PORT=8083
 ```
 
 ## Command line options
 
-Prefix every command with `pipenv run flask`.
-
 Available commands:
 
-* `add --user USER --display DISPLAY_NAME --admin true|false`: Creates a new user. Will prompt for password.
+* `flask add --user USER --display DISPLAY_NAME [--admin true|false]`: Creates a new user. Will prompt for password. Default value for admin is `false`
 
-* `show --user USER`:  Displays user info.
+* `flask show --user USER`:  Displays user info.
 
-* `showall`: Shows the entire user data base.
+* `flask showall`: Shows the entire user data base.
 
-* `check --user USER`: Authenticates user `USER`. Will prompt for password.
+* `flask check --user USER`: Authenticates user `USER`. Will prompt for password.
 
-* `deactivate --user USER`: Sets `USER`'s status to passive.
+* `flask deactivate --user USER`: Sets `USER`'s status to passive.
 
-* `changepw --user USER`: Change password for `USER`.
+* `flask changepw --user USER`: Change password for `USER`.
