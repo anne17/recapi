@@ -70,8 +70,7 @@ class KungsornenParser(GeneralParser):
     def get_portions(self):
         """Get number of portions for recipe."""
         try:
-            portions = self.soup.find(itemprop="recipeYield").text
-            self.portions = re.sub(r" portion(er)?$", r"", portions)
+            self.portions = self.soup.find(itemprop="recipeYield").text
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""

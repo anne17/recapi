@@ -7,6 +7,7 @@ Flask REST-API for storing, editing and searching recipes.
 
 * A Unix-like environment (e.g. Linux, OS X)
 * [Python 3.6](http://python.org/) or newer
+* mariaDB
 
 
 ## Installation
@@ -19,7 +20,7 @@ Flask REST-API for storing, editing and searching recipes.
   pip install -r requirements.txt
   ```
 
-* Copy file `config_default.py` to `config.py` and adjust configuration.
+* Optional: create `config.py` inside the instance directory and adjust configuration.
 
 ## Running the backend
 

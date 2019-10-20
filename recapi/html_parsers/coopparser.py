@@ -83,7 +83,6 @@ class CoopParser(GeneralParser):
         """Get number of portions."""
         try:
             portions = self.soup.find(class_="Grid-cell Grid-cell--fit").text
-            portions = re.sub(r" portioner$", r"", portions)
             self.portions = portions.strip()
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")

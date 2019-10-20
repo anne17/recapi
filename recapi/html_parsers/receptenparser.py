@@ -83,8 +83,7 @@ class ICAParser(GeneralParser):
     def get_portions(self):
         """Get number of portions for recipe."""
         try:
-            portions = self.soup.find_all(class_="property")[-1].text.strip()
-            self.portions = re.sub(r" portioner$", r"", portions)
+            self.portions = self.soup.find_all(class_="property")[-1].text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""

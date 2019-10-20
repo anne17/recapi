@@ -83,7 +83,7 @@ class ICAParser(GeneralParser):
             portions = self.soup.find(class_="recipe-servings").text
             portions = portions.rstrip(":")
             portions = re.sub(r"^För ", r"", portions)
-            self.portions = re.sub(r" personer$", r"", portions)
+            self.portions = re.sub(r"personer$", r"portioner", portions)
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""

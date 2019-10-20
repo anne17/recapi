@@ -89,7 +89,7 @@ class ArlaParser(GeneralParser):
             # Portions in selector
             portions = self.soup.find(class_="servings-selector__select").find("option", {"selected": "selected"})
             if portions:
-                self.portions = portions.text.rstrip(" port")
+                self.portions = re.sub(r"port$", r"portioner", portions)
                 return
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")

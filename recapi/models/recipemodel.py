@@ -78,7 +78,7 @@ def edit_recipe(in_id, data):
     recipe.source = data.get("source", "")
     recipe.ingredients = data.get("ingredients", "")
     recipe.contents = data.get("contents", "")
-    recipe.portions_text = data.get("portions_text", "")
+    recipe.portions_text = portion_text_extend(data.get("portions_text", ""))
     recipe.portions = portion_str_to_number(data.get("portions_text", ""))
     recipe.changed_by = data.get("user")
     recipe.changed = datetime.datetime.now()
@@ -98,6 +98,13 @@ def delete_recipe(in_id):
     """Find recipe by id and remove from data base."""
     recipe = Recipe.get(Recipe.id == in_id)
     return recipe.delete_instance()
+
+
+def portion_text_extend(in_str):
+    """Add 'portioner' if string contains numbers only."""
+    if re.fullmatch(in_str, r"\d+"):
+        return in_str + " portioner"
+    return in_str
 
 
 def portion_str_to_number(in_str):

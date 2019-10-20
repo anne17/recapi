@@ -87,7 +87,7 @@ class TastelineParser(GeneralParser):
         """Get number of portions."""
         try:
             portions = self.soup.find(class_="portions")
-            self.portions = portions.find("option", selected=True).text.rstrip(" portioner")
+            self.portions = portions.find("option", selected=True).text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""
