@@ -52,7 +52,7 @@ def send_img(filename):
     """Serve images."""
     image_dir = os.path.join(current_app.instance_path,
                              current_app.config.get("IMAGE_PATH"))
-    return send_from_directory(image_dir, filename)
+    return send_from_directory(image_dir, filename, mimetype="image/jpeg")
 
 
 @bp.route("/img/medium/<filename>")
@@ -60,7 +60,7 @@ def send_medium_img(filename):
     """Serve medium sized images."""
     image_dir = os.path.join(current_app.instance_path,
                              current_app.config.get("MEDIUM_IMAGE_PATH"))
-    return send_from_directory(image_dir, filename)
+    return send_from_directory(image_dir, filename, mimetype="image/jpeg")
 
 
 @bp.route("/img/thumbnail/<id>")
@@ -71,11 +71,11 @@ def send_thumbnail(id):
     return send_from_directory(image_dir, id, mimetype="image/jpeg")
 
 
-@bp.route("/tmp/<filename>")
+@bp.route("/img/tmp/<filename>")
 def send_tmp(filename):
     """Serve temporary files."""
     data_dir = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
-    return send_from_directory(data_dir, filename)
+    return send_from_directory(data_dir, filename, mimetype="image/jpeg")
 
 
 @bp.route("/clean_tmp_data")

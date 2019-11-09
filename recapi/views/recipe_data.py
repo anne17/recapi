@@ -64,10 +64,10 @@ def preview_data():
         data = utils.deserialize(data)
         image_file = request.files.get("image")
         if image_file:
-            filename = utils.make_random_filename(image_file)
+            filename = utils.make_random_filename(image_file, file_extension=".jpg")
             directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
-            utils.save_upload_file(image_file, filename, directory)
-            data["image"] = "tmp/" + filename
+            utils.save_upload_image(image_file, filename, directory)
+            data["image"] = filename
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -226,7 +226,7 @@ def save_image(data, recipe_id, image_file):
     if image_file:
         # Get filename and save image
         filename = utils.make_db_filename(image_file, id=str(recipe_id))
-        utils.save_upload_file(image_file, filename, img_path)
+        utils.save_upload_image(image_file, filename, img_path)
         # Edit row to add image path
         data["image"] = "img/" + filename
         recipemodel.set_image(recipe_id, data)

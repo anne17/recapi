@@ -1,5 +1,6 @@
 """Routes and utilities for html parsing."""
 
+import io
 import re
 import os
 import importlib
@@ -9,6 +10,8 @@ import requests
 import traceback
 
 from flask import current_app, Blueprint, request
+from PIL import Image
+
 from recapi import utils, html_parsers
 from recapi.html_parsers import GeneralParser
 
@@ -91,21 +94,23 @@ def download_image(image_url):
     try:
         # Get file info, check if content type is image
         file_info = urllib.request.urlopen(image_url).info()
-        content_type = file_info.get('Content-Type')
-        if utils.IMAGE_FORMATS.get(content_type):
-            file_ending = "." + utils.IMAGE_FORMATS.get(content_type)
-        else:
+        content_type = file_info.get("Content-Type")
+        if not utils.IMAGE_FORMATS.get(content_type):
             current_app.logger.error(f"URL did not point to an image: {image_url}")
             return ""
 
-        # Get image data and save in tmp dir
+        # Get image data, convert it to jpg and save in tmp dir
         img_data = requests.get(image_url).content
-        filename = utils.make_random_filename("", file_extension=file_ending)
-        directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
-        utils.save_upload_data(img_data, filename, directory)
+        filelike = io.BytesIO(img_data)
+        imageobj = Image.open(filelike)
+        imageobj = imageobj.convert("RGB")
+        imageobj.save(filelike, format="jpeg")
 
-        filepath = "tmp/" + filename
-        return filepath
+        filename = utils.make_random_filename("", file_extension=".jpg")
+        directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
+        utils.save_upload_data(filelike.getvalue(), filename, directory)
+
+        return filename
 
     except Exception:
         current_app.logger.error(traceback.format_exc())

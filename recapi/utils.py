@@ -85,12 +85,14 @@ def get_file_extension(file):
         return os.path.splitext(file)[1]
 
 
-def save_upload_file(file, filename, upload_folder):
-    """Save uploaded file."""
+def save_upload_image(file, filename, upload_folder):
+    """Save uploaded image and convert to jpg."""
     try:
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
-        file.save(os.path.join(upload_folder, filename))
+        imageobj = Image.open(file)
+        imageobj = imageobj.convert('RGB')
+        imageobj.save(os.path.join(upload_folder, filename), format="jpeg")
         return True
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
