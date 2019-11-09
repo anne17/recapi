@@ -168,7 +168,7 @@ def edit_recpie():
         if not image_file and not data["image"]:
             recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == data["id"])
             try:
-                utils.remove_file(recipe.image, relative=True)
+                utils.remove_file(utils.remove_file(os.path.join(current_app.config.get("IMAGE_PATH"), recipe.image)))
             except OSError:
                 current_app.logger.warning(traceback.format_exc())
         else:
@@ -225,7 +225,7 @@ def save_image(data, recipe_id, image_file):
 
     if image_file:
         # Get filename and save image
-        filename = utils.make_db_filename(image_file, id=str(recipe_id))
+        filename = utils.make_db_filename(image_file, id=str(recipe_id), file_extension=".jpg")
         utils.save_upload_image(image_file, filename, img_path)
         # Edit row to add image path
         data["image"] = filename
@@ -237,7 +237,7 @@ def save_image(data, recipe_id, image_file):
 
     # When recipe was parsed from external source, image is already uploaded
     elif data.get("image") and data.get("image", "").startswith("tmp"):
-        filename = utils.make_db_filename(data["image"], id=str(recipe_id))
+        filename = utils.make_db_filename(data["image"], id=str(recipe_id), file_extension=".jpg")
         # Get path to file and copy it from tmp to img folder
         src_directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
         src = os.path.join(src_directory, os.path.split(data["image"])[1])
@@ -259,9 +259,9 @@ def delete_recpie():
         recipe_id = request.args.get("id")
         recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == recipe_id)
         if recipe.image:
-            utils.remove_file(os.path.join(current_app.config.get("IMAGE_PATH"), recipe.image), relative=True)
-            utils.remove_file(os.path.join(current_app.config.get("THUMBNAIL_PATH"), recipe.image), relative=True)
-            utils.remove_file(os.path.join(current_app.config.get("MEDIUM_IMAGE_PATH"), recipe.image), relative=True)
+            utils.remove_file(os.path.join(current_app.config.get("IMAGE_PATH"), recipe.image))
+            utils.remove_file(os.path.join(current_app.config.get("THUMBNAIL_PATH"), recipe.image))
+            utils.remove_file(os.path.join(current_app.config.get("MEDIUM_IMAGE_PATH"), recipe.image))
         tagmodel.delete_recipe(recipe_id)
         recipemodel.delete_recipe(recipe_id)
         return utils.success_response(msg="Recipe removed")

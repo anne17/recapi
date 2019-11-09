@@ -110,7 +110,7 @@ def download_image(image_url):
         directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
         utils.save_upload_data(filelike.getvalue(), filename, directory)
 
-        return filename
+        return "tmp/" + filename
 
     except Exception:
         current_app.logger.error(traceback.format_exc())

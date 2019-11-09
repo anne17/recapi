@@ -71,9 +71,10 @@ def make_random_filename(infile, file_extension=None):
     return filename + file_extension.lower()
 
 
-def make_db_filename(filename, id):
+def make_db_filename(filename, id, file_extension=None):
     """Generate a filename with id + file extension."""
-    file_extension = get_file_extension(filename)
+    if not file_extension:
+        file_extension = get_file_extension(filename)
     return id + file_extension.lower()
 
 
