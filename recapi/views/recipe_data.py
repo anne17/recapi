@@ -228,11 +228,11 @@ def save_image(data, recipe_id, image_file):
         filename = utils.make_db_filename(image_file, id=str(recipe_id))
         utils.save_upload_image(image_file, filename, img_path)
         # Edit row to add image path
-        data["image"] = "img/" + filename
+        data["image"] = filename
         recipemodel.set_image(recipe_id, data)
         # Save thumbnail
         src = os.path.join(img_path, filename)
-        utils.save_downscaled(src, thumb_destfolder, thumbail=True)
+        utils.save_downscaled(src, thumb_destfolder, thumbnail=True)
         utils.save_downscaled(src, medium_destfolder)
 
     # When recipe was parsed from external source, image is already uploaded
