@@ -67,7 +67,7 @@ def preview_data():
             filename = utils.make_random_filename(image_file, file_extension=".jpg")
             directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
             utils.save_upload_image(image_file, filename, directory)
-            data["image"] = filename
+            data["image"] = "tmp/" + filename
         return utils.success_response(msg="Data converted", data=data)
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -247,7 +247,7 @@ def save_image(data, recipe_id, image_file):
         recipemodel.set_image(recipe_id, data)
         # Save thumbnail
         src = os.path.join(img_path, filename)
-        utils.save_downscaled(src, thumb_destfolder, thumbail=True)
+        utils.save_downscaled(src, thumb_destfolder, thumbnail=True)
         utils.save_downscaled(src, medium_destfolder)
 
 
