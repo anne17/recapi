@@ -68,13 +68,13 @@ def make_random_filename(infile, file_extension=None):
     if not file_extension:
         file_extension = get_file_extension(infile)
     filename = str(uuid.uuid1())
-    return filename + file_extension
+    return filename + file_extension.lower()
 
 
 def make_db_filename(filename, id):
     """Generate a filename with id + file extension."""
     file_extension = get_file_extension(filename)
-    return id + file_extension
+    return id + file_extension.lower()
 
 
 def get_file_extension(file):
