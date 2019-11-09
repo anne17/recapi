@@ -63,12 +63,12 @@ def send_medium_img(filename):
     return send_from_directory(image_dir, filename)
 
 
-@bp.route("/thumbnail/<id>")
+@bp.route("/img/thumbnail/<id>")
 def send_thumbnail(id):
     """Serve thumbnail images."""
     image_dir = os.path.join(current_app.instance_path,
                              current_app.config.get("THUMBNAIL_PATH"))
-    return send_from_directory(image_dir, id + ".jpg", mimetype="image/jpeg")
+    return send_from_directory(image_dir, id, mimetype="image/jpeg")
 
 
 @bp.route("/tmp/<filename>")

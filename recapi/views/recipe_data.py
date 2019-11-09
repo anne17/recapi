@@ -242,8 +242,8 @@ def save_image(data, recipe_id, image_file):
         src_directory = os.path.join(current_app.instance_path, current_app.config.get("TMP_DIR"))
         src = os.path.join(src_directory, os.path.split(data["image"])[1])
         utils.copy_file(src, img_path, filename)
-        # Edit row to add image path
-        data["image"] = "img/" + filename
+        # Edit row to add image file name
+        data["image"] = filename
         recipemodel.set_image(recipe_id, data)
         # Save thumbnail
         src = os.path.join(img_path, filename)
@@ -259,9 +259,9 @@ def delete_recpie():
         recipe_id = request.args.get("id")
         recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == recipe_id)
         if recipe.image:
-            utils.remove_file(recipe.image, relative=True)
-            utils.remove_file(os.path.join(current_app.config.get("THUMBNAIL_PATH"), recipe_id), relative=True)
-            utils.remove_file(os.path.join(current_app.config.get("MEDIUM_IMAGE_PATH"), recipe_id), relative=True)
+            utils.remove_file(os.path.join(current_app.config.get("IMAGE_PATH"), recipe.image), relative=True)
+            utils.remove_file(os.path.join(current_app.config.get("THUMBNAIL_PATH"), recipe.image), relative=True)
+            utils.remove_file(os.path.join(current_app.config.get("MEDIUM_IMAGE_PATH"), recipe.image), relative=True)
         tagmodel.delete_recipe(recipe_id)
         recipemodel.delete_recipe(recipe_id)
         return utils.success_response(msg="Recipe removed")
