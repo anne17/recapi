@@ -221,6 +221,7 @@ def save_image(data, recipe_id, image_file):
     """Save uploaded image in data base."""
     img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
     thumb_destfolder = os.path.join(current_app.instance_path, current_app.config.get("THUMBNAIL_PATH"))
+    medium_destfolder = os.path.join(current_app.instance_path, current_app.config.get("MEDIUM_IMAGE_PATH"))
 
     if image_file:
         # Get filename and save image
@@ -231,7 +232,8 @@ def save_image(data, recipe_id, image_file):
         recipemodel.set_image(recipe_id, data)
         # Save thumbnail
         src = os.path.join(img_path, filename)
-        utils.save_thumbnail(src, thumb_destfolder)
+        utils.save_downscaled(src, thumb_destfolder, thumbail=True)
+        utils.save_downscaled(src, medium_destfolder)
 
     # When recipe was parsed from external source, image is already uploaded
     elif data.get("image") and data.get("image", "").startswith("tmp"):
@@ -245,7 +247,8 @@ def save_image(data, recipe_id, image_file):
         recipemodel.set_image(recipe_id, data)
         # Save thumbnail
         src = os.path.join(img_path, filename)
-        utils.save_thumbnail(src, thumb_destfolder)
+        utils.save_downscaled(src, thumb_destfolder, thumbail=True)
+        utils.save_downscaled(src, medium_destfolder)
 
 
 @bp.route("/delete_recipe")
@@ -257,6 +260,8 @@ def delete_recpie():
         recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == recipe_id)
         if recipe.image:
             utils.remove_file(recipe.image, relative=True)
+            utils.remove_file(os.path.join(current_app.config.get("THUMBNAIL_PATH"), recipe_id), relative=True)
+            utils.remove_file(os.path.join(current_app.config.get("MEDIUM_IMAGE_PATH"), recipe_id), relative=True)
         tagmodel.delete_recipe(recipe_id)
         recipemodel.delete_recipe(recipe_id)
         return utils.success_response(msg="Recipe removed")

@@ -8,6 +8,7 @@ Can be overwritten with config.py in instance folder.
 TMP_DIR = "tmp"
 IMAGE_PATH = "img"
 THUMBNAIL_PATH = "thumb"
+MEDIUM_IMAGE_PATH = "img_medium"
 
 ADMIN_PASSWORD = "password"
 

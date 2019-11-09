@@ -64,12 +64,14 @@ def create_app():
         logging.basicConfig(filename=logfile, level=logging.INFO,
                             format=logfmt, datefmt=datefmt)
 
-    # Create thumbnails
+    # Create thumbnails and medium sized images
     srcfolder = os.path.join(app.instance_path, app.config.get("IMAGE_PATH"))
-    destfolder = os.path.join(app.instance_path, app.config.get("THUMBNAIL_PATH"))
+    thumbnailfolder = os.path.join(app.instance_path, app.config.get("THUMBNAIL_PATH"))
+    mediumfolder = os.path.join(app.instance_path, app.config.get("MEDIUM_IMAGE_PATH"))
     for imgfile in os.listdir(srcfolder):
         src = os.path.join(srcfolder, imgfile)
-        utils.save_thumbnail(src, destfolder)
+        utils.save_downscaled(src, thumbnailfolder, thumbnail=True)
+        utils.save_downscaled(src, mediumfolder)
 
     # Init session
     Session(app)

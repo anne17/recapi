@@ -123,8 +123,8 @@ def copy_file(src, destfolder, destfilename):
         raise e
 
 
-def save_thumbnail(src, destfolder):
-    """Create thumbnail from src and save it under thumbnail path."""
+def save_downscaled(src, destfolder, thumbnail=False):
+    """Create a downscaled image from src and save it in destfolder."""
     try:
         if not os.path.exists(destfolder):
             os.makedirs(destfolder)
@@ -132,10 +132,13 @@ def save_thumbnail(src, destfolder):
         filename = os.path.basename(src)
         file, ext = os.path.splitext(filename)
 
-        size = 512, 512
+        if thumbnail:
+            size = 512, 512
+        else:
+            size = 1110, 1110
         im = Image.open(src)
         im.thumbnail(size)
-        outpath = os.path.join(destfolder, file + "_thumb.jpg")
+        outpath = os.path.join(destfolder, file + ".jpg")
         im.save(outpath, "JPEG")
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
