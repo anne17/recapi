@@ -1,5 +1,6 @@
 """Arla parser class."""
 
+import json
 import re
 import traceback
 
@@ -34,7 +35,7 @@ class ArlaParser(GeneralParser):
     def get_title(self):
         """Get recipe title."""
         try:
-            self.title = self.soup.find(class_="recipe-header__heading").text.strip()
+            self.title = self.soup.find(class_="c-recipe__details").find("h1").text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract title: {traceback.format_exc()}")
             self.title = ""
@@ -42,7 +43,7 @@ class ArlaParser(GeneralParser):
     def get_image(self):
         """Get recipe main image."""
         try:
-            self.image = self.soup.find(class_="image-box-recipe__image").find("img").get("src", "")
+            self.image = self.soup.find(class_="c-recipe__image").find("picture").find("img").get("src", "")
         except Exception:
             current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
             self.image = ""
@@ -50,13 +51,19 @@ class ArlaParser(GeneralParser):
     def get_ingredients(self):
         """Get recipe ingredients list."""
         try:
-            ingredients = self.soup.find(class_="ingredients")
-            # Convert h4 into div
-            for x in ingredients.find_all("h4"):
-                x.name = "div"
-            ingredients = ingredients.find_all(True, {"class": ["recipe-information__subheading", "recipe-ingredients"]})
-            ingredients = "".join(str(i) for i in ingredients)
-            self.ingredients = text_maker.handle(ingredients).strip("\n")
+            ingredients_raw = self.soup.find(class_="c-recipe__ingredients-inner").find_all("div")
+            ingredients = []
+            for i in ingredients_raw:
+                model = json.loads(i.get("data-model"))
+                if model.get("ingredientGroups"):
+                    ilist = model["ingredientGroups"]
+                    for sublist in ilist:
+                        if sublist.get("title"):
+                            ingredients.append(f"\n{sublist.get('title')}\n")
+                        for x in sublist.get("ingredients", []):
+                            ingredients.append(f"* {x.get('formattedAmount')} {x.get('formattedName')}")
+
+            self.ingredients = "\n".join(ingredients).strip()
         except Exception:
             current_app.logger.error(f"Could not extract ingredients: {traceback.format_exc()}")
             self.ingredients = ""
@@ -64,16 +71,17 @@ class ArlaParser(GeneralParser):
     def get_contents(self):
         """Get recipe description."""
         try:
-            contents = self.soup.find(class_="instructions-area__text")
-            self.contents = text_maker.handle(str(contents)).strip()
-            if not contents:
-                contents = self.soup.find(class_="recipe-information__sub-column")
-                # Convert h3 into div
-                for x in contents.find_all("h3"):
-                    x.name = "div"
-                # Remove first heading
-                contents.find("div", text=re.compile("Gör så här")).decompose()
-                self.contents = text_maker.handle(str(contents)).strip("\n")
+            contents_raw = self.soup.find(class_="c-recipe__instructions-steps").find_all("div")
+            contents = []
+            for c in contents_raw:
+                model = json.loads(c.get("data-model"))
+                for section in model.get("sections", []):
+                    if section.get("title"):
+                        contents.append(f"\n{section.get('title')}:")
+                    for i, step in enumerate(section.get("steps", []), 1):
+                        contents.append(f"{i}. {step.get('text').strip()}")
+            self.contents = "\n".join(contents).strip()
+
         except Exception:
             current_app.logger.error(f"Could not extract contents: {traceback.format_exc()}")
             self.contents = ""
@@ -81,16 +89,14 @@ class ArlaParser(GeneralParser):
     def get_portions(self):
         """Get number of portions."""
         try:
+            portions = self.soup.find(class_="c-recipe__ingredients-inner").find("div").get("data-model")
+            model = json.loads(portions)
             # Portions in plain text
-            portions = self.soup.find(class_="servings-selector__label")
-            if portions:
-                self.portions = portions.text.lstrip("Receptet gäller för ")
+            if model.get("notScalablePortionText"):
+                self.portions = model.get("notScalablePortionText").lstrip("Receptet gäller för ")
                 return
             # Portions in selector
-            portions = self.soup.find(class_="servings-selector__select").find("option", {"selected": "selected"})
-            if portions:
-                self.portions = re.sub(r"port$", r"portioner", portions)
-                return
+            self.portions = str(model.get("portionCount")) + " portioner"
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""
