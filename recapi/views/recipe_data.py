@@ -317,7 +317,8 @@ def search():
 
             expr_list = [
                 (
-                    recipemodel.Recipe.contents.contains(s)
+                    recipemodel.Recipe.title.contains(s)
+                    | recipemodel.Recipe.contents.contains(s)
                     | recipemodel.Recipe.ingredients.contains(s)
                     | recipemodel.Recipe.source.contains(s)
                     | User.username.contains(s)
