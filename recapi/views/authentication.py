@@ -38,6 +38,9 @@ def login():
             session["user"] = user.displayname
             session["uid"] = user.id
             session["admin"] = user.admin
+            # For admin users make session expire according to PERMANENT_SESSION_LIFETIME
+            if user.admin:
+                session.permanent = True
             current_app.logger.debug("User %s logged in successfully" % username)
             return utils.success_response("User %s logged in successfully!" % username,
                                           user=user.displayname, admin=user.admin)

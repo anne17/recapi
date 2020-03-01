@@ -4,6 +4,8 @@ Default configuration for recAPI backed.
 Can be overwritten with config.py in instance folder.
 """
 
+import datetime
+
 # Paths relative to the instance folder
 TMP_DIR = "tmp"
 IMAGE_PATH = "img"
@@ -19,6 +21,7 @@ WSGI_PORT = 9005
 SECRET_KEY = "super secret key"
 SESSION_TYPE = "filesystem"
 SESSION_FILE_DIR = "instance/flask_session"
+PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=90)
 
 # SQL database info
 DB_NAME = "recipe"
