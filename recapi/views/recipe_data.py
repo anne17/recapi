@@ -2,6 +2,7 @@
 
 from functools import reduce
 import os
+import random
 import traceback
 
 from flask import request, current_app, Blueprint, session
@@ -375,3 +376,44 @@ def get_tag_structure():
 def get_tag_structure_simple():
     cats = tagmodel.get_tag_structure(simple=True)
     return utils.success_response(msg="", data=cats)
+
+
+@bp.route("/random")
+def get_random_recipe():
+    """Return one recipe at random from randomizer categories in config."""
+    tags = current_app.config.get("RANDOM_TAGS", [])
+
+    or_expressions = reduce(pw.operator.or_, [
+        pw.fn.FIND_IN_SET(tag, pw.fn.group_concat(tagmodel.Tag.tagname))
+        for tag in tags
+    ])
+
+    try:
+        Changed = User.alias()
+        recipes = recipemodel.Recipe.select(
+            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+        ).where(
+            recipemodel.Recipe.published == True
+        ).join(
+            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
+        ).join(
+            tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
+        ).group_by(
+            recipemodel.Recipe.id
+        ).having(
+            or_expressions
+        )
+
+        recipe = random.choice(recipemodel.get_recipes(recipes))
+        return utils.success_response(msg="Data loaded", data=recipe, hits=len(recipe))
+    except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Failed to load data: {e}")
