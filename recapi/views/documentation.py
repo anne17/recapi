@@ -13,7 +13,7 @@ def api_spec():
     """Return open API specification in json."""
     spec_file = os.path.join(current_app.static_folder, "recapi-oas.yaml")
     with open(spec_file, encoding="UTF-8") as f:
-        return jsonify(yaml.load(f))
+        return jsonify(yaml.load(f, Loader=yaml.FullLoader))
 
 
 @bp.route("/")
