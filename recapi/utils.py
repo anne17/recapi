@@ -126,7 +126,7 @@ def copy_file(src, destfolder, destfilename):
         raise e
 
 
-def save_downscaled(src, destfolder, thumbnail=False):
+def save_downscaled(src, destfolder, thumbnail=False, overwrite=True):
     """Create a downscaled image from src and save it in destfolder."""
     try:
         if not os.path.exists(destfolder):
@@ -134,6 +134,11 @@ def save_downscaled(src, destfolder, thumbnail=False):
 
         filename = os.path.basename(src)
         file, ext = os.path.splitext(filename)
+        outpath = os.path.join(destfolder, file + ".jpg")
+
+        # Do not downscale image if it already exists
+        if (overwrite is False) and os.path.exists(destfolder):
+            return
 
         if thumbnail:
             size = 512, 512
@@ -141,7 +146,6 @@ def save_downscaled(src, destfolder, thumbnail=False):
             size = 1110, 1110
         im = Image.open(src)
         im.thumbnail(size)
-        outpath = os.path.join(destfolder, file + ".jpg")
         im.save(outpath, "JPEG")
     except Exception as e:
         current_app.logger.error(traceback.format_exc())

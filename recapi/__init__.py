@@ -70,8 +70,8 @@ def create_app():
     mediumfolder = os.path.join(app.instance_path, app.config.get("MEDIUM_IMAGE_PATH"))
     for imgfile in os.listdir(srcfolder):
         src = os.path.join(srcfolder, imgfile)
-        utils.save_downscaled(src, thumbnailfolder, thumbnail=True)
-        utils.save_downscaled(src, mediumfolder)
+        utils.save_downscaled(src, thumbnailfolder, thumbnail=True, overwrite=False)
+        utils.save_downscaled(src, mediumfolder, overwrite=False)
 
     # Init session
     Session(app)
