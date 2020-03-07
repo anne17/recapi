@@ -60,7 +60,10 @@ def migrate_example():
         # Drop column
         # migrator.drop_column("recipe", "changed_by")
         # Rename column
-        migrator.rename_column('recipe', 'suggestor', 'suggester')
+        migrator.rename_column('recipe', 'suggestor', 'suggester'),
+        migrator.add_column("recipe", "stored", pw.BooleanField(default=False)),
+        migrator.add_column("recipe", "needs_fix", pw.BooleanField(default=False))
+
     )
     update_recipes()
 

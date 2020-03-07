@@ -417,3 +417,103 @@ def get_random_recipe():
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to load data: {e}")
+
+
+@bp.route("/toggle_stored", methods=["POST"])
+@utils.gatekeeper()
+def toggle_stored():
+    """Toggle the 'stored' value of a recipe."""
+    try:
+        data = request.form.to_dict()
+        data = utils.deserialize(data)
+        stored = data.get("stored", False)
+        recipemodel.toggle_stored(data["id"], stored)
+        if stored:
+            return utils.success_response(msg="Recipe stored")
+        else:
+            return utils.success_response(msg="Recipe unstored")
+
+    except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Failed to save data: {e}"), 400
+
+
+@bp.route("/stored_recipes")
+@utils.gatekeeper()
+def stored_recipes():
+    """Return data for all stored recipes."""
+    try:
+        Changed = User.alias()
+        recipes = recipemodel.Recipe.select(
+            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+        ).where(
+            recipemodel.Recipe.stored == True
+        ).join(
+            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
+        ).join(
+            tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
+        ).group_by(recipemodel.Recipe.id)
+
+        data = recipemodel.get_recipes(recipes)
+        return utils.success_response(msg="Data loaded", data=data, hits=len(data))
+    except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Failed to load data: {e}")
+
+
+@bp.route("/toggle_needs_fix", methods=["POST"])
+@utils.gatekeeper(allow_guest=True)
+def toggle_needs_fix():
+    """Toggle the 'needs_fix' value of a recipe."""
+    try:
+        data = request.form.to_dict()
+        data = utils.deserialize(data)
+        needs_fix = data.get("needs_fix", False)
+        recipemodel.toggle_needs_fix(data["id"], needs_fix)
+        if needs_fix:
+            return utils.success_response(msg="Recipe marked as 'needs_fix'")
+        else:
+            return utils.success_response(msg="Recipe unmarked")
+
+    except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Failed to save data: {e}"), 400
+
+
+@bp.route("/needs_fix_recipes")
+@utils.gatekeeper()
+def needs_fix_recipes():
+    """Return data for all recipes that need fixes."""
+    try:
+        Changed = User.alias()
+        recipes = recipemodel.Recipe.select(
+            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+        ).where(
+            recipemodel.Recipe.needs_fix == True
+        ).join(
+            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
+        ).switch(
+            recipemodel.Recipe
+        ).join(
+            tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
+        ).join(
+            tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
+        ).group_by(recipemodel.Recipe.id)
+
+        data = recipemodel.get_recipes(recipes)
+        return utils.success_response(msg="Data loaded", data=data, hits=len(data))
+    except Exception as e:
+        current_app.logger.error(traceback.format_exc())
+        return utils.error_response(f"Failed to load data: {e}")

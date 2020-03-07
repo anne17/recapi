@@ -25,6 +25,8 @@ class Recipe(BaseModel):
     changed = pw.DateTimeField(null=True)
     published = pw.BooleanField(default=True)
     suggester = pw.CharField(max_length="100", null=True)
+    stored = pw.BooleanField(default=False)
+    needs_fix = pw.BooleanField(default=False)
 
 
 def add_recipe(data):
@@ -43,7 +45,9 @@ def add_recipe(data):
         changed_by=None,
         changed=None,
         published=data.get("published", True),
-        suggester=data.get("suggester", None)
+        suggester=data.get("suggester", None),
+        stored=data.get("stored", False),
+        needs_fix=data.get("needs_fix", False)
     )
     recipe.save()
     return recipe.id
@@ -84,6 +88,20 @@ def edit_recipe(in_id, data):
     recipe.changed = datetime.datetime.now()
     recipe.published = data.get("published", True)
     recipe.suggester = data.get("suggester", None)
+    recipe.save()
+
+
+def toggle_stored(in_id, store):
+    """Change the 'stored' value of a recipe."""
+    recipe = Recipe.get(Recipe.id == in_id)
+    recipe.stored = store
+    recipe.save()
+
+
+def toggle_needs_fix(in_id, needs_fix):
+    """Change the 'needs_fix' value of a recipe."""
+    recipe = Recipe.get(Recipe.id == in_id)
+    recipe.needs_fix = needs_fix
     recipe.save()
 
 
