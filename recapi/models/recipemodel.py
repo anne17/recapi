@@ -24,7 +24,7 @@ class Recipe(BaseModel):
     changed_by = pw.ForeignKeyField(usermodel.User, null=True)
     changed = pw.DateTimeField(null=True)
     published = pw.BooleanField(default=True)
-    suggestor = pw.CharField(max_length="100", null=True)
+    suggester = pw.CharField(max_length="100", null=True)
 
 
 def add_recipe(data):
@@ -43,7 +43,7 @@ def add_recipe(data):
         changed_by=None,
         changed=None,
         published=data.get("published", True),
-        suggestor=data.get("suggestor", None)
+        suggester=data.get("suggester", None)
     )
     recipe.save()
     return recipe.id
@@ -83,7 +83,7 @@ def edit_recipe(in_id, data):
     recipe.changed_by = data.get("user")
     recipe.changed = datetime.datetime.now()
     recipe.published = data.get("published", True)
-    recipe.suggestor = data.get("suggestor", None)
+    recipe.suggester = data.get("suggester", None)
     recipe.save()
 
 

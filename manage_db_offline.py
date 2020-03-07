@@ -55,10 +55,12 @@ def migrate_example():
     from recapi.models import usermodel
     playhouse.migrate.migrate(
         # Add column with or without foreign key
-        migrator.add_column("recipe", "changed_by_id", pw.ForeignKeyField(usermodel.User, null=True, field=usermodel.User.id)),
-        migrator.add_column("recipe", "changed", pw.DateTimeField(null=True)),
+        # migrator.add_column("recipe", "changed_by_id", pw.ForeignKeyField(usermodel.User, null=True, field=usermodel.User.id)),
+        # migrator.add_column("recipe", "changed", pw.DateTimeField(null=True)),
         # Drop column
         # migrator.drop_column("recipe", "changed_by")
+        # Rename column
+        migrator.rename_column('recipe', 'suggestor', 'suggester')
     )
     update_recipes()
 
@@ -111,4 +113,5 @@ def make_thumbnails():
 
 
 if __name__ == '__main__':
+    # migrate_example()
     print("Nothing to be done!")
