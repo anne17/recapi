@@ -412,8 +412,8 @@ def get_random_recipe():
             or_expressions
         )
 
-        recipe = random.choice(recipemodel.get_recipes(recipes))
-        return utils.success_response(msg="Data loaded", data=recipe, hits=len(recipe))
+        recipe = [random.choice(recipemodel.get_recipes(recipes))]
+        return utils.success_response(msg="Got random recipe", data=recipe, hits=len(recipe))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to load data: {e}")
