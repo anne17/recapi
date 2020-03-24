@@ -6,34 +6,32 @@
 #
 attrs==19.3.0             # via jsonschema
 beautifulsoup4==4.8.2     # via bs4
-bleach-whitelist==0.0.10
-bleach==3.1.1
-bs4==0.0.1
+bleach-whitelist==0.0.10  # via -r requirements.in
+bleach==3.1.2             # via -r requirements.in
+bs4==0.0.1                # via -r requirements.in
 certifi==2019.11.28       # via requests
 chardet==3.0.4            # via requests
-click==7.0
-flask-cors==3.0.8
-flask-session==0.3.1
-flask==1.1.1
-gunicorn==20.0.4
-html2text==2020.1.16
+click==7.0                # via -r requirements.in, flask
+flask-cors==3.0.8         # via -r requirements.in
+flask-session==0.3.1      # via -r requirements.in
+flask==1.1.1              # via -r requirements.in, flask-cors, flask-session
+gunicorn==20.0.4          # via -r requirements.in
+html2text==2020.1.16      # via -r requirements.in
 idna==2.9                 # via requests
-importlib-metadata==1.5.0  # via jsonschema
 itsdangerous==1.1.0       # via flask
 jinja2==2.11.1            # via flask
 jsonschema==3.2.0         # via validator-collection
-markdown==3.2.1
+markdown==3.2.1           # via -r requirements.in
 markupsafe==1.1.1         # via jinja2
-peewee==3.13.1
-pillow==7.0.0
-pymysql==0.9.3
+peewee==3.13.1            # via -r requirements.in
+pillow==7.0.0             # via -r requirements.in
+pymysql==0.9.3            # via -r requirements.in
 pyrsistent==0.15.7        # via jsonschema
-pyyaml==5.3
-requests==2.23.0
-six==1.14.0               # via bleach, flask-cors, jsonschema, pyrsistent
+pyyaml==5.3               # via -r requirements.in
+requests==2.23.0          # via -r requirements.in
+six==1.14.0               # via bleach, flask-cors, jsonschema
 soupsieve==2.0            # via beautifulsoup4
 urllib3==1.25.8           # via requests
-validator-collection==1.4.1
+validator-collection==1.4.1  # via -r requirements.in
 webencodings==0.5.1       # via bleach
 werkzeug==0.16.0          # via flask
-zipp==3.1.0               # via importlib-metadata
