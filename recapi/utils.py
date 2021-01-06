@@ -133,11 +133,11 @@ def save_downscaled(src, destfolder, thumbnail=False, overwrite=True):
             os.makedirs(destfolder)
 
         filename = os.path.basename(src)
-        file, ext = os.path.splitext(filename)
+        file, _ext = os.path.splitext(filename)
         outpath = os.path.join(destfolder, file + ".jpg")
 
         # Do not downscale image if it already exists
-        if (overwrite is False) and os.path.exists(destfolder):
+        if (overwrite is False) and os.path.exists(outpath):
             return
 
         if thumbnail:

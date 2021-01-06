@@ -25,6 +25,7 @@ def init_db():
 
 def update_recipes():
     """Update all recipes, e.g. when values of a column are converted."""
+    init_db()
     from recapi.models import recipemodel
     recipes = recipemodel.Recipe.select()
     for recipe in recipes:
@@ -65,7 +66,7 @@ def migrate_example():
         migrator.add_column("recipe", "needs_fix", pw.BooleanField(default=False))
 
     )
-    update_recipes()
+    # update_recipes()
 
 
 def create_categories():
@@ -102,17 +103,6 @@ def create_tags():
     for newtagname, cat in newtagnames:
         tag = Tag(tagname=newtagname, parent=TagCategory.get(TagCategory.categoryname == cat))
         tag.save()
-
-
-def make_thumbnails():
-    """Create thumbnails for existing images."""
-    from recapi import utils
-    srcfolder = os.path.join("instance", "img")
-    destfolder = os.path.join("instance", "thumb")
-    for imgfile in os.listdir(srcfolder):
-        src = os.path.join(srcfolder, imgfile)
-        print(src, destfolder)
-        utils.save_thumbnail(src, destfolder)
 
 
 if __name__ == '__main__':

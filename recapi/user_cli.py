@@ -117,7 +117,7 @@ def input_pw(prompt="Password: "):
 def stringify_user_info(userdict):
     """Turn user info into string."""
     user_status = "active" if userdict.get("active") is True else "passive"
-    return 'username: "%s" displayname: id: "%s" "%s" status: "%s" admin: %s' % (
+    return 'username: "%s" displayname: "%s" id: "%s" status: "%s" admin: %s' % (
         userdict.get("username"),
         userdict.get("displayname"),
         userdict.get("id"),
