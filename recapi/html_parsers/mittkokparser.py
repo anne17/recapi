@@ -13,7 +13,7 @@ text_maker = html2text.HTML2Text()
 text_maker.emphasis_mark = "*"
 
 
-class ICAParser(GeneralParser):
+class MittkokParser(GeneralParser):
     """Parser for recipes at mittkok.expressen.se."""
 
     domain = "expressen.se"

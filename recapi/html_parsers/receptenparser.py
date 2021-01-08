@@ -15,7 +15,7 @@ text_maker.ignore_links = True
 text_maker.ignore_images = True
 
 
-class ICAParser(GeneralParser):
+class ReceptenParser(GeneralParser):
     """Parser for recipes at recepten.se."""
 
     domain = "recepten.se"

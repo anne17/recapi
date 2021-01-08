@@ -14,7 +14,7 @@ text_maker.emphasis_mark = "*"
 text_maker.ignore_tables = True
 
 
-class ICAParser(GeneralParser):
+class AlltommatParser(GeneralParser):
     """Parser for recipes at alltommat.se."""
 
     domain = "alltommat.se"
