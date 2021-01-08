@@ -33,7 +33,7 @@ class ICAParser(GeneralParser):
     def get_title(self):
         """Get recipe title."""
         try:
-            self.title = self.soup.find(class_="recipepage__headline").text.strip()
+            self.title = self.soup.find(class_="recipe-header__title").text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract title: {traceback.format_exc()}")
             self.title = ""
@@ -41,9 +41,7 @@ class ICAParser(GeneralParser):
     def get_image(self):
         """Get recipe main image."""
         try:
-            image = self.soup.find(class_="recipe-image-square__image").get("style", "")
-            match = re.match(r"background-image: url\('(.*)'\)", str(image))
-            self.image = "https:" + match.group(1)
+            self.image = self.soup.find(class_="recipe-header__desktop-image-wrapper").find("img").get("src", "")
         except Exception:
             current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
             self.image = ""
@@ -51,10 +49,23 @@ class ICAParser(GeneralParser):
     def get_ingredients(self):
         """Get recipe ingredients list."""
         try:
-            ingredients = self.soup.find(class_="ingredients")
-            ingredients = ingredients.find_all(["ul", "strong"])
-            ingredients = "".join(str(i) for i in ingredients)
-            self.ingredients = text_maker.handle(ingredients).strip("\n")
+            ingredients = self.soup.find_all(class_="ingredients-list-group")
+            ingredients_list = []
+            for i in ingredients:
+                if "extra" in i.get("class", []):
+                    continue
+                heading = i.find(class_="ingredients-list-group__heading")
+                if heading:
+                    ingredients_list.append("\n" + heading.text + ":\n")
+                for row in i.find_all(class_="ingredients-list-group__card"):
+                    quantity = text_maker.handle(str(row.find(class_="ingredients-list-group__card__qty"))).strip()
+                    if quantity in ["-", "None"]:
+                        quantity = ""
+                    else:
+                        quantity += " "
+                    ingredient = text_maker.handle(str(row.find(class_="ingredients-list-group__card__ingr"))).strip()
+                    ingredients_list.append("* " + quantity + ingredient)
+            self.ingredients = "\n".join(ingredients_list)
         except Exception:
             current_app.logger.error(f"Could not extract ingredients: {traceback.format_exc()}")
             self.ingredients = ""
@@ -62,10 +73,16 @@ class ICAParser(GeneralParser):
     def get_contents(self):
         """Get recipe description."""
         try:
-            contents = self.soup.find(class_="recipe-howto-steps").find("ol")
-            contents = text_maker.handle(str(contents)).strip()
+            contents = self.soup.find(id="steps").find_all(class_="cooking-steps-main--step")
+            contents_list = []
+
+            for n, div in enumerate(contents, start=1):
+                for i in div.find_all(class_="timer-wrapper"):
+                    i.decompose()
+                contents_list.append(str(n) + ". " + text_maker.handle(str(div)).strip())
+            self.contents = "\n".join(contents_list)
             # Remove indentation
-            self.contents = re.sub(r"\n\s+", r"\n", contents)
+            # self.contents = re.sub(r"\n\s+", r"\n", contents)
         except Exception:
             current_app.logger.error(f"Could not extract contents: {traceback.format_exc()}")
             self.contents = ""
@@ -73,7 +90,12 @@ class ICAParser(GeneralParser):
     def get_portions(self):
         """Get number of portions for recipe."""
         try:
-            self.portions = self.soup.find(class_="servings-picker__servings").text
+            portions = self.soup.find(class_="default-portions")
+            if portions:
+                self.portions = portions.text
+            else:
+                portions = self.soup.find(class_="ingredients-change-portions").get("default-portions", "")
+                self.portions = portions + " portioner" if portions else ""
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""

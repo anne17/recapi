@@ -42,9 +42,8 @@ class ICAParser(GeneralParser):
     def get_image(self):
         """Get recipe main image."""
         try:
-            image = self.soup.find(class_="featured-image-body").find("style").text
-            match = re.match(r".*background-image: url\((.*)\)", image)
-            self.image = match.group(1)
+            image = self.soup.find(class_="featured-image-body").find("style")
+            self.image = re.findall(r".*background-image: url\((.*)\)", str(image))[-1]
         except Exception:
             current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
             self.image = ""

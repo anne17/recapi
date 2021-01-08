@@ -57,6 +57,7 @@ class TastelineParser(GeneralParser):
                 # Convert h3 into div
                 for x in i.find_all("h3"):
                     x.name = "div"
+                    x.string = x.text + ":"
                 out.append(text_maker.handle(str(i)).strip())
             self.ingredients = "\n\n".join(i for i in out)
         except Exception:
@@ -71,7 +72,7 @@ class TastelineParser(GeneralParser):
             [x.extract() for x in contents.find_all(class_='row')]  # remove meta data
             # Convert h3 into b
             for x in contents.find_all("h3"):
-                x.name = "b"
+                x.name = "div"
             # Convert ul into ol
             for x in contents.find_all("ul"):
                 x.name = "ol"

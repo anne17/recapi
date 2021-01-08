@@ -54,7 +54,7 @@ class ArlaParser(GeneralParser):
             ingredients_raw = self.soup.find(class_="c-recipe__ingredients-inner").find_all("div")
             ingredients = []
             for i in ingredients_raw:
-                model = json.loads(i.get("data-model"))
+                model = json.loads(i.get("data-model", "{}"))
                 if model.get("ingredientGroups"):
                     ilist = model["ingredientGroups"]
                     for sublist in ilist:

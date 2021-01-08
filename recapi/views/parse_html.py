@@ -1,18 +1,18 @@
 """Routes and utilities for html parsing."""
 
-import io
-import re
-import os
 import importlib
+import io
+import os
 import pkgutil
-import urllib
-import requests
+import re
 import traceback
+import urllib.parse
+from urllib.request import Request, urlopen
 
-from flask import current_app, Blueprint, request
+import requests
+from flask import Blueprint, current_app, request
 from PIL import Image
-
-from recapi import utils, html_parsers
+from recapi import html_parsers, utils
 from recapi.html_parsers import GeneralParser
 
 bp = Blueprint("parser_views", __name__)
@@ -93,7 +93,15 @@ def download_image(image_url):
     """Retrieve image from URL and save it as a temporary file."""
     try:
         # Get file info, check if content type is image
-        file_info = urllib.request.urlopen(image_url).info()
+        # Add headers to avoid being blocked by some servers
+        headers = {"User-Agent": ("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko)"
+                                  "Chrome/41.0.2228.0 Safari/537.3")}
+        # Handle non-ascii URLs
+        image_url = list(urllib.parse.urlsplit(image_url))
+        image_url[2] = urllib.parse.quote(image_url[2])
+        image_url = urllib.parse.urlunsplit(image_url)
+        # Check content type
+        file_info = urlopen(Request(url=image_url, headers=headers)).info()
         content_type = file_info.get("Content-Type")
         if not utils.IMAGE_FORMATS.get(content_type):
             current_app.logger.error(f"URL did not point to an image: {image_url}")

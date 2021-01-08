@@ -74,8 +74,9 @@ class ICAParser(GeneralParser):
                     i.decompose()
             contents = text_maker.handle(str(contents))
             # Remove indentation
-            contents = contents.strip()
-            self.contents = re.sub(r"\n\s+", r"\n", contents)
+            contents = re.sub(r"(?<!:)\n\s+", r"\n", contents)
+            # Prettify headers
+            self.contents = re.sub("\n### ", "\n\n", contents).strip()
         except Exception:
             current_app.logger.error(f"Could not extract contents: {traceback.format_exc()}")
             self.contents = ""

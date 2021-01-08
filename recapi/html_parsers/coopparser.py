@@ -1,10 +1,9 @@
 """Coop parser class."""
 
-import re
 import traceback
 
-from flask import current_app
 import html2text
+from flask import current_app
 
 from recapi.html_parsers import GeneralParser
 
@@ -35,7 +34,7 @@ class CoopParser(GeneralParser):
     def get_title(self):
         """Get recipe title."""
         try:
-            self.title = self.soup.find(itemprop="name").text.strip()
+            self.title = self.soup.find(class_="Section").find("h1").text
         except Exception:
             current_app.logger.error(f"Could not extract title: {traceback.format_exc()}")
             self.title = ""
@@ -54,15 +53,14 @@ class CoopParser(GeneralParser):
         """Get recipe ingredients list."""
         try:
             ingredients = self.soup.find(class_="IngredientList-container")
-            header = ingredients.find(class_="List-heading")  # Remove header
-            header.decompose()
 
             for li in ingredients("li"):
                 if not li.text:  # Remove empty list items
                     li.decompose()
                 else:
-                    if "List-heading" in li.get("class"):  # Make headers headers
+                    if "List-heading" in li.get("class"):  # Prettify headers
                         li.name = "ul"
+                        li.string = li.text + ":"
             self.ingredients = text_maker.handle(str(ingredients)).strip("\n")
         except Exception:
             current_app.logger.error(f"Could not extract ingredients: {traceback.format_exc()}")
@@ -71,9 +69,13 @@ class CoopParser(GeneralParser):
     def get_contents(self):
         """Get recipe description."""
         try:
-            contents = self.soup.find(itemprop="recipeInstructions")
-            for span in contents("span"):  # Remove numbers
-                span.decompose()
+            contents = self.soup.find_all(class_="Tab-panel")[-1]
+            for i in contents.find_all("h2"):
+                if i.text.strip() == "Gör så här":
+                    i.decompose()
+                else:
+                    i.name = "div"
+                    i.string = i.text + ":"
             self.contents = text_maker.handle(str(contents)).strip("\n")
         except Exception:
             current_app.logger.error(f"Could not extract contents: {traceback.format_exc()}")

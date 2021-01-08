@@ -33,7 +33,7 @@ class ICAParser(GeneralParser):
     def get_title(self):
         """Get recipe title."""
         try:
-            self.title = self.soup.find(class_="recipe-content-wrapper").find("h1").text.strip()
+            self.title = self.soup.find("div", {"class": re.compile("recipe_gridLeftWrapper*")}).find("h1").text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract title: {traceback.format_exc()}")
             self.title = ""
@@ -41,8 +41,7 @@ class ICAParser(GeneralParser):
     def get_image(self):
         """Get recipe main image."""
         try:
-            image = self.soup.find(class_="image-container").find("picture").find("source").get("srcset", "")
-            self.image = image.split(",")[0]
+            self.image = self.soup.find("img", {"class": re.compile("media_recipeImage__*")}).get("data-src", "")
         except Exception:
             current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
             self.image = ""
@@ -65,7 +64,7 @@ class ICAParser(GeneralParser):
     def get_contents(self):
         """Get recipe description."""
         try:
-            contents = self.soup.find(class_="step-by-step").find("ol")
+            contents = self.soup.find(id="step-by-step").find("ol")
             contents = text_maker.handle(str(contents)).strip()
             # Remove indentation
             self.contents = re.sub(r"\n\s+", r"\n", contents)
@@ -76,7 +75,7 @@ class ICAParser(GeneralParser):
     def get_portions(self):
         """Get number of portions for recipe."""
         try:
-            self.portions = self.soup.find(class_="amount").text.strip()
+            self.portions = self.soup.find("span", {"class": re.compile("portions_converter_portions*")}).text.strip()
         except Exception:
             current_app.logger.error(f"Could not extract portions: {traceback.format_exc()}")
             self.portions = ""

@@ -41,8 +41,8 @@ class KungsornenParser(GeneralParser):
     def get_image(self):
         """Get recipe main image."""
         try:
-            image = self.soup.find(class_="container main").find("img").get("src", "")
-            self.image = "https://www.kungsornen.se/" + image
+            image = self.soup.find(class_="container main").find("img").get("src", "").split("?")[0]
+            self.image = "https://www.kungsornen.se" + image
         except Exception:
             current_app.logger.error(f"Could not extract image: {traceback.format_exc()}")
             self.image = ""
@@ -59,10 +59,8 @@ class KungsornenParser(GeneralParser):
     def get_contents(self):
         """Get recipe description."""
         try:
-            contents = self.soup.find(itemprop="recipeInstructions").find_all("p")
+            contents = self.soup.find(class_="span9").find(class_="section").find_all("p")
             self.contents = "\n".join(str(i.text) for i in contents)
-            # contents = self.soup.find(itemprop="recipeInstructions")
-            # self.contents = text_maker.handle(str(contents))
         except Exception:
             current_app.logger.error(f"Could not extract contents: {traceback.format_exc()}")
             self.contents = ""
