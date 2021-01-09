@@ -305,7 +305,7 @@ def search():
         elif user:
             # User search
             querytype = "user"
-            expr = (User.displayname == user)
+            expr = ((User.displayname == user) | recipemodel.Recipe.suggester.contains(user))
 
         else:
             # String search: seperate by whitespace and search in all relevant fields
