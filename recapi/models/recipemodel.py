@@ -94,7 +94,7 @@ def edit_recipe(in_id, data):
 def toggle_stored(in_id, store):
     """Change the 'stored' value of a recipe."""
     recipe = Recipe.get(Recipe.id == in_id)
-    recipe.stored = store
+    recipe.stored = not store
     recipe.save()
 
 

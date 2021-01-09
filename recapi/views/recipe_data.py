@@ -424,8 +424,7 @@ def get_random_recipe():
 def toggle_stored():
     """Toggle the 'stored' value of a recipe."""
     try:
-        data = request.form.to_dict()
-        data = utils.deserialize(data)
+        data = request.get_json()
         stored = data.get("stored", False)
         recipemodel.toggle_stored(data["id"], stored)
         if stored:
