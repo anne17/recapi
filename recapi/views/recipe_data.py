@@ -133,6 +133,7 @@ def add_recpie():
         data = request.form.to_dict()
         data = utils.deserialize(data)
         data["user"] = session.get("uid")
+        data["published"] = False if data.get("published", True).lower() == "false" else True
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
         tagmodel.add_tags(data, recipe_id)
