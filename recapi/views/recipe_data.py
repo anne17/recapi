@@ -199,6 +199,17 @@ def suggest_recipe():
         recipe_id = recipemodel.add_recipe(data)
         tagmodel.add_tags(data, recipe_id)
         save_image(data, recipe_id, image_file)
+
+        # Attempt to send email to admins
+        try:
+            msg = ("Hej kalufs-admin!\n\nEtt nytt receptförslag med titel \"{}\" har lämnats in av {}.\n"
+                   "Logga in på https://kalufs.lol/recept för att granska och publicera receptet.\n\n"
+                   "Vänliga hälsningar,\nkalufs.lol"
+                   ).format(data.get("title"), data.get("suggester"))
+            utils.send_mail(current_app.config.get("EMAIL_TO"), "Nytt receptförslag!", msg)
+        except Exception:
+            current_app.logger.error(traceback.format_exc())
+
         return utils.success_response(msg="Recipe saved")
 
     except pw.IntegrityError:

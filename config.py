@@ -32,3 +32,8 @@ DB_PORT = 3306
 
 # List of randomizer tags (for /random route)
 RANDOM_TAGS = ["lunch/middag"]
+
+# Email config
+EMAIL_FROM = ""
+EMAIL_TO = []        # Adresses for all admin users
+EMAIL_TO_ADMIN = []  # Adresses for admin mails such as error reports

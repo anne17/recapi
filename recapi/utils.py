@@ -7,15 +7,16 @@ import shutil
 import time
 import traceback
 import uuid
+from email.message import EmailMessage
+from subprocess import PIPE, Popen
 
 import bleach
-from bleach_whitelist import markdown_tags, markdown_attrs
+import markdown
+from bleach_whitelist import markdown_attrs, markdown_tags
+from flask import current_app, jsonify, session
 from PIL import Image
 from validator_collection import checkers
-import markdown
-from flask import jsonify, current_app, session
 from werkzeug.datastructures import FileStorage
-
 
 IMAGE_FORMATS = {
     "image/jpeg": "jpg",
@@ -192,6 +193,20 @@ def remove_file(filepath, relative=False):
     except Exception as e:
         current_app.logger.error("Could not delete file: %s", traceback.format_exc())
         raise e
+
+
+def send_mail(mailto: list, subject, content):
+    """Send email to adresses in 'mailto'."""
+    assert current_app.config.get("EMAIL_FROM", "") != "", "Couldn't send email: no sender adress configured!"
+
+    msg = EmailMessage()
+    msg.set_content(content)
+    msg["Subject"] = subject
+    msg["From"] = current_app.config.get("EMAIL_FROM")
+    msg["To"] = ', '.join(mailto)
+
+    p = Popen(["/usr/sbin/sendmail", "-t"], stdin=PIPE)
+    p.communicate(msg.as_bytes())
 
 
 def gatekeeper(allow_guest=False):
