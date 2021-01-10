@@ -166,6 +166,7 @@ def edit_recpie():
         data = request.form.to_dict()
         data = utils.deserialize(data)
         data["user"] = session.get("uid")  # Store info about which user edited last
+        data["published"] = False if data.get("published", True).lower() == "false" else True
         image_file = request.files.get("image")
         if not image_file and not data["image"]:
             recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == data["id"])
