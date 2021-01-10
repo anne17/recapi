@@ -46,6 +46,8 @@ def create_app():
     if app.config.get("DEBUG"):
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
                             format=logfmt, datefmt=datefmt)
+        # Stop peewee from spamming
+        logging.getLogger("peewee").setLevel(logging.INFO)
     else:
         today = time.strftime("%Y-%m-%d")
         logdir = os.path.join(app.instance_path, "logs")
