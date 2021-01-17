@@ -25,8 +25,8 @@ def login():
     if session.get("authorized"):
         return utils.success_response("User already authorized!", user=session.get("user"))
     else:
-        username = request.get_json().get("login")
-        password = request.get_json().get("password")
+        username = request.form.get("login")
+        password = request.form.get("password")
         try:
             user = get_user(username)
             current_app.logger.debug(f"User: {user.username}, {user.displayname}, {user.is_authenticated(password)}")
