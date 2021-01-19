@@ -2,6 +2,7 @@
 
 import logging
 import os
+import shutil
 import sys
 import time
 
@@ -10,9 +11,7 @@ from flask_cors import CORS
 from flask_session import Session
 
 from recapi import utils
-from recapi.models import usermodel
-from recapi.models import recipemodel
-from recapi.models import tagmodel
+from recapi.models import recipemodel, tagmodel, usermodel
 
 
 def create_app():
@@ -67,9 +66,11 @@ def create_app():
                             format=logfmt, datefmt=datefmt)
 
     # Create thumbnails and medium sized images
+    defaultimg = os.path.join(app.static_folder, "default.jpg")
     srcfolder = os.path.join(app.instance_path, app.config.get("IMAGE_PATH"))
     thumbnailfolder = os.path.join(app.instance_path, app.config.get("THUMBNAIL_PATH"))
     mediumfolder = os.path.join(app.instance_path, app.config.get("MEDIUM_IMAGE_PATH"))
+    shutil.copy(defaultimg, srcfolder)
     for imgfile in os.listdir(srcfolder):
         src = os.path.join(srcfolder, imgfile)
         utils.save_downscaled(src, thumbnailfolder, thumbnail=True, overwrite=False)
@@ -109,7 +110,7 @@ def create_app():
         return response
 
     # Register blueprints
-    from .views import general, authentication, parse_html, recipe_data, documentation
+    from .views import authentication, documentation, general, parse_html, recipe_data
     app.register_blueprint(general.bp)
     app.register_blueprint(recipe_data.bp)
     app.register_blueprint(authentication.bp)

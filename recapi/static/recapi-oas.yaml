@@ -585,15 +585,6 @@ paths:
         '200':
           description: OK
 
-  /defaultimg:
-    get:
-      summary: Default Image File
-      tags:
-        - misc
-      responses:
-        '200':
-          description: OK
-
   /tmp:
     get:
       summary: Temporary File
