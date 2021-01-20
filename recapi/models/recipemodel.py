@@ -53,22 +53,55 @@ def add_recipe(data):
     return recipe.id
 
 
-def get_recipes(recipes):
-    """Return all recipes in the database."""
+def get_recipe(recipe):
+    """Return data for one recipe."""
+    r = model_to_dict(recipe, recurse=False)
+    # Add user data
+    r["created_by"] = model_to_dict(recipe.a)
+    r["created_by"].pop("password")
+    if hasattr(recipe, "b"):
+        r["changed_by"] = model_to_dict(recipe.b)
+    else:
+        r["changed_by"] = model_to_dict(usermodel.User())
+    r["changed_by"].pop("password")
+    # Add tags
+    r["tags"] = sorted(recipe.taglist.split(",")) if recipe.taglist else []
+    return r
+
+
+def get_recipes(recipes, complete_data=False):
+    """Return list of recipes."""
     data = []
     for recipe in recipes:
         r = model_to_dict(recipe, recurse=False)
-        # Add user data
-        r["created_by"] = model_to_dict(recipe.a)
-        r["created_by"].pop("password")
-        if hasattr(recipe, "b"):
-            r["changed_by"] = model_to_dict(recipe.b)
-        else:
-            r["changed_by"] = model_to_dict(usermodel.User())
-        r["changed_by"].pop("password")
+
         # Add tags
         r["tags"] = sorted(recipe.taglist.split(",")) if recipe.taglist else []
         data.append(r)
+
+        if complete_data:
+            # Add user data
+            r["created_by"] = model_to_dict(recipe.a)
+            r["created_by"].pop("password")
+            if hasattr(recipe, "b"):
+                r["changed_by"] = model_to_dict(recipe.b)
+            else:
+                r["changed_by"] = model_to_dict(usermodel.User())
+            r["changed_by"].pop("password")
+
+        else:
+            # Remove data not needed in listing
+            r.pop("contents")
+            r.pop("ingredients")
+            r.pop("portions")
+            r.pop("portions_text")
+            r.pop("source")
+            r.pop("suggester")
+            r.pop("created")
+            r.pop("created_by")
+            r.pop("changed")
+            r.pop("changed_by")
+
     # Reverse list to display the newest recipe first
     data.reverse()
     return data

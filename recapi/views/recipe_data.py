@@ -18,7 +18,8 @@ bp = Blueprint("recipe_data", __name__)
 @bp.route("/recipe_data")
 def recipe_data():
     """Return all available recipe data."""
-    return get_recipe_data(published=True)
+    complete = True if request.args.get("complete", "false").lower() == "true" else False
+    return get_recipe_data(published=True, complete_data=complete)
 
 
 @bp.route("/recipe_suggestions")
@@ -28,7 +29,7 @@ def recipe_suggestions():
     return get_recipe_data(published=False)
 
 
-def get_recipe_data(published=False):
+def get_recipe_data(published=False, complete_data=False):
     """Return published or unpublished recipe data."""
     try:
         Changed = User.alias()
@@ -50,7 +51,7 @@ def get_recipe_data(published=False):
             tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
         ).group_by(recipemodel.Recipe.id)
 
-        data = recipemodel.get_recipes(recipes)
+        data = recipemodel.get_recipes(recipes, complete_data=complete_data)
         return utils.success_response(msg="Data loaded", data=data, hits=len(data))
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -110,7 +111,7 @@ def get_recipe_from_db(convert=False):
         ).join(
             tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
         ).group_by(recipemodel.Recipe.id)
-        recipe = recipemodel.get_recipes(recipes)[0]
+        recipe = recipemodel.get_recipe(recipes[0])
 
         if convert:
             recipe = utils.recipe2html(recipe)
