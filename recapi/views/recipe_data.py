@@ -104,6 +104,8 @@ def get_recipe_from_db(convert=False):
             recipemodel.Recipe.title == title
         ).join(
             storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
+        ).switch(
+            recipemodel.Recipe
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
         ).switch(
