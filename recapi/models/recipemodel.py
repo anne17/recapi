@@ -25,7 +25,6 @@ class Recipe(BaseModel):
     changed = pw.DateTimeField(null=True)
     published = pw.BooleanField(default=True)
     suggester = pw.CharField(max_length="100", null=True)
-    stored = pw.BooleanField(default=False)
     needs_fix = pw.BooleanField(default=False)
 
 
@@ -46,7 +45,6 @@ def add_recipe(data):
         changed=None,
         published=data.get("published", True),
         suggester=data.get("suggester", None),
-        stored=data.get("stored", False),
         needs_fix=data.get("needs_fix", False)
     )
     recipe.save()
@@ -66,6 +64,8 @@ def get_recipe(recipe):
     r["changed_by"].pop("password")
     # Add tags
     r["tags"] = sorted(recipe.taglist.split(",")) if recipe.taglist else []
+    # Add stored value
+    r["stored"] = recipe.stored.stored
     return r
 
 
@@ -78,6 +78,9 @@ def get_recipes(recipes, complete_data=False):
         # Add tags
         r["tags"] = sorted(recipe.taglist.split(",")) if recipe.taglist else []
         data.append(r)
+
+        # Add stored values
+        r["stored"] = recipe.stored.stored
 
         if complete_data:
             # Add user data
@@ -121,13 +124,6 @@ def edit_recipe(in_id, data):
     recipe.changed = datetime.datetime.now()
     recipe.published = data.get("published", True)
     recipe.suggester = data.get("suggester", None)
-    recipe.save()
-
-
-def toggle_stored(in_id, store):
-    """Change the 'stored' value of a recipe."""
-    recipe = Recipe.get(Recipe.id == in_id)
-    recipe.stored = not store
     recipe.save()
 
 

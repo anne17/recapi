@@ -11,7 +11,7 @@ from flask_cors import CORS
 from flask_session import Session
 
 from recapi import utils
-from recapi.models import recipemodel, tagmodel, usermodel
+from recapi.models import recipemodel, storedmodel, tagmodel, usermodel
 
 
 def create_app():
@@ -96,6 +96,7 @@ def create_app():
     tagmodel.TagCategory.create_table()
     tagmodel.Tag.create_table()
     tagmodel.RecipeTags.create_table()
+    storedmodel.Stored.create_table()
     app.config.get("SQLDB").close()
 
     @app.before_request

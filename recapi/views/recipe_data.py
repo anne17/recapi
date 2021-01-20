@@ -1,15 +1,15 @@
 """Routes related to recipe data."""
 
-from functools import reduce
 import os
 import random
 import traceback
+from functools import reduce
 
-from flask import request, current_app, Blueprint, session
 import peewee as pw
+from flask import Blueprint, current_app, request, session
 
 from recapi import utils
-from recapi.models import recipemodel, tagmodel
+from recapi.models import recipemodel, storedmodel, tagmodel
 from recapi.models.usermodel import User
 
 bp = Blueprint("recipe_data", __name__)
@@ -34,9 +34,12 @@ def get_recipe_data(published=False, complete_data=False):
     try:
         Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, User, Changed, storedmodel.Stored,
+            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).where(
             recipemodel.Recipe.published == published
+        ).join(
+            storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
         ).switch(
@@ -95,9 +98,12 @@ def get_recipe_from_db(convert=False):
 
         Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, User, Changed, storedmodel.Stored,
+            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).where(
             recipemodel.Recipe.title == title
+        ).join(
+            storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
         ).switch(
@@ -138,6 +144,7 @@ def add_recpie():
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
         tagmodel.add_tags(data, recipe_id)
+        storedmodel.add_recipe(recipe_id)
         save_image(data, recipe_id, image_file)
         return utils.success_response(msg="Recipe saved")
 
@@ -148,6 +155,7 @@ def add_recpie():
         # Delete recipe data and image
         if recipe_id is not None:
             recipemodel.delete_recipe(recipe_id)
+            storedmodel.delete_recipe(recipe_id)
         if filename is not None:
             img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
             filepath = os.path.join(img_path, filename)
@@ -201,6 +209,7 @@ def suggest_recipe():
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
         tagmodel.add_tags(data, recipe_id)
+        storedmodel.add_recipe(recipe_id)
         save_image(data, recipe_id, image_file)
 
         # Attempt to send email to admins
@@ -222,6 +231,7 @@ def suggest_recipe():
         # Delete recipe data and image
         if recipe_id is not None:
             recipemodel.delete_recipe(recipe_id)
+            storedmodel.delete_recipe(recipe_id)
         if filename is not None:
             img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
             filepath = os.path.join(img_path, filename)
@@ -280,6 +290,7 @@ def delete_recpie():
             utils.remove_file(os.path.join(current_app.config.get("MEDIUM_IMAGE_PATH"), recipe.image))
         tagmodel.delete_recipe(recipe_id)
         recipemodel.delete_recipe(recipe_id)
+        storedmodel.delete_recipe(recipe_id)
         return utils.success_response(msg="Recipe removed")
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -345,7 +356,10 @@ def search():
         # Build query
         Changed = User.alias()
         query = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, User, Changed, storedmodel.Stored,
+            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+        ).join(
+            storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
         ).switch(
@@ -405,9 +419,12 @@ def get_random_recipe():
     try:
         Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, User, Changed, storedmodel.Stored,
+            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).where(
             recipemodel.Recipe.published == True
+        ).join(
+            storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
         ).switch(
@@ -440,7 +457,7 @@ def toggle_stored():
     try:
         data = request.get_json()
         stored = data.get("stored", False)
-        recipemodel.toggle_stored(data["id"], stored)
+        storedmodel.toggle_stored(data["id"], stored)
         if stored:
             return utils.success_response(msg="Recipe stored")
         else:
@@ -458,9 +475,12 @@ def stored_recipes():
     try:
         Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, User, Changed, storedmodel.Stored,
+            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+        ).join(
+            storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
         ).where(
-            recipemodel.Recipe.stored == True
+            storedmodel.Stored.stored == True
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
         ).switch(
@@ -508,9 +528,12 @@ def needs_fix_recipes():
     try:
         Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, User, Changed, storedmodel.Stored,
+            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).where(
             recipemodel.Recipe.needs_fix == True
+        ).join(
+            storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
         ).join(
             User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
         ).switch(
