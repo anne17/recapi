@@ -34,25 +34,32 @@ def get_recipe_data(published=False, complete_data=False):
     try:
         Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, storedmodel.Stored,
+            recipemodel.Recipe, storedmodel.Stored,
             pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).where(
             recipemodel.Recipe.published == published
         ).join(
             storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
         ).join(
-            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
-        ).switch(
-            recipemodel.Recipe
-        ).join(
-            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
-        ).switch(
-            recipemodel.Recipe
-        ).join(
             tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
         ).join(
             tagmodel.Tag, pw.JOIN.LEFT_OUTER, on=(tagmodel.Tag.id == tagmodel.RecipeTags.tagID)
-        ).group_by(recipemodel.Recipe.id)
+        ).group_by(
+            recipemodel.Recipe.id)
+
+        if complete_data:
+            # Load in User table
+            recipes = recipes.select(
+                User, Changed, recipemodel.Recipe, storedmodel.Stored,
+                pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            ).switch(
+                recipemodel.Recipe
+            ).join(
+                User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
+            ).switch(
+                recipemodel.Recipe
+            ).join(
+                Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b"))
 
         data = recipemodel.get_recipes(recipes, complete_data=complete_data)
         return utils.success_response(msg="Data loaded", data=data, hits=len(data))
@@ -419,22 +426,12 @@ def get_random_recipe():
     ])
 
     try:
-        Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, storedmodel.Stored,
-            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, storedmodel.Stored, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).where(
             recipemodel.Recipe.published == True
         ).join(
             storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
-        ).join(
-            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
-        ).switch(
-            recipemodel.Recipe
-        ).join(
-            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
-        ).switch(
-            recipemodel.Recipe
         ).join(
             tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
         ).join(
@@ -475,22 +472,12 @@ def toggle_stored():
 def stored_recipes():
     """Return data for all stored recipes."""
     try:
-        Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, storedmodel.Stored,
-            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, storedmodel.Stored, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).join(
             storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
         ).where(
             storedmodel.Stored.stored == True
-        ).join(
-            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
-        ).switch(
-            recipemodel.Recipe
-        ).join(
-            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
-        ).switch(
-            recipemodel.Recipe
         ).join(
             tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
         ).join(
@@ -528,22 +515,12 @@ def toggle_needs_fix():
 def needs_fix_recipes():
     """Return data for all recipes that need fixes."""
     try:
-        Changed = User.alias()
         recipes = recipemodel.Recipe.select(
-            recipemodel.Recipe, User, Changed, storedmodel.Stored,
-            pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
+            recipemodel.Recipe, storedmodel.Stored, pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).where(
             recipemodel.Recipe.needs_fix == True
         ).join(
             storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
-        ).join(
-            User, pw.JOIN.LEFT_OUTER, on=(User.id == recipemodel.Recipe.created_by).alias("a")
-        ).switch(
-            recipemodel.Recipe
-        ).join(
-            Changed, pw.JOIN.LEFT_OUTER, on=(Changed.id == recipemodel.Recipe.changed_by).alias("b")
-        ).switch(
-            recipemodel.Recipe
         ).join(
             tagmodel.RecipeTags, pw.JOIN.LEFT_OUTER, on=(tagmodel.RecipeTags.recipeID == recipemodel.Recipe.id)
         ).join(

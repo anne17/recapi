@@ -7,10 +7,11 @@ Can be overwritten with config.py in instance folder.
 import datetime
 
 # Paths relative to the instance folder
-TMP_DIR = "tmp"
+TMP_DIR = "img_tmp"
 IMAGE_PATH = "img"
-THUMBNAIL_PATH = "thumb"
+THUMBNAIL_PATH = "img_thumb"
 MEDIUM_IMAGE_PATH = "img_medium"
+RECIPE_JSON = "recipe-list.json"
 
 ADMIN_PASSWORD = "password"
 
