@@ -4,40 +4,82 @@
 #
 #    pip-compile
 #
-attrs==20.3.0             # via jsonschema
-beautifulsoup4==4.9.3     # via bs4
-bleach-whitelist==0.0.11  # via -r requirements.in
-bleach==3.2.1             # via -r requirements.in
-bs4==0.0.1                # via -r requirements.in
-cachelib==0.1.1           # via flask-session
-certifi==2020.12.5        # via requests
-chardet==4.0.0            # via requests
-click==7.1.2              # via -r requirements.in, flask
-flask-cors==3.0.10        # via -r requirements.in
-flask-session==0.3.2      # via -r requirements.in
-flask==1.1.2              # via -r requirements.in, flask-cors, flask-session
-gunicorn==20.0.4          # via -r requirements.in
-html2text==2020.1.16      # via -r requirements.in
-idna==2.10                # via requests
-itsdangerous==1.1.0       # via flask
-jinja2==2.11.2            # via flask
-jsonschema==3.2.0         # via validator-collection
-markdown==3.3.3           # via -r requirements.in
-markupsafe==1.1.1         # via jinja2
-packaging==20.8           # via bleach
-peewee==3.14.0            # via -r requirements.in
-pillow==8.1.0             # via -r requirements.in
-pymysql==0.10.1           # via -r requirements.in
-pyparsing==2.4.7          # via packaging
-pyrsistent==0.17.3        # via jsonschema
-pyyaml==5.3.1             # via -r requirements.in
-requests==2.25.1          # via -r requirements.in
-six==1.15.0               # via bleach, flask-cors, jsonschema
-soupsieve==2.1            # via beautifulsoup4
-urllib3==1.26.2           # via requests
-validator-collection==1.5.0  # via -r requirements.in
-webencodings==0.5.1       # via bleach
-werkzeug==1.0.1           # via flask
+attrs==20.3.0
+    # via jsonschema
+beautifulsoup4==4.9.3
+    # via bs4
+bleach-whitelist==0.0.11
+    # via -r requirements.in
+bleach==3.2.1
+    # via -r requirements.in
+bs4==0.0.1
+    # via -r requirements.in
+cachelib==0.1.1
+    # via flask-session
+certifi==2020.12.5
+    # via requests
+chardet==4.0.0
+    # via requests
+click==7.1.2
+    # via
+    #   -r requirements.in
+    #   flask
+flask-cors==3.0.10
+    # via -r requirements.in
+flask-session==0.3.2
+    # via -r requirements.in
+flask==1.1.2
+    # via
+    #   -r requirements.in
+    #   flask-cors
+    #   flask-session
+gunicorn==20.0.4
+    # via -r requirements.in
+html2text==2020.1.16
+    # via -r requirements.in
+idna==2.10
+    # via requests
+itsdangerous==1.1.0
+    # via flask
+jinja2==2.11.2
+    # via flask
+jsonschema==3.2.0
+    # via validator-collection
+markdown==3.3.3
+    # via -r requirements.in
+markupsafe==1.1.1
+    # via jinja2
+packaging==20.8
+    # via bleach
+peewee==3.14.0
+    # via -r requirements.in
+pillow==8.1.1
+    # via -r requirements.in
+pymysql==0.10.1
+    # via -r requirements.in
+pyparsing==2.4.7
+    # via packaging
+pyrsistent==0.17.3
+    # via jsonschema
+pyyaml==5.3.1
+    # via -r requirements.in
+requests==2.25.1
+    # via -r requirements.in
+six==1.15.0
+    # via
+    #   bleach
+    #   flask-cors
+    #   jsonschema
+soupsieve==2.1
+    # via beautifulsoup4
+urllib3==1.26.2
+    # via requests
+validator-collection==1.5.0
+    # via -r requirements.in
+webencodings==0.5.1
+    # via bleach
+werkzeug==1.0.1
+    # via flask
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
