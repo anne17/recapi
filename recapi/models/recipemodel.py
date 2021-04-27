@@ -17,7 +17,8 @@ class Recipe(BaseModel):
     source = pw.TextField()
     ingredients = pw.TextField()
     contents = pw.TextField()
-    portions_text = pw.CharField(max_length="20")
+    portions_text = pw.CharField(max_length="100")
+    # portions_text_old = pw.CharField(max_length="50")
     portions = pw.IntegerField()
     created_by = pw.ForeignKeyField(usermodel.User)
     created = pw.DateTimeField()
@@ -26,6 +27,7 @@ class Recipe(BaseModel):
     published = pw.BooleanField(default=True)
     suggester = pw.CharField(max_length="100", null=True)
     needs_fix = pw.BooleanField(default=False)
+    needs_fix_text = pw.TextField()
 
 
 def add_recipe(data):

@@ -105,6 +105,37 @@ def create_tags():
         tag.save()
 
 
+def change_max_length():
+    """Change max length of CharField column."""
+    init_db()
+    migrator = playhouse.migrate.MySQLMigrator(config.SQLDB)
+
+    # Create new column
+    playhouse.migrate.migrate(
+        migrator.rename_column("recipe", "portions_text", "portions_text_old"),
+        migrator.add_column("recipe", "portions_text", pw.CharField(max_length="100", default="")),
+    )
+    # # Copy column data
+    # from recapi.models import recipemodel
+    # recipes = recipemodel.Recipe.select()
+    # for recipe in recipes:
+    #     recipe.portions_text = str(recipe.portions_text_old)
+    #     recipe.save()
+    # # Drop column
+    # playhouse.migrate.migrate(
+    #     migrator.drop_column("recipe", "portions_text_old")
+    # )
+
+
+def add_needs_fix_text():
+    init_db()
+    migrator = playhouse.migrate.MySQLMigrator(config.SQLDB)
+    playhouse.migrate.migrate(
+        migrator.add_column("recipe", "needs_fix_text", pw.TextField(default="")),
+    )
+
 if __name__ == '__main__':
     # migrate_example()
     print("Nothing to be done!")
+    # change_max_length()
+    # add_needs_fix_text()
