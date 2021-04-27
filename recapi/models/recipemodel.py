@@ -18,7 +18,6 @@ class Recipe(BaseModel):
     ingredients = pw.TextField()
     contents = pw.TextField()
     portions_text = pw.CharField(max_length="100")
-    # portions_text_old = pw.CharField(max_length="50")
     portions = pw.IntegerField()
     created_by = pw.ForeignKeyField(usermodel.User)
     created = pw.DateTimeField()
@@ -47,7 +46,8 @@ def add_recipe(data):
         changed=None,
         published=data.get("published", True),
         suggester=data.get("suggester", None),
-        needs_fix=data.get("needs_fix", False)
+        needs_fix=data.get("needs_fix", False),
+        needs_fix_text=data.get("needs_fix_text", "")
     )
     recipe.save()
     return recipe.id
@@ -106,6 +106,7 @@ def get_recipes(recipes, complete_data=False):
             r.pop("created_by")
             r.pop("changed")
             r.pop("changed_by")
+            r.pop("needs_fix_text")
 
     # Reverse list to display the newest recipe first
     data.reverse()
@@ -133,6 +134,8 @@ def toggle_needs_fix(in_id, needs_fix):
     """Change the 'needs_fix' value of a recipe."""
     recipe = Recipe.get(Recipe.id == in_id)
     recipe.needs_fix = needs_fix
+    if needs_fix == False:
+        recipe.needs_fix_text = ""
     recipe.save()
 
 
