@@ -170,8 +170,8 @@ def add_recpie():
     except Exception as e:
         # Delete recipe data and image
         if recipe_id is not None:
-            recipemodel.delete_recipe(recipe_id)
             storedmodel.delete_recipe(recipe_id)
+            recipemodel.delete_recipe(recipe_id)
         if filename is not None:
             img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
             filepath = os.path.join(img_path, filename)
@@ -250,8 +250,8 @@ def suggest_recipe():
     except Exception as e:
         # Delete recipe data and image
         if recipe_id is not None:
-            recipemodel.delete_recipe(recipe_id)
             storedmodel.delete_recipe(recipe_id)
+            recipemodel.delete_recipe(recipe_id)
         if filename is not None:
             img_path = os.path.join(current_app.instance_path, current_app.config.get("IMAGE_PATH"))
             filepath = os.path.join(img_path, filename)
@@ -309,8 +309,8 @@ def delete_recpie():
             utils.remove_file(os.path.join(current_app.config.get("THUMBNAIL_PATH"), recipe.image))
             utils.remove_file(os.path.join(current_app.config.get("MEDIUM_IMAGE_PATH"), recipe.image))
         tagmodel.delete_recipe(recipe_id)
-        recipemodel.delete_recipe(recipe_id)
         storedmodel.delete_recipe(recipe_id)
+        recipemodel.delete_recipe(recipe_id)
         return utils.success_response(msg="Recipe removed")
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
