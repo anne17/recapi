@@ -13,6 +13,7 @@ class Recipe(BaseModel):
     """Recipe table (peewee model)."""
 
     title = pw.CharField(unique=True, max_length="100")
+    url = pw.CharField(unique=True, max_length="120")
     image = pw.TextField()
     source = pw.TextField()
     ingredients = pw.TextField()
@@ -34,6 +35,7 @@ def add_recipe(data):
     portions = portion_str_to_number(data.get("portions_text", ""))
     recipe = Recipe(
         title=data.get("title"),
+        url="",
         image=data.get("image", ""),
         source=data.get("source", ""),
         ingredients=data.get("ingredients", ""),
@@ -117,6 +119,7 @@ def edit_recipe(in_id, data):
     """Override data of an existing recipe. Find recipe by ID."""
     recipe = Recipe.get(Recipe.id == in_id)
     recipe.title = data.get("title")
+    recipe.url = data.get("url")
     recipe.image = data.get("image", "")
     recipe.source = data.get("source", "")
     recipe.ingredients = data.get("ingredients", "")
@@ -127,6 +130,8 @@ def edit_recipe(in_id, data):
     recipe.changed = datetime.datetime.now()
     recipe.published = data.get("published", True)
     recipe.suggester = data.get("suggester", None)
+    recipe.needs_fix = data.get("needs_fix", False),
+    recipe.needs_fix_text = data.get("needs_fix_text", "")
     recipe.save()
 
 
@@ -143,6 +148,13 @@ def set_image(in_id, data):
     """Set image of recipe without changing any other data."""
     recipe = Recipe.get(Recipe.id == in_id)
     recipe.image = data.get("image", "")
+    recipe.save()
+
+
+def set_url(in_id, url):
+    """Set URL of recipe without changing any other data."""
+    recipe = Recipe.get(Recipe.id == in_id)
+    recipe.url = url
     recipe.save()
 
 

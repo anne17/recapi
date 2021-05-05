@@ -100,14 +100,15 @@ def get_recipe():
 
 def get_recipe_from_db(convert=False):
     """Get data for one recipe. Convert to html if convert=True."""
+    recipe_id = request.args.get("id")
+    title = request.args.get("title")
     try:
-        title = request.args.get("title")
-
         Changed = User.alias()
         recipes = recipemodel.Recipe.select(
             recipemodel.Recipe, User, Changed, storedmodel.Stored,
             pw.fn.group_concat(tagmodel.Tag.tagname).alias("taglist")
         ).where(
+            recipemodel.Recipe.id == recipe_id if recipe_id else
             recipemodel.Recipe.title == title
         ).join(
             storedmodel.Stored, pw.JOIN.LEFT_OUTER, on=(storedmodel.Stored.recipeID == recipemodel.Recipe.id)
@@ -134,6 +135,10 @@ def get_recipe_from_db(convert=False):
             return utils.error_response(f"Could not find recipe '{title}'."), 404
 
         return utils.success_response(msg="Data loaded", data=recipe)
+
+    except IndexError:
+        return utils.error_response(f"Could not find recipe with ID '{recipe_id}'"), 404
+
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
         return utils.error_response(f"Failed to load recipe: {e}"), 400
@@ -152,10 +157,12 @@ def add_recpie():
         data["published"] = False if data.get("published", True).lower() == "false" else True
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
+        url = utils.make_url(data["title"], recipe_id)
+        recipemodel.set_url(recipe_id, url)
         tagmodel.add_tags(data, recipe_id)
         storedmodel.add_recipe(recipe_id)
         save_image(data, recipe_id, image_file)
-        return utils.success_response(msg="Recipe saved")
+        return utils.success_response(msg="Recipe saved", url=url)
 
     except pw.IntegrityError:
         return utils.error_response("Recipe title already exists!"), 409
@@ -185,6 +192,8 @@ def edit_recpie():
         data = utils.deserialize(data)
         data["user"] = session.get("uid")  # Store info about which user edited last
         data["published"] = False if data.get("published", True).lower() == "false" else True
+        url = utils.make_url(data["title"], data["id"])
+        data["url"] = url
         image_file = request.files.get("image")
         if not image_file and not data["image"]:
             recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == data["id"])
@@ -197,7 +206,7 @@ def edit_recpie():
             save_image(data, data["id"], image_file)
         recipemodel.edit_recipe(data["id"], data)
         tagmodel.add_tags(data, data["id"])
-        return utils.success_response(msg="Recipe saved")
+        return utils.success_response(msg="Recipe saved", url=url)
 
     except Exception as e:
         current_app.logger.error(traceback.format_exc())
@@ -217,6 +226,8 @@ def suggest_recipe():
         data["published"] = False
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
+        url = utils.make_url(data["title"], recipe_id)
+        recipemodel.set_url(recipe_id, url)
         tagmodel.add_tags(data, recipe_id)
         storedmodel.add_recipe(recipe_id)
         save_image(data, recipe_id, image_file)
@@ -231,7 +242,7 @@ def suggest_recipe():
         except Exception:
             current_app.logger.error(traceback.format_exc())
 
-        return utils.success_response(msg="Recipe saved")
+        return utils.success_response(msg="Recipe saved", url=url)
 
     except pw.IntegrityError:
         return utils.error_response("Recipe title already exists!"), 409

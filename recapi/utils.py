@@ -3,9 +3,11 @@
 import functools
 import json
 import os
+import re
 import shutil
 import time
 import traceback
+import unicodedata
 import uuid
 from email.message import EmailMessage
 from subprocess import PIPE, Popen
@@ -220,3 +222,14 @@ def gatekeeper(allow_guest=False):
                 return function(*args, **kwargs)
         return wrapper
     return decorator
+
+
+def make_url(title, recipe_id):
+    """Create a pretty URL from the recipe title and it's numeric ID."""
+    title = title.lower()
+    title = title.replace("ß", "ss")
+    title = re.sub(r"[\"',.!?+\-:&/$`<>\[\]{}()]", "", title)
+    title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("UTF-8")
+    title = re.sub(r"\s{2,}", " ", title)
+    title = title.replace(" ", "-")
+    return f"{title}-{recipe_id}"

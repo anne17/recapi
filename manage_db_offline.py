@@ -27,11 +27,16 @@ def update_recipes():
     """Update all recipes, e.g. when values of a column are converted."""
     init_db()
     from recapi.models import recipemodel
+    from recapi import utils
     recipes = recipemodel.Recipe.select()
     for recipe in recipes:
 
-        # Example: copy int value in 'portions' column to 'portions_text' and convert to str
-        recipe.portions_text = str(recipe.portions)
+        # # Example: copy int value in 'portions' column to 'portions_text' and convert to str
+        # recipe.portions_text = str(recipe.portions)
+        # recipe.save()
+
+        recipe.url = utils.make_url(recipe.title, recipe.id)
+        print(recipe.title, recipe.url)
         recipe.save()
 
 
@@ -53,7 +58,7 @@ def migrate_example():
     migrator = playhouse.migrate.MySQLMigrator(config.SQLDB)
 
     # Some examples for altering data
-    from recapi.models import usermodel
+    # from recapi.models import usermodel
     playhouse.migrate.migrate(
         # Add column with or without foreign key
         # migrator.add_column("recipe", "changed_by_id", pw.ForeignKeyField(usermodel.User, null=True, field=usermodel.User.id)),
@@ -61,12 +66,13 @@ def migrate_example():
         # Drop column
         # migrator.drop_column("recipe", "changed_by")
         # Rename column
-        migrator.rename_column('recipe', 'suggestor', 'suggester'),
-        migrator.add_column("recipe", "stored", pw.BooleanField(default=False)),
-        migrator.add_column("recipe", "needs_fix", pw.BooleanField(default=False))
+        # migrator.rename_column('recipe', 'suggestor', 'suggester'),
+        # migrator.add_column("recipe", "stored", pw.BooleanField(default=False)),
+        # migrator.add_column("recipe", "needs_fix", pw.BooleanField(default=False))
 
+        # migrator.drop_column("recipe", "url"),
+        migrator.add_column("recipe", "url", pw.CharField(unique=True, max_length="120", null=True))
     )
-    # update_recipes()
 
 
 def create_categories():
@@ -129,4 +135,5 @@ def change_max_length():
 
 if __name__ == '__main__':
     # migrate_example()
+    # update_recipes()
     print("Nothing to be done!")
