@@ -39,8 +39,6 @@ html2text==2020.1.16
     # via -r requirements.in
 idna==3.3
     # via requests
-importlib-metadata==4.10.1
-    # via markdown
 itsdangerous==2.0.1
     # via flask
 jinja2==3.0.3
@@ -55,7 +53,7 @@ packaging==21.3
     # via bleach
 peewee==3.14.8
     # via -r requirements.in
-pillow==9.0.1
+pillow==9.3.0
     # via -r requirements.in
 pymysql==1.0.2
     # via -r requirements.in
@@ -81,8 +79,6 @@ webencodings==0.5.1
     # via bleach
 werkzeug==2.0.2
     # via flask
-zipp==3.7.0
-    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
