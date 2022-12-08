@@ -16,7 +16,7 @@ bs4==0.0.1
     # via -r requirements.in
 cachelib==0.6.0
     # via flask-session
-certifi==2021.10.8
+certifi==2022.12.7
     # via requests
 charset-normalizer==2.0.11
     # via requests
@@ -39,8 +39,6 @@ html2text==2020.1.16
     # via -r requirements.in
 idna==3.3
     # via requests
-importlib-metadata==4.10.1
-    # via markdown
 itsdangerous==2.0.1
     # via flask
 jinja2==3.0.3
@@ -81,8 +79,6 @@ webencodings==0.5.1
     # via bleach
 werkzeug==2.0.2
     # via flask
-zipp==3.7.0
-    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
