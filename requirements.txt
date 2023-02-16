@@ -39,8 +39,6 @@ html2text==2020.1.16
     # via -r requirements.in
 idna==3.3
     # via requests
-importlib-metadata==4.10.1
-    # via markdown
 itsdangerous==2.0.1
     # via flask
 jinja2==3.0.3
@@ -49,8 +47,10 @@ jsonschema==4.4.0
     # via validator-collection
 markdown==3.3.6
     # via -r requirements.in
-markupsafe==2.0.1
-    # via jinja2
+markupsafe==2.1.2
+    # via
+    #   jinja2
+    #   werkzeug
 packaging==21.3
     # via bleach
 peewee==3.14.8
@@ -79,10 +79,8 @@ validator-collection==1.5.0
     # via -r requirements.in
 webencodings==0.5.1
     # via bleach
-werkzeug==2.0.2
+werkzeug==2.2.3
     # via flask
-zipp==3.7.0
-    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
