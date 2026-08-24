@@ -70,6 +70,9 @@ def create_app():
     srcfolder = os.path.join(app.instance_path, app.config.get("IMAGE_PATH"))
     thumbnailfolder = os.path.join(app.instance_path, app.config.get("THUMBNAIL_PATH"))
     mediumfolder = os.path.join(app.instance_path, app.config.get("MEDIUM_IMAGE_PATH"))
+    tmpfolder = os.path.join(app.instance_path, app.config.get("TMP_DIR"))
+    for folder in (srcfolder, thumbnailfolder, mediumfolder, tmpfolder):
+        os.makedirs(folder, exist_ok=True)
     shutil.copy(defaultimg, srcfolder)
     for imgfile in os.listdir(srcfolder):
         src = os.path.join(srcfolder, imgfile)
