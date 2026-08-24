@@ -124,3 +124,9 @@ def stringify_user_info(userdict):
         user_status,
         userdict.get("admin")
     )
+
+
+def main():
+    """Run the Flask CLI commands for user administration."""
+    with app.app_context():
+        app.cli.main(prog_name="recapi-user-cli")
