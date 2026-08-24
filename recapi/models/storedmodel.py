@@ -15,7 +15,7 @@ class Stored(BaseModel):
 
 def toggle_stored(recipe_id, stored_val):
     """Change the 'stored' value of a recipe."""
-    stored_entry = Stored.get(Stored.recipeID == recipe_id)
+    stored_entry, _ = Stored.get_or_create(recipeID=recipe_id, defaults={"stored": False})
     stored_entry.stored = not stored_val
     stored_entry.save()
 
@@ -31,5 +31,4 @@ def add_recipe(recipe_id):
 
 def delete_recipe(recipe_id):
     """Remove 'stored' entry for a recipe."""
-    stored = Stored.get(Stored.recipeID == recipe_id)
-    return stored.delete_instance()
+    return Stored.delete().where(Stored.recipeID == recipe_id).execute()

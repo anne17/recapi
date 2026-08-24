@@ -69,7 +69,7 @@ def get_recipe(recipe):
     # Add tags
     r["tags"] = sorted(recipe.taglist.split(",")) if recipe.taglist else []
     # Add stored value
-    r["stored"] = recipe.stored.stored
+    r["stored"] = recipe.stored.stored if recipe.stored is not None else False
     return r
 
 
@@ -84,7 +84,7 @@ def get_recipes(recipes, complete_data=False):
         data.append(r)
 
         # Add stored values
-        r["stored"] = recipe.stored.stored
+        r["stored"] = recipe.stored.stored if recipe.stored is not None else False
 
         if complete_data:
             # Add user data
