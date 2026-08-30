@@ -61,7 +61,7 @@ def get_recipe(recipe):
     # Add user data
     r["created_by"] = model_to_dict(recipe.a)
     r["created_by"].pop("password")
-    if hasattr(recipe, "b"):
+    if getattr(recipe, "b", None) is not None:
         r["changed_by"] = model_to_dict(recipe.b)
     else:
         r["changed_by"] = model_to_dict(usermodel.User())
@@ -90,7 +90,7 @@ def get_recipes(recipes, complete_data=False):
             # Add user data
             r["created_by"] = model_to_dict(recipe.a)
             r["created_by"].pop("password")
-            if hasattr(recipe, "b"):
+            if getattr(recipe, "b", None) is not None:
                 r["changed_by"] = model_to_dict(recipe.b)
             else:
                 r["changed_by"] = model_to_dict(usermodel.User())
