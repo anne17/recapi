@@ -154,7 +154,8 @@ def add_recpie():
         data = request.form.to_dict()
         data = utils.deserialize(data)
         data["user"] = session.get("uid")
-        data["published"] = False if data.get("published", True).lower() == "false" else True
+        published_val = data.get("published", True)
+        data["published"] = published_val.lower() != "false" if isinstance(published_val, str) else bool(published_val)
         image_file = request.files.get("image")
         recipe_id = recipemodel.add_recipe(data)
         url = utils.make_url(data["title"], recipe_id)
@@ -191,15 +192,16 @@ def edit_recpie():
         data = request.form.to_dict()
         data = utils.deserialize(data)
         data["user"] = session.get("uid")  # Store info about which user edited last
-        data["published"] = False if data.get("published", True).lower() == "false" else True
+        published_val = data.get("published", True)
+        data["published"] = published_val.lower() != "false" if isinstance(published_val, str) else bool(published_val)
         url = utils.make_url(data["title"], data["id"])
         data["url"] = url
         image_file = request.files.get("image")
-        if not image_file and not data["image"]:
+        if not image_file and not data.get("image"):
             recipe = recipemodel.Recipe.get(recipemodel.Recipe.id == data["id"])
             if recipe.image:
                 try:
-                    utils.remove_file(utils.remove_file(os.path.join(current_app.config.get("IMAGE_PATH"), recipe.image)))
+                    utils.remove_file(os.path.join(current_app.config.get("IMAGE_PATH"), recipe.image))
                 except OSError:
                     current_app.logger.warning(traceback.format_exc())
         else:
