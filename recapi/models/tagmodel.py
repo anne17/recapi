@@ -1,7 +1,6 @@
 """Tag table models."""
 
 import peewee as pw
-from playhouse.shortcuts import model_to_dict
 
 from recapi.models import BaseModel
 from recapi.models.recipemodel import Recipe
@@ -28,38 +27,71 @@ class RecipeTags(BaseModel):
     tagID = pw.ForeignKeyField(Tag)
 
 
+def _normalize_tags(tags):
+    """Normalize a tag list and drop duplicates while preserving order."""
+    normalized_tags = []
+    seen = set()
+    if not isinstance(tags, list):
+        return normalized_tags
+
+    for tagname in tags:
+        if not isinstance(tagname, str):
+            continue
+        normalized = tagname.lower().strip()
+        if normalized and normalized not in seen:
+            normalized_tags.append(normalized)
+            seen.add(normalized)
+    return normalized_tags
+
+
 def add_tags(recipe_data, recipe_id):
     """Add entries for Tag and RecipeTags and delete removed tags."""
     newTags = recipe_data.get("newTags") or {}
     if isinstance(newTags, dict):
         for tagname, category in newTags.items():
-            tagname = tagname.lower().strip()
-            tag = Tag(tagname=tagname, parent=TagCategory.get(TagCategory.categoryname == category))
-            tag.save()
+            normalized = tagname.lower().strip()
+            if not normalized:
+                continue
+            Tag.get_or_create(
+                tagname=normalized,
+                defaults={"parent": TagCategory.get(TagCategory.categoryname == category)}
+            )
 
-    # Get existing tags for recipe
-    existing_tags_rows = RecipeTags.select().join(Tag, pw.JOIN.LEFT_OUTER).where((RecipeTags.recipeID == recipe_id))
-    existing_tags = []
+    recipe = Recipe.get(Recipe.id == recipe_id)
+    requested_tags = _normalize_tags(recipe_data.get("tags") or [])
+
+    # Load current relations and collapse any duplicate rows for this recipe.
+    existing_tags_rows = (
+        RecipeTags
+        .select(RecipeTags, Tag)
+        .join(Tag, pw.JOIN.LEFT_OUTER)
+        .where(RecipeTags.recipeID == recipe_id)
+        .order_by(RecipeTags.id)
+    )
+    existing_tags = {}
     for row in existing_tags_rows:
-        row_dict = model_to_dict(row)
-        tag_dict = row_dict.get("tagID")
-        if isinstance(tag_dict, dict) and tag_dict.get("tagname"):
-            existing_tags.append(tag_dict["tagname"])
+        tagname = row.tagID.tagname.lower().strip()
+        existing_tags.setdefault(tagname, []).append(row)
 
-    # Add tags if they don't exist already
-    tags = recipe_data.get("tags") or []
-    if isinstance(tags, list):
-        for tagname in tags:
-            tagname = tagname.lower().strip()
-            if tagname not in existing_tags:
-                recipetags = RecipeTags(recipeID=Recipe.get(Recipe.id == recipe_id), tagID=Tag.get(Tag.tagname == tagname))
-                recipetags.save()
+    for duplicate_rows in existing_tags.values():
+        for duplicate_row in duplicate_rows[1:]:
+            duplicate_row.delete_instance()
 
-    # Delete removed tags
-    for tagname in existing_tags:
-        if isinstance(tags, list) and tagname not in tags:
-            recipetags = RecipeTags.get(RecipeTags.recipeID == recipe_id, RecipeTags.tagID == Tag.get(Tag.tagname == tagname).id)
-            recipetags.delete_instance()
+    existing_tag_names = set(existing_tags)
+
+    # Add tags if they don't exist already.
+    for tagname in requested_tags:
+        if tagname not in existing_tag_names:
+            RecipeTags.get_or_create(
+                recipeID=recipe,
+                tagID=Tag.get(Tag.tagname == tagname)
+            )
+
+    # Delete removed tags.
+    requested_tag_names = set(requested_tags)
+    for tagname, rows in existing_tags.items():
+        if tagname not in requested_tag_names:
+            rows[0].delete_instance()
             # Remove this tag from Tag table if no other recipe uses it
             delete_abandoned_tag(in_tagname=tagname)
 
